@@ -1,3 +1,7 @@
+import cv2
+import numpy as np
+import os
+
 class tecnai:
     """
     Set of convenience functions for electron microscopy images of the tecnai
