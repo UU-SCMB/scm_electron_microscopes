@@ -3,6 +3,8 @@
 # HELIOS
 #==============================================================================
 import os
+from .utility import util
+
 class helios:
     """
     Set of convenience functions for the Helios SEM.
