@@ -1,6 +1,3 @@
-import cv2
-import numpy as np
-
 from .tem import tecnai
 from .sem import helios,phenom,xl30sfeg
 from .utility import util
