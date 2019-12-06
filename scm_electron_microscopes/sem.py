@@ -3,7 +3,7 @@
 # HELIOS
 #==============================================================================
 import os
-from .utility import util
+from utility import util
 
 class helios:
     """
