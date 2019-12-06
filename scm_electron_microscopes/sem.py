@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-created by:     Maarten Bransen
-email:          m.bransen@uu.nl
-last updated:   05-11-2019
-"""
-
-import cv2
-import numpy as np
-
 
 #==============================================================================
 # HELIOS
