@@ -1,6 +1,8 @@
 # scm_electron_microscopes
 Set of functions for dealing with data from the electron microscopes at Utrecht University
 
+**[The documentation can be found here](https://maartenbransen.github.io/scm_electron_microscopes/)**
+
 ## Info
 - Created by: Maarten Bransen
 - Email: m.bransen@uu.nl
