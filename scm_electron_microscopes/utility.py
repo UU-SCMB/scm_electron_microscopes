@@ -29,15 +29,12 @@ class util:
     def print_metadata(xml_root):
         """
         print xml attributes/tags of phenom data to inspect elements.
-        
-        @dependencies:
-            import xml.etree.ElementTree as et
-        
-        @parameters:
-            xml_root: output of get_metadata()
-        
-        @returns:
-            none, but prints output
+
+        Parameters
+        ----------
+        xml_root : xml root object
+            Takes output of get_metadata() and prints formatted metadata to the
+            terminal
         """       
         print('-----------------------------------------------------')
         print('METADATA')
@@ -49,8 +46,18 @@ class util:
         print('-----------------------------------------------------\n')
         
     def image_histogram(image,binsize=1,log=True):
-        """plot histogram of the image grey values"""
+        """plot histogram of the image grey values
         
+        Parameters
+        ----------
+        image : numpy.array-like
+            the image to calculate the intensity histogram for.
+        binsize : float-like, optional
+            width (in intensity units) of the bins to use. The default is 1.
+        log : bool, optional
+            Whether to plot the histogram y axis on a log scale. The default is
+            True.
+        """
         import matplotlib.pyplot as plt
         minval = np.iinfo(image.dtype).min
         maxval = np.iinfo(image.dtype).max

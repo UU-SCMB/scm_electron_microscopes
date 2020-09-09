@@ -19,17 +19,12 @@ class tecnai:
         filename : string
             name of the file to load. Can but is not required to include .tif
             as extension.
-
-
-        Returns
-        -------
-        None.
-
         """
 
         #raise error if wrong format or file does not exist
         if type(filename) != str:
-            raise TypeError('The argument to the tecnai class must be a string containing the filename.')
+            raise TypeError('The argument to the '+self.__name__+
+                            ' class must be a string containing the filename.')
         if not os.path.exists(filename):
             if os.path.exists(filename + '.tif'):
                 filename = filename + '.tif'
@@ -174,7 +169,10 @@ class tecnai:
             plt.legend()
         
         #take the text of the databar
-        bartext = self.scalebar[:,min(corners[1][:,0,0])-int(6*self.shape[1]/1024):max(corners[-1][:,0,0])+int(6*self.shape[1]/1024+1)]
+        bartext = self.scalebar[:,
+            min(corners[1][:,0,0])-int(6*self.shape[1]/1024):\
+                max(corners[-1][:,0,0])+int(6*self.shape[1]/1024+1)
+        ]
         
         #upscale if needed for OCR
         if self.shape[1] < 4096:
@@ -183,15 +181,25 @@ class tecnai:
             else:
                 factor = 2
             bartextshape = np.shape(bartext)
-            bartext = cv2.resize(bartext,(factor*bartextshape[1],factor*bartextshape[0]),interpolation = cv2.INTER_CUBIC)
-            bartext = cv2.erode(cv2.threshold(bartext,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1],np.ones((5,5),np.uint8))
+            bartext = cv2.resize(
+                bartext,
+                (factor*bartextshape[1],factor*bartextshape[0]),
+                interpolation = cv2.INTER_CUBIC
+            )
+            bartext = cv2.erode(
+                cv2.threshold(bartext,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1],
+                np.ones((5,5),np.uint8)
+            )
             if debug:
                 print('- preprocessing text, resizing text image from',bartextshape,'to',np.shape(bartext))
         
         try:
             #read the text
             import pytesseract
-            text = pytesseract.image_to_string(bartext,config="--oem 0 -c tessedit_char_whitelist=0123456789pnuµm --psm 7")
+            text = pytesseract.image_to_string(
+                bartext,
+                config="--oem 0 -c tessedit_char_whitelist=0123456789pnuµm --psm 7"
+            )
             #oem 0 selects older version of tesseract which still takes the char_whitelist param
             #tessedit_char_whitelist takes list of characters it searches for (to reduce reading errors)
             #psm 7 is a mode that tells tesseract to assume a single line of text in the image
