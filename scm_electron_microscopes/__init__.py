@@ -15,3 +15,10 @@ __all__ = [
     'xl30sfeg',
     'util'
 ]
+
+#add submodules to pdoc ignore list for generated documentation
+__pdoc__ = {
+    'tem' : False,
+    'sem' : False,
+    'utility' : False,
+}
