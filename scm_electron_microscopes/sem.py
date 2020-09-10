@@ -214,21 +214,16 @@ class phenom:
         return self.image
     
     def load_metadata(self):
-        """
-        Load the metadata footer from Helios SEM files and return xml tree
+        """Load the metadata footer from Helios SEM files and return xml tree
         object which can be indexed for extraction of useful parameters. Does
         not require loading whole file into memory. Attempts first to find xml
         formatted data, if this is not found it looks for 'human' formatted
         metadata.
         
-        @dependencies:
-            import io
-            import xml.etree.ElementTree as et
-        
-        @parameters:
-            self.filename:   string
-        
-        @returns:
+
+        Returns
+        -------
+        xml.etree.ElementTree object
             xml root object of the metadata. Can be printed using it as
             argument to print_metadata, or indexed with
             xml_root.find('<element name>')
@@ -271,8 +266,16 @@ class phenom:
     
     
     def get_pixelsize(self):
-        """gets the pixel size from the metadata and calculates the unit"""
-        
+        """gets the pixel size from the metadata and calculates the unit
+
+        Returns
+        -------
+        pixelsize : (y,x) tuple of float
+            physical size of the pixels
+        unit : str
+            physical unit corresponding to the pixelsize.
+
+        """      
         #get the metadata or load it if it is not (yet) available
         try:
             xml_root = self.metadata
@@ -291,7 +294,7 @@ class phenom:
             unit = 'µm'
         
         #print result
-        pixelsize = (pixelsize_x,pixelsize_y)
+        pixelsize = (pixelsize_y,pixelsize_x)
         print('Pixel size x: {:.6g}'.format(pixelsize[0]),unit)
         print('Pixel size y: {:.6g}'.format(pixelsize[1]),unit)
         
@@ -331,15 +334,19 @@ class xl30sfeg:
     
     
     def load_metadata(self):
+        """Load the metadata footer from XL30SFEG SEM files and return xml tree
+        object which can be indexed for extraction of useful parameters. Does 
+        not require loading whole file into memory. Searches for 'human' 
+        formatted metadata.
+
+        Returns
+        -------
+        xml_root : xml.etree.ElementTree object
+            xml root object of the metadata. Can be printed using it as
+            argument to print_metadata, or indexed with
+            xml_root.find('<element name>')
+
         """
-        Load the metadata footer from XL30SFEG SEM files and return xml tree object
-        which can be indexed for extraction of useful parameters. Does not require
-        loading whole file into memory. Searches for 'human' formatted metadata.
-        
-        @dependencies:
-            import io
-            import xml.etree.ElementTree as et
-        """  
         import xml.etree.ElementTree as et
         import io
         
@@ -386,7 +393,16 @@ class xl30sfeg:
         util.print_metadata(xml_root)
     
     def get_pixelsize(self):
-        """gets the pixelsize from the data"""
+        """gets the pixel size from the metadata and calculates the unit
+
+        Returns
+        -------
+        pixelsize : float
+            physical size of the pixels in x and y
+        unit : str
+            physical unit corresponding to the pixelsize.
+
+        """   
         #try finding metadata, else call load_metadata
         try:
             self.metadata
