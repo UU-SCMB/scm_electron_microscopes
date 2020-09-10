@@ -2,9 +2,9 @@ from .tem import tecnai
 from .sem import helios,phenom,xl30sfeg
 from .utility import util
 
-#make talos alias for tecnai/talos class
-talos = tecnai
-talos.__name__ = 'talos'
+#make talos alias for identical tecnai/talos class
+talos = type('talos', tecnai.__bases__, dict(tecnai.__dict__))
+talos.__doc__ = 'Alias of `tecnai` class\n'+talos.__doc__
 
 #make visible for 'from stackscroller import *'
 __all__ = [
