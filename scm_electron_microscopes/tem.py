@@ -152,7 +152,7 @@ class tecnai:
             self.pixelsize = pixelsize
             return pixelsize,'nm'
         else:
-            _,corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+            corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
             corners = sorted(corners, key=lambda c: cv2.boundingRect(c)[0])
         
         #length in pixels between bottom left corners of vertical bars
