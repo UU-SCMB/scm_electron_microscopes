@@ -239,3 +239,81 @@ class tecnai:
         self.scalebarlength_px = barlength
         
         return pixelsize,unit
+    
+    def export_with_scalebar(self,filename,barsize=None,scale=1,loc=0,
+                             resolution=None,box=True,invert=False):
+        
+        #check if pixelsize already calculated, otherwise call get_pixelsize
+        try:
+            pixelsize,unit = self.pixelsize,self.unit
+        except AttributeError:
+            pixelsize,unit = self.get_pixelsize()
+        
+        #set default scalebar to original scalebar or calculate len
+        if type(barsize) == type(None):
+            barsize_px = self.scalebarlength_px
+        else:
+            barsize_px = barsize/pixelsize
+        
+        #set default resolution or correct barlen_px
+        if type(resolution) == type(None):
+            resolution = self.shape[1]
+        else:
+            barsize_px = barsize_px/self.shape[1]*resolution
+        
+        #TODO resolution correction
+        scale = scale*resolution/1024
+        exportim = self.image.copy()
+        
+        boxheight = int(scale*80)
+        barheight = int(scale*20)
+        
+        #bottom left
+        if loc == 0:
+            x = int(10*scale)
+            y = int(resolution - 10*scale - boxheight)
+        #bottom right
+        elif loc == 1:
+            x = int(resolution - 30*scale - barsize_px)
+            y = int(resolution - 10*scale - boxheight)
+        #top left
+        elif loc == 2:
+            x = int(10*scale)
+            y = int(10*scale)
+        #top right
+        elif loc == 3:
+            x = int(resolution - 30*scale - barsize_px)
+            y = int(10*scale)
+        else:
+            raise ValueError("loc must be 0, 1, 2 or 3")
+        
+        #put semitransparent box
+        if box:
+            #get rectangle from im and create box
+            w,h = int(20*scale+barsize_px),int(boxheight)
+            subim = exportim[y:y+h, x:x+w]
+            white_box = np.ones(subim.shape, dtype=np.uint8) * 255
+            
+            #add or subtract box from im, and put back in im
+            if invert:
+                exportim[y:y+h, x:x+w] = cv2.addWeighted(subim, 0.5, -white_box, 0.5, 1.0)
+            else:
+                exportim[y:y+h, x:x+w] = cv2.addWeighted(subim, 0.5, white_box, 0.5, 1.0)
+
+        #put scalebar itself and text on im
+        barx = int(x+10*scale)
+        bary = int(y+boxheight-10*scale-barheight)
+        
+        text = str(barsize)+' '+unit,(textx,texty)
+        font = cv2.FONT_HERSHEY_DUPLEX
+        textx = int((2*barx + barsize_px)//2-cv2.getTextSize(text, font, 1, 2)[0])
+        texty = int(bary - 10*scale)
+        
+        if invert:
+            exportim = cv2.rectangle(exportim,(barx,y),(barx+barsize_px,bary+barheight),255,-1)
+            exportim = cv2.putText(exportim,,font,scale*1,255,-1)
+        else:
+            exportim = cv2.rectangle(exportim,(barx,bary),(int(barx+barsize_px),bary+barheight),0,-1)
+            exportim = cv2.putText(exportim,str(barsize)+' '+unit,(textx,texty),font,scale*1,0,1)
+        
+        
