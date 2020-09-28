@@ -152,7 +152,10 @@ class tecnai:
             self.pixelsize = pixelsize
             return pixelsize,'nm'
         else:
-            corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+            if int(cv2.__version__[0]) >= 4:
+                corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+            else:
+                _,corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
             corners = sorted(corners, key=lambda c: cv2.boundingRect(c)[0])
         
         #length in pixels between bottom left corners of vertical bars
@@ -240,8 +243,45 @@ class tecnai:
         
         return pixelsize,unit
     
-    def export_with_scalebar(self,filename,barsize=None,scale=1,loc=0,
-                             resolution=None,box=True,invert=False):
+    def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
+                             loc=2,resolution=None,box=True,invert=False):
+        """
+        saves an exported image of the TEM image with a scalebar in one of the 
+        four corners, where barsize is the scalebar size in data units (e.g. 
+        nm) and scale the overall scaling of the scalebar and text on the image
+
+        Parameters
+        ----------
+        filename : string or None, optional
+            Filename + extension to use for the export file. The default is the
+            filename sans extension of the original TEM file, with 
+            '_exported.png' appended.
+        barsize : float or None, optional
+            size (in data units matching the original scale bar, e.g. nm) of 
+            the scale bar to use. The default is the same as the original bar.
+        crop : tuple of form `((xmin,ymin),(xmax,ymax))` or None, optional
+            range describing a area of the original image (before rescaling the
+            resolution) to crop out for the export image. The default is None 
+            which takes the entire image.
+        scale : float, optional
+            DESCRIPTION. The default is 1.
+        loc : int, one of [`0`,`1`,`2`,`3`], optional
+            Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
+            the top left, top right, bottom left and bottom right respectively.
+            The default is 2, which is the bottom left corner.
+        resolution : int, optional
+            the resolution along the x-axis (i.e. image width in pixels) to use
+            for the exported image. The default is None, which uses the size of
+            the original image.
+        box : bool, optional
+            Whether to put a semitransparent box around the scalebar and text
+            to enhance contrast. The default is True.
+        invert : bool, optional
+            If True, a white scalebar and text on a black box are used. The 
+            default is False which gives black text on a white background.
+        """
+        #import matplotlib to open figures
+        import matplotlib.pyplot as plt
         
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -249,71 +289,147 @@ class tecnai:
         except AttributeError:
             pixelsize,unit = self.get_pixelsize()
         
+        #set default export filename
+        if type(filename) != str:
+            filename = self.filename[:-4]+'_scalebar.png'
+        
+        #check we're not overwriting the original file
+        if filename==self.filename:
+            raise ValueError('overwriting original TEM file not reccomended, '+
+                             'use a different filename for exporting.')
+        
         #set default scalebar to original scalebar or calculate len
         if type(barsize) == type(None):
+            barsize = self.scalebarlength
             barsize_px = self.scalebarlength_px
         else:
             barsize_px = barsize/pixelsize
         
-        #set default resolution or correct barlen_px
-        if type(resolution) == type(None):
-            resolution = self.shape[1]
-        else:
-            barsize_px = barsize_px/self.shape[1]*resolution
-        
-        #TODO resolution correction
-        scale = scale*resolution/1024
+        #get and display image
         exportim = self.image.copy()
+        plt.figure()
+        plt.imshow(exportim,cmap='gray')
+        plt.title('original image')
+        plt.axis('off')
+        plt.tight_layout()
         
-        boxheight = int(scale*80)
-        barheight = int(scale*20)
+        #(optionally) crop
+        if type(crop) != type(None):
+            exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
         
-        #bottom left
-        if loc == 0:
-            x = int(10*scale)
-            y = int(resolution - 10*scale - boxheight)
-        #bottom right
-        elif loc == 1:
-            x = int(resolution - 30*scale - barsize_px)
-            y = int(resolution - 10*scale - boxheight)
-        #top left
-        elif loc == 2:
-            x = int(10*scale)
-            y = int(10*scale)
-        #top right
-        elif loc == 3:
-            x = int(resolution - 30*scale - barsize_px)
-            y = int(10*scale)
+        #set default resolution or scale image and correct barsize_px
+        if type(resolution) == type(None):
+            ny,nx = exportim.shape
+            resolution = nx
         else:
-            raise ValueError("loc must be 0, 1, 2 or 3")
+            nx = resolution
+            ny = int(exportim.shape[0]/exportim.shape[1]*nx)
+            barsize_px = barsize_px/exportim.shape[1]*resolution
+            exportim = cv2.resize(exportim, (int(nx),int(ny)), interpolation=cv2.INTER_AREA)
+        
+        
+        #adjust general scaling for all sizes relative to 1024 pixels
+        scale = scale*resolution/1024
+        
+        #set up sizes
+        barheight = scale*16
+        boxpad = scale*10
+        barpad = scale*10
+        textpad = scale*8
+        
+        font = cv2.FONT_HERSHEY_DUPLEX
+        fontthickness = 2*scale
+        fontsize = 0.9*scale
+        
+        #format string
+        if round(barsize)==barsize:
+            text = str(int(barsize))+' '+unit
+        else:
+            for i in range(1,4):
+                if round(barsize,i)==barsize:
+                    text = ('{:.'+str(i)+'f} ').format(barsize)+unit
+                    break
+                elif i==3:
+                    text = '{:.3f} '.format(round(barsize,3))+unit
+        
+        #get size of text
+        textsize = cv2.getTextSize(text, font, fontsize, int(fontthickness))[0]
+        boxheight = barpad + barheight + 2*textpad + textsize[1]
+        
+        #top left
+        if loc == 0:
+            x = boxpad
+            y = boxpad
+        #top right
+        elif loc == 1:
+            x = nx - boxpad - 2*barpad - max([barsize_px,textsize[0]])
+            y = boxpad
+        #bottom left
+        elif loc == 2:
+            x = boxpad
+            y = ny - boxpad - boxheight
+        #bottom right
+        elif loc == 3:
+            x = nx - boxpad - 2*barpad - max([barsize_px,textsize[0]])
+            y = ny - boxpad - boxheight
+        else:
+            raise ValueError("loc must be 0, 1, 2 or 3 for top left, top right"+
+                             ", bottom left or bottom right respectively.")
         
         #put semitransparent box
         if box:
             #get rectangle from im and create box
-            w,h = int(20*scale+barsize_px),int(boxheight)
-            subim = exportim[y:y+h, x:x+w]
+            w,h = 2*barpad+max([barsize_px,textsize[0]]),boxheight
+            subim = exportim[int(y):int(y+h), int(x):int(x+w)]
             white_box = np.ones(subim.shape, dtype=np.uint8) * 255
             
             #add or subtract box from im, and put back in im
             if invert:
-                exportim[y:y+h, x:x+w] = cv2.addWeighted(subim, 0.5, -white_box, 0.5, 1.0)
+                exportim[int(y):int(y+h), int(x):int(x+w)] = \
+                    cv2.addWeighted(subim, 0.5, -white_box, 0.5, 1.0)
             else:
-                exportim[y:y+h, x:x+w] = cv2.addWeighted(subim, 0.5, white_box, 0.5, 1.0)
+                exportim[int(y):int(y+h), int(x):int(x+w)] = \
+                    cv2.addWeighted(subim, 0.5, white_box, 0.5, 1.0)
 
-        #put scalebar itself and text on im
-        barx = int(x+10*scale)
-        bary = int(y+boxheight-10*scale-barheight)
+        #calculate positions for bar and text (horizontally centered in box)
+        barx = (2*x + 2*barpad + max([barsize_px,textsize[0]]))/2 - barsize_px/2
+        bary = y+boxheight-barpad-barheight
+        textx = (2*x + 2*barpad + max([barsize_px,textsize[0]]))/2 - textsize[0]/2
+        texty = bary - textpad
         
-        text = str(barsize)+' '+unit,(textx,texty)
-        font = cv2.FONT_HERSHEY_DUPLEX
-        textx = int((2*barx + barsize_px)//2-cv2.getTextSize(text, font, 1, 2)[0])
-        texty = int(bary - 10*scale)
-        
+        #color for bar and text
         if invert:
-            exportim = cv2.rectangle(exportim,(barx,y),(barx+barsize_px,bary+barheight),255,-1)
-            exportim = cv2.putText(exportim,,font,scale*1,255,-1)
+            color = 255
         else:
-            exportim = cv2.rectangle(exportim,(barx,bary),(int(barx+barsize_px),bary+barheight),0,-1)
-            exportim = cv2.putText(exportim,str(barsize)+' '+unit,(textx,texty),font,scale*1,0,1)
+            color = 0
         
+        #draw scalebar
+        exportim = cv2.rectangle(
+            exportim,
+            (int(barx),int(bary)),
+            (int(barx+barsize_px),int(bary+barheight)),
+            color,
+            -1
+        )
         
+        #draw text
+        exportim = cv2.putText(
+            exportim,
+            text,
+            (int(textx),int(texty)),
+            font,
+            fontsize,
+            color,
+            int(fontthickness),
+            cv2.LINE_AA
+        )
+        
+        #show result
+        plt.figure()
+        plt.imshow(exportim,cmap='gray')
+        plt.title('exported image')
+        plt.axis('off')
+        plt.tight_layout()
+        
+        #save image
+        cv2.imwrite(filename,exportim)
