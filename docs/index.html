@@ -47,6 +47,45 @@ as extension.</dd>
 <p>None.</p></section>
 <h3>Methods</h3>
 <dl>
+<dt id="scm_electron_microscopes.helios.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, barsize=None, crop=None, scale=1, loc=2, resolution=None, box=True, invert=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall scaling of the scalebar and text on the image</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default is the same as the original bar.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> of <code>form</code> <code>((</code>xmin<code>,</code>ymin<code>),(</code>xmax<code>,</code>ymax<code>))</code> or <code>None</code>, optional</dt>
+<dd>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. The default is None
+which takes the entire image.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int</code>, <code>one</code> of [<code>0</code>,<code>1</code>,<code>2</code>,<code>3</code>], optional</dt>
+<dd>Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
+the top left, top right, bottom left and bottom right respectively.
+The default is 2, which is the bottom left corner.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is None, which uses the size of
+the original image.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is True.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, a white scalebar and text on a black box are used. The
+default is False which gives black text on a white background.</dd>
+</dl></section>
+</dd>
 <dt id="scm_electron_microscopes.helios.get_pixelsize"><code class="name flex">
 <span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
 </code></dt>
@@ -105,6 +144,45 @@ xml_root.find('<element name>').</dd>
 <p>Initialize the class instance</p></section>
 <h3>Methods</h3>
 <dl>
+<dt id="scm_electron_microscopes.phenom.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, barsize=None, crop=None, scale=1, loc=2, resolution=None, box=True, invert=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall scaling of the scalebar and text on the image</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default is the same as the original bar.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> of <code>form</code> <code>((</code>xmin<code>,</code>ymin<code>),(</code>xmax<code>,</code>ymax<code>))</code> or <code>None</code>, optional</dt>
+<dd>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. The default is None
+which takes the entire image.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int</code>, <code>one</code> of [<code>0</code>,<code>1</code>,<code>2</code>,<code>3</code>], optional</dt>
+<dd>Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
+the top left, top right, bottom left and bottom right respectively.
+The default is 2, which is the bottom left corner.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is None, which uses the size of
+the original image.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is True.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, a white scalebar and text on a black box are used. The
+default is False which gives black text on a white background.</dd>
+</dl></section>
+</dd>
 <dt id="scm_electron_microscopes.phenom.get_pixelsize"><code class="name flex">
 <span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
 </code></dt>
@@ -168,6 +246,45 @@ as extension.</dd>
 </dl></section>
 <h3>Methods</h3>
 <dl>
+<dt id="scm_electron_microscopes.talos.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, barsize=None, crop=None, scale=1, loc=2, resolution=None, box=True, invert=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall scaling of the scalebar and text on the image</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default is the same as the original bar.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> of <code>form</code> <code>((</code>xmin<code>,</code>ymin<code>),(</code>xmax<code>,</code>ymax<code>))</code> or <code>None</code>, optional</dt>
+<dd>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. The default is None
+which takes the entire image.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int</code>, <code>one</code> of [<code>0</code>,<code>1</code>,<code>2</code>,<code>3</code>], optional</dt>
+<dd>Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
+the top left, top right, bottom left and bottom right respectively.
+The default is 2, which is the bottom left corner.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is None, which uses the size of
+the original image.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is True.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, a white scalebar and text on a black box are used. The
+default is False which gives black text on a white background.</dd>
+</dl></section>
+</dd>
 <dt id="scm_electron_microscopes.talos.get_pixelsize"><code class="name flex">
 <span>def <span class="ident">get_pixelsize</span></span>(<span>self, debug=False)</span>
 </code></dt>
@@ -232,6 +349,45 @@ as extension.</dd>
 </dl></section>
 <h3>Methods</h3>
 <dl>
+<dt id="scm_electron_microscopes.tecnai.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, barsize=None, crop=None, scale=1, loc=2, resolution=None, box=True, invert=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall scaling of the scalebar and text on the image</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default is the same as the original bar.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> of <code>form</code> <code>((</code>xmin<code>,</code>ymin<code>),(</code>xmax<code>,</code>ymax<code>))</code> or <code>None</code>, optional</dt>
+<dd>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. The default is None
+which takes the entire image.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int</code>, <code>one</code> of [<code>0</code>,<code>1</code>,<code>2</code>,<code>3</code>], optional</dt>
+<dd>Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
+the top left, top right, bottom left and bottom right respectively.
+The default is 2, which is the bottom left corner.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is None, which uses the size of
+the original image.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is True.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, a white scalebar and text on a black box are used. The
+default is False which gives black text on a white background.</dd>
+</dl></section>
+</dd>
 <dt id="scm_electron_microscopes.tecnai.get_pixelsize"><code class="name flex">
 <span>def <span class="ident">get_pixelsize</span></span>(<span>self, debug=False)</span>
 </code></dt>
@@ -325,6 +481,45 @@ terminal</dd>
 <p>initialize class by storing the file name</p></section>
 <h3>Methods</h3>
 <dl>
+<dt id="scm_electron_microscopes.xl30sfeg.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, barsize=None, crop=None, scale=1, loc=2, resolution=None, box=True, invert=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall scaling of the scalebar and text on the image</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default is the same as the original bar.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> of <code>form</code> <code>((</code>xmin<code>,</code>ymin<code>),(</code>xmax<code>,</code>ymax<code>))</code> or <code>None</code>, optional</dt>
+<dd>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. The default is None
+which takes the entire image.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int</code>, <code>one</code> of [<code>0</code>,<code>1</code>,<code>2</code>,<code>3</code>], optional</dt>
+<dd>Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
+the top left, top right, bottom left and bottom right respectively.
+The default is 2, which is the bottom left corner.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is None, which uses the size of
+the original image.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is True.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, a white scalebar and text on a black box are used. The
+default is False which gives black text on a white background.</dd>
+</dl></section>
+</dd>
 <dt id="scm_electron_microscopes.xl30sfeg.get_pixelsize"><code class="name flex">
 <span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
 </code></dt>
@@ -382,6 +577,7 @@ xml_root.find('<element name>')</dd>
 <li>
 <h4><code><a title="scm_electron_microscopes.helios" href="#scm_electron_microscopes.helios">helios</a></code></h4>
 <ul class="">
+<li><code><a title="scm_electron_microscopes.helios.export_with_scalebar" href="#scm_electron_microscopes.helios.export_with_scalebar">export_with_scalebar</a></code></li>
 <li><code><a title="scm_electron_microscopes.helios.get_pixelsize" href="#scm_electron_microscopes.helios.get_pixelsize">get_pixelsize</a></code></li>
 <li><code><a title="scm_electron_microscopes.helios.load_image" href="#scm_electron_microscopes.helios.load_image">load_image</a></code></li>
 <li><code><a title="scm_electron_microscopes.helios.load_metadata" href="#scm_electron_microscopes.helios.load_metadata">load_metadata</a></code></li>
@@ -391,6 +587,7 @@ xml_root.find('<element name>')</dd>
 <li>
 <h4><code><a title="scm_electron_microscopes.phenom" href="#scm_electron_microscopes.phenom">phenom</a></code></h4>
 <ul class="">
+<li><code><a title="scm_electron_microscopes.phenom.export_with_scalebar" href="#scm_electron_microscopes.phenom.export_with_scalebar">export_with_scalebar</a></code></li>
 <li><code><a title="scm_electron_microscopes.phenom.get_pixelsize" href="#scm_electron_microscopes.phenom.get_pixelsize">get_pixelsize</a></code></li>
 <li><code><a title="scm_electron_microscopes.phenom.load_image" href="#scm_electron_microscopes.phenom.load_image">load_image</a></code></li>
 <li><code><a title="scm_electron_microscopes.phenom.load_metadata" href="#scm_electron_microscopes.phenom.load_metadata">load_metadata</a></code></li>
@@ -400,6 +597,7 @@ xml_root.find('<element name>')</dd>
 <li>
 <h4><code><a title="scm_electron_microscopes.talos" href="#scm_electron_microscopes.talos">talos</a></code></h4>
 <ul class="">
+<li><code><a title="scm_electron_microscopes.talos.export_with_scalebar" href="#scm_electron_microscopes.talos.export_with_scalebar">export_with_scalebar</a></code></li>
 <li><code><a title="scm_electron_microscopes.talos.get_pixelsize" href="#scm_electron_microscopes.talos.get_pixelsize">get_pixelsize</a></code></li>
 <li><code><a title="scm_electron_microscopes.talos.load_metadata" href="#scm_electron_microscopes.talos.load_metadata">load_metadata</a></code></li>
 <li><code><a title="scm_electron_microscopes.talos.print_metadata" href="#scm_electron_microscopes.talos.print_metadata">print_metadata</a></code></li>
@@ -408,6 +606,7 @@ xml_root.find('<element name>')</dd>
 <li>
 <h4><code><a title="scm_electron_microscopes.tecnai" href="#scm_electron_microscopes.tecnai">tecnai</a></code></h4>
 <ul class="">
+<li><code><a title="scm_electron_microscopes.tecnai.export_with_scalebar" href="#scm_electron_microscopes.tecnai.export_with_scalebar">export_with_scalebar</a></code></li>
 <li><code><a title="scm_electron_microscopes.tecnai.get_pixelsize" href="#scm_electron_microscopes.tecnai.get_pixelsize">get_pixelsize</a></code></li>
 <li><code><a title="scm_electron_microscopes.tecnai.load_metadata" href="#scm_electron_microscopes.tecnai.load_metadata">load_metadata</a></code></li>
 <li><code><a title="scm_electron_microscopes.tecnai.print_metadata" href="#scm_electron_microscopes.tecnai.print_metadata">print_metadata</a></code></li>
@@ -423,6 +622,7 @@ xml_root.find('<element name>')</dd>
 <li>
 <h4><code><a title="scm_electron_microscopes.xl30sfeg" href="#scm_electron_microscopes.xl30sfeg">xl30sfeg</a></code></h4>
 <ul class="">
+<li><code><a title="scm_electron_microscopes.xl30sfeg.export_with_scalebar" href="#scm_electron_microscopes.xl30sfeg.export_with_scalebar">export_with_scalebar</a></code></li>
 <li><code><a title="scm_electron_microscopes.xl30sfeg.get_pixelsize" href="#scm_electron_microscopes.xl30sfeg.get_pixelsize">get_pixelsize</a></code></li>
 <li><code><a title="scm_electron_microscopes.xl30sfeg.load_image" href="#scm_electron_microscopes.xl30sfeg.load_image">load_image</a></code></li>
 <li><code><a title="scm_electron_microscopes.xl30sfeg.load_metadata" href="#scm_electron_microscopes.xl30sfeg.load_metadata">load_metadata</a></code></li>
