@@ -537,7 +537,6 @@ class xl30sfeg:
         except AttributeError:
             self.load_metadata()
         
-        
         self.pixelsize = float(self.metadata.find('DatabarData').find('flMagn').text)
         self.unit = 'µm'
         
@@ -604,5 +603,5 @@ class xl30sfeg:
         
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
-        _export_with_scalebar(exportim, pixelsize[0], unit, filename, barsize, 
+        _export_with_scalebar(exportim, pixelsize, unit, filename, barsize, 
                               crop, scale, loc, resolution, box, invert)
