@@ -307,13 +307,29 @@ class tecnai:
         else:
             barsize_px = barsize/pixelsize
         
-        #get and display image
+        #get image
         exportim = self.image.copy()
-        plt.figure()
-        plt.imshow(exportim,cmap='gray',vmin=0,vmax=255)
+        
+        #show original figure
+        fig,ax = plt.subplots(1,1)
+        ax.imshow(exportim,cmap='gray',vmin=0,vmax=255)
         plt.title('original image')
         plt.axis('off')
         plt.tight_layout()
+        
+        #print current axes limits for easy cropping
+        def _on_lim_change(call):
+            [txt.set_visible(False) for txt in ax.texts]
+            xmin,xmax = ax.get_xlim()
+            ymax,ymin = ax.get_ylim()
+            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
+            ax.text(0.01,0.01,croptext,fontsize=12,ha='left',va='bottom',
+                    transform=ax.transAxes,color='red')
+        
+        #attach callback to limit change
+        ax.callbacks.connect("xlim_changed", _on_lim_change)
+        ax.callbacks.connect("ylim_changed", _on_lim_change)
         
         #(optionally) crop
         if type(crop) != type(None):

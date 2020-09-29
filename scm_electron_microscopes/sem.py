@@ -249,13 +249,28 @@ class helios:
         except AttributeError:
             exportim = self.load_image()
         
-        plt.figure()
-        plt.imshow(exportim,cmap='gray',vmin=0,vmax=255)
+        #show original figure
+        fig,ax = plt.subplots(1,1)
+        ax.imshow(exportim,cmap='gray',vmin=0,vmax=255)
         plt.title('original image')
         plt.axis('off')
         plt.tight_layout()
         
-        #(optionally) crop
+        #print current axes limits for easy cropping
+        def _on_lim_change(call):
+            [txt.set_visible(False) for txt in ax.texts]
+            xmin,xmax = ax.get_xlim()
+            ymax,ymin = ax.get_ylim()
+            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
+            ax.text(0.01,0.01,croptext,fontsize=12,ha='left',va='bottom',
+                    transform=ax.transAxes,color='red')
+        
+        #attach callback to limit change
+        ax.callbacks.connect("xlim_changed", _on_lim_change)
+        ax.callbacks.connect("ylim_changed", _on_lim_change)
+        
+        #(optionally) crop the image
         if type(crop) != type(None):
             exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
         
@@ -266,7 +281,7 @@ class helios:
             lst = [0.1,0.2,0.3,0.4,0.5,0.6,0.8,1,2,2.5,3,4,5,6,8,10,20,25,30,
                    40,50,60,80,100,200,250,300,400,500,600,800,1000,2000,2500,
                    3000,4000,5000,6000,8000,10000]
-            barsize = lst[min(range(len(lst)), key = lambda i: abs(lst[i]-barsize))]
+            barsize = lst[min(range(len(lst)), key=lambda i: abs(lst[i]-barsize))]
             barsize_px = barsize/pixelsize[0]
             
         else:
@@ -577,11 +592,26 @@ class phenom:
         except AttributeError:
             exportim = self.load_image()
         
-        plt.figure()
-        plt.imshow(exportim,cmap='gray',vmin=0,vmax=255)
+        #show original figure
+        fig,ax = plt.subplots(1,1)
+        ax.imshow(exportim,cmap='gray',vmin=0,vmax=255)
         plt.title('original image')
         plt.axis('off')
         plt.tight_layout()
+        
+        #print current axes limits for easy cropping
+        def _on_lim_change(call):
+            [txt.set_visible(False) for txt in ax.texts]
+            xmin,xmax = ax.get_xlim()
+            ymax,ymin = ax.get_ylim()
+            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
+            ax.text(0.01,0.01,croptext,fontsize=12,ha='left',va='bottom',
+                    transform=ax.transAxes,color='red')
+        
+        #attach callback to limit change
+        ax.callbacks.connect("xlim_changed", _on_lim_change)
+        ax.callbacks.connect("ylim_changed", _on_lim_change)
         
         #(optionally) crop
         if type(crop) != type(None):
@@ -900,11 +930,26 @@ class xl30sfeg:
         except AttributeError:
             exportim = self.load_image()
         
-        plt.figure()
-        plt.imshow(exportim,cmap='gray',vmin=0,vmax=255)
+        #show original figure
+        fig,ax = plt.subplots(1,1)
+        ax.imshow(exportim,cmap='gray',vmin=0,vmax=255)
         plt.title('original image')
         plt.axis('off')
         plt.tight_layout()
+        
+        #print current axes limits for easy cropping
+        def _on_lim_change(call):
+            [txt.set_visible(False) for txt in ax.texts]
+            xmin,xmax = ax.get_xlim()
+            ymax,ymin = ax.get_ylim()
+            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
+            ax.text(0.01,0.01,croptext,fontsize=12,ha='left',va='bottom',
+                    transform=ax.transAxes,color='red')
+        
+        #attach callback to limit change
+        ax.callbacks.connect("xlim_changed", _on_lim_change)
+        ax.callbacks.connect("ylim_changed", _on_lim_change)
         
         #(optionally) crop
         if type(crop) != type(None):
