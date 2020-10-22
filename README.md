@@ -17,7 +17,9 @@ which may print something like
 ```
 '<current user>\\AppData\\Local\\Continuum\\anaconda3\\lib\\site-packages\\numpy\\__init__.py'
 ```
-Alternatively, you can make sure that the folder is located in your current working directory, or any other directory which is added to the `PYTHONPATH` variable of your python environment. 
+Alternatively, you can make sure that the folder is located in your current working directory, or any other directory which is added to the `PYTHONPATH` variable of your python environment.
+
+To use automatic scale bar calibration for the Tecnai and Talos microscopes, the [tesseract optical character recognition](https://github.com/tesseract-ocr/tesseract) tool is used which must be installed separately, installation files can be found [here](https://tesseract-ocr.github.io/tessdoc/Home.html). This is interfaced through the `pytesseract` package which can be installed normally using e.g. conda. It may be necessary to point it towards your tesseract installation by changing the `pytesseract.pytesseract.tesseract_cmd` variable to the correct path, something like `tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'`.
 
 ## Usage
 
