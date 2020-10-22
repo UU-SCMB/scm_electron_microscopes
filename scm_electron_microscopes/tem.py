@@ -176,6 +176,7 @@ class tecnai:
             min(corners[1][:,0,0])-int(6*self.shape[1]/1024):\
                 max(corners[-1][:,0,0])+int(6*self.shape[1]/1024+1)
         ]
+        bartext = bartext.max() - bartext
         
         #upscale if needed for OCR
         if self.shape[1] < 4096:
@@ -197,16 +198,27 @@ class tecnai:
                 print('- preprocessing text, resizing text image from',bartextshape,'to',np.shape(bartext))
         
         try:
-            #read the text
+            #load tesseract-OCR for reading the text
             import pytesseract
-            text = pytesseract.image_to_string(
-                bartext,
-                config="--oem 0 -c tessedit_char_whitelist=0123456789pnuµm --psm 7"
-            )
-            #oem 0 selects older version of tesseract which still takes the char_whitelist param
-            #tessedit_char_whitelist takes list of characters it searches for (to reduce reading errors)
-            #psm 7 is a mode that tells tesseract to assume a single line of text in the image
-
+            
+            #settings vary per version
+            tesseract_version = float(str(pytesseract.get_tesseract_version())[:3])
+            if tesseract_version == 4.0:
+                text = pytesseract.image_to_string(
+                    bartext,
+                    config="--oem 0 -c tessedit_char_whitelist=0123456789pnuµm --psm 7"
+                )
+                #oem 0 selects older version of tesseract which still takes the char_whitelist param
+                #tessedit_char_whitelist takes list of characters it searches for (to reduce reading errors)
+                #psm 7 is a mode that tells tesseract to assume a single line of text in the image
+            else:
+                text = pytesseract.image_to_string(
+                    bartext,
+                    config="-c tessedit_char_whitelist=0123456789pnuµm --psm 7"
+                )
+                #since version 4.1 char whitelist is added back
+            
+            text = text.replace('\x0c','')
             if debug:
                 plt.figure('[DEBUG MODE] scale bar text')
                 plt.imshow(bartext)
