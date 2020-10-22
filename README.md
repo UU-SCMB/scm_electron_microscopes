@@ -19,7 +19,7 @@ which may print something like
 ```
 Alternatively, you can make sure that the folder is located in your current working directory, or any other directory which is added to the `PYTHONPATH` variable of your python environment.
 
-To use automatic scale bar calibration for the Tecnai and Talos microscopes, the [tesseract optical character recognition](https://github.com/tesseract-ocr/tesseract) tool is used which must be installed separately, installation files can be found [here](https://tesseract-ocr.github.io/tessdoc/Home.html). This is interfaced through the `pytesseract` package which can be installed normally using e.g. conda. It may be necessary to point it towards your tesseract installation by changing the `pytesseract.pytesseract.tesseract_cmd` variable to the correct path, something like `tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'`.
+To use automatic scale bar calibration for the Tecnai and Talos microscopes, the [tesseract optical character recognition](https://github.com/tesseract-ocr/tesseract) tool is used which must be installed separately, installation files can be found [here](https://tesseract-ocr.github.io/tessdoc/Home.html). This is interfaced through the `pytesseract` package which can be installed normally using e.g. conda. It may be necessary to point it towards your tesseract installation by changing the `pytesseract.pytesseract.tesseract_cmd` variable to the correct path, something like `tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'`. If pytesseract or tesseract-OCR is not found the function switches to semi-automatic mode where the user is asked to give the size and unit written next to the scalebar. For the other microscopes, the pixelsize is correctly encoded in the normal image metadata and these dependencies are not neccesary.
 
 ## Usage
 
@@ -35,7 +35,7 @@ Note that this is only the image data, with the scalebar stripped off. The image
 ```
 pixelsize,unit = em_data.get_pixelsize()
 ```
-for fully automatic calibration of the scalebar, pytesseract and the tesseract-OCR must be installed, if these are not found the function switches to semi-automatic mode where the user is asked to give the size and unit written next to the scalebar. Other information about the microscope is read from the file and can be printed with `tecnai.print_metadata()`. Files can be exported with a nicer and customizable scalebar using the `tecnai.export_with_scalebar()` function.
+Other information about the microscope is read from the file and can be printed with `tecnai.print_metadata()`. Files can be exported with a nicer and customizable scalebar using the `tecnai.export_with_scalebar()` function.
 
 ### Helios
 For the Helios SEM use the `helios` class, which unlike the `tecnai` and `talos` classes does not load the image into memory by default, such that it is possible to quickly read out metadata of e.g. a slice-and-view series without having to load all the image data. Image data is available through the `load_image` function:
