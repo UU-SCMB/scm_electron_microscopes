@@ -71,14 +71,13 @@ class util:
 
 import cv2
 def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
-                          loc,resolution,box,invert):
+                          loc,resolution,box,invert,convert):
     """
     see top level export_with_scalebar functions for docs
     """
     #imports
     import matplotlib.pyplot as plt
     from PIL import ImageFont, ImageDraw, Image
-
     
     #show original figure
     fig,ax = plt.subplots(1,1)
@@ -105,6 +104,19 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     if type(crop) != type(None):
         exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
     
+    #convert unit
+    if type(convert) != type(None):
+        if convert == unit:
+            pass
+        elif (convert == 'um' or convert == 'µm') and unit == 'nm':
+            unit = 'µm'
+            pixelsize = pixelsize/1000
+        elif convert == 'nm' and unit == 'µm':
+            unit = convert
+            pixelsize = pixelsize*1000
+        else:
+            raise ValueError
+    
     #set default scalebar to original scalebar or calculate len
     if type(barsize) == type(None):
         #take 15% of image width and round to nearest in list of 'nice' vals
@@ -113,9 +125,9 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
                40,50,100,200,250,300,400,500,1000,2000,2500,
                3000,4000,5000,6000,8000,10000]
         barsize = lst[min(range(len(lst)), key=lambda i: abs(lst[i]-barsize))]
-        barsize_px = barsize/pixelsize
-    else:
-        barsize_px = barsize/pixelsize
+    
+    #determine len of scalebar on im
+    barsize_px = barsize/pixelsize
     
     #set default resolution or scale image and correct barsize_px
     if type(resolution) == type(None):
@@ -135,7 +147,8 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     boxpad = scale*10
     barpad = scale*10
     textpad = scale*2
-    font = 'verdana.ttf'
+    boxalpha = 0.6
+    font = 'arialbd.ttf'
     fontsize = 32*scale
     
     #format string
@@ -194,10 +207,10 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
         #add or subtract box from im, and put back in im
         if invert:
             exportim[int(y):int(y+h), int(x):int(x+w)] = \
-                cv2.addWeighted(subim, 0.5, -white_box, 0.5, 1.0)
+                cv2.addWeighted(subim, 1-boxalpha, -white_box, boxalpha, 1.0)
         else:
             exportim[int(y):int(y+h), int(x):int(x+w)] = \
-                cv2.addWeighted(subim, 0.5, white_box, 0.5, 1.0)
+                cv2.addWeighted(subim, 1-boxalpha, white_box, boxalpha, 1.0)
 
     #calculate positions for bar and text (horizontally centered in box)
     barx = (2*x + 2*barpad + max([barsize_px,textsize[0]]))/2 - barsize_px/2

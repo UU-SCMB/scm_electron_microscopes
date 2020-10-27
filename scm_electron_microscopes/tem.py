@@ -244,7 +244,8 @@ class tecnai:
         return pixelsize,unit
     
     def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
-                             loc=2,resolution=None,box=True,invert=False):
+                             loc=2,resolution=None,box=True,invert=False,
+                             convert=None):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
@@ -303,4 +304,5 @@ class tecnai:
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
         _export_with_scalebar(exportim, pixelsize, unit, filename, barsize, 
-                              crop, scale, loc, resolution, box, invert)
+                              crop, scale, loc, resolution, box, invert, 
+                              convert)
