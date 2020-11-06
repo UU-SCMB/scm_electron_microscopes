@@ -103,6 +103,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     #(optionally) crop
     if type(crop) != type(None):
         exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
+        print('cropped to',exportim.shape)
     
     #convert unit
     if type(convert) != type(None):
