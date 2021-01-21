@@ -273,7 +273,8 @@ class tecnai:
             size (in data units matching the original scale bar, e.g. nm) of 
             the scale bar to use. The default 15% of the image width rounded to
             the nearest 'nice' value.
-        crop : tuple of form `((xmin,ymin),(xmax,ymax))` or None, optional
+        crop : tuple of form `((xmin,ymin),(xmax,ymax))` or `(xmin,ymin,w,h)` 
+               or None, optional
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. The default is None 
             which takes the entire image.

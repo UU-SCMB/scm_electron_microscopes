@@ -91,8 +91,12 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
         [txt.set_visible(False) for txt in ax.texts]
         xmin,xmax = ax.get_xlim()
         ymax,ymin = ax.get_ylim()
-        croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
-        croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
+        if len(crop) == 4:
+            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
+        else:
+            croptext = 'current crop: ({:}, {:}, {:}, {:})'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax-xmin+1),int(ymax-ymin+1))
         ax.text(0.01,0.01,croptext,fontsize=12,ha='left',va='bottom',
                 transform=ax.transAxes,color='red')
     
@@ -102,8 +106,14 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     
     #(optionally) crop
     if type(crop) != type(None):
+        
+        #if (x,y,w,h) format, convert to other format
+        if len(crop) == 4:
+            crop = ((crop[0],crop[1]),(crop[0]+crop[2],crop[1]+crop[3]))
+        
+        #crop
         exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
-        print('cropped to',exportim.shape)
+        print('cropped to {:} × {:} pixels'.format(*exportim.shape))
     
     #convert unit
     if type(convert) != type(None):
