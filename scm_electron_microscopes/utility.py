@@ -104,17 +104,6 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     ax.callbacks.connect("xlim_changed", _on_lim_change)
     ax.callbacks.connect("ylim_changed", _on_lim_change)
     
-    #(optionally) crop
-    if type(crop) != type(None):
-        
-        #if (x,y,w,h) format, convert to other format
-        if len(crop) == 4:
-            crop = ((crop[0],crop[1]),(crop[0]+crop[2],crop[1]+crop[3]))
-        
-        #crop
-        exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
-        print('cropped to {:} × {:} pixels'.format(*exportim.shape))
-    
     #convert unit
     if type(convert) != type(None):
         if convert == unit:
@@ -127,6 +116,18 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
             pixelsize = pixelsize*1000
         else:
             raise ValueError
+    
+    #(optionally) crop
+    if type(crop) != type(None):
+        
+        #if (x,y,w,h) format, convert to other format
+        if len(crop) == 4:
+            crop = ((crop[0],crop[1]),(crop[0]+crop[2],crop[1]+crop[3]))
+        
+        #crop
+        exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
+        print('cropped to {:} × {:} pixels, {:.4g} × {:.4g} '.format(
+            *exportim.shape,exportim.shape[0]*pixelsize,exportim.shape[1]*pixelsize)+unit)
     
     #set default scalebar to original scalebar or calculate len
     if type(barsize) == type(None):
