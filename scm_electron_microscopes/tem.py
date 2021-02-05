@@ -304,7 +304,7 @@ class tecnai:
         
         #set default export filename
         if type(filename) != str:
-            filename = self.filename[:-4]+'_scalebar.png'
+            filename = self.filename.rpartition('.')[0]+'_scalebar.png'
         
         #check we're not overwriting the original file
         if filename==self.filename:
