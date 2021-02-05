@@ -187,7 +187,8 @@ class helios:
         return pixelsize,unit
     
     def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
-                             loc=2,resolution=None,box=True,invert=False):
+                             loc=2,resolution=None,box=True,invert=False, 
+                             convert=None):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
@@ -223,6 +224,10 @@ class helios:
         invert : bool, optional
             If True, a white scalebar and text on a black box are used. The 
             default is False which gives black text on a white background.
+        convert : str, one of [`nm`, `um`, `µm`], optional
+            Unit that will be used for the scale bar, the value will be 
+            automatically converted if this unit differs from the pixel size
+            unit. The default is None, which uses the unit of the original image.
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -248,7 +253,8 @@ class helios:
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
         _export_with_scalebar(exportim, pixelsize[0], unit, filename, barsize, 
-                              crop, scale, loc, resolution, box, invert)
+                              crop, scale, loc, resolution, box, invert, 
+                              convert)
 
 
 #==============================================================================
@@ -368,7 +374,8 @@ class phenom:
         return pixelsize,unit
 
     def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
-                             loc=2,resolution=None,box=True,invert=False):
+                             loc=2,resolution=None,box=True,invert=False,
+                             convert=None):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
@@ -404,6 +411,10 @@ class phenom:
         invert : bool, optional
             If True, a white scalebar and text on a black box are used. The 
             default is False which gives black text on a white background.
+        convert : str, one of [`nm`, `um`, `µm`], optional
+            Unit that will be used for the scale bar, the value will be 
+            automatically converted if this unit differs from the pixel size
+            unit. The default is None, which uses the unit of the original image.
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -429,7 +440,8 @@ class phenom:
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
         _export_with_scalebar(exportim, pixelsize[0], unit, filename, barsize, 
-                              crop, scale, loc, resolution, box, invert)
+                              crop, scale, loc, resolution, box, invert, 
+                              convert)
 
 
 class xl30sfeg:
@@ -543,7 +555,8 @@ class xl30sfeg:
         return self.pixelsize,self.unit
 
     def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
-                             loc=2,resolution=None,box=True,invert=False):
+                             loc=2,resolution=None,box=True,invert=False, 
+                             convert=None):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
@@ -579,6 +592,10 @@ class xl30sfeg:
         invert : bool, optional
             If True, a white scalebar and text on a black box are used. The 
             default is False which gives black text on a white background.
+        convert : str, one of [`nm`, `um`, `µm`], optional
+            Unit that will be used for the scale bar, the value will be 
+            automatically converted if this unit differs from the pixel size
+            unit. The default is None, which uses the unit of the original image.
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -604,4 +621,5 @@ class xl30sfeg:
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
         _export_with_scalebar(exportim, pixelsize, unit, filename, barsize, 
-                              crop, scale, loc, resolution, box, invert)
+                              crop, scale, loc, resolution, box, invert, 
+                              convert)

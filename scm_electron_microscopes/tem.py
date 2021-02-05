@@ -295,6 +295,10 @@ class tecnai:
         invert : bool, optional
             If True, a white scalebar and text on a black box are used. The 
             default is False which gives black text on a white background.
+        convert : str, one of [`nm`, `um`, `µm`], optional
+            Unit that will be used for the scale bar, the value will be 
+            automatically converted if this unit differs from the pixel size
+            unit. The default is None, which uses the unit of the original image.
         """        
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
