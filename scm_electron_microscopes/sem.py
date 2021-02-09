@@ -67,7 +67,7 @@ class helios:
         xml.etree.ElementTree root object
             xml root object of the metadata. Can be printed using it as
             argument to print_metadata, or indexed with
-            xml_root.find('<element name>').
+            `xml_root.find('<element name>')`.
 
         """
         import io
@@ -190,44 +190,59 @@ class helios:
                              loc=2,resolution=None,box=True,invert=False, 
                              convert=None):
         """
-        saves an exported image of the TEM image with a scalebar in one of the 
+        saves an exported image of the SEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
-        nm) and scale the overall scaling of the scalebar and text on the image
+        nm) and scale the overall size of the scalebar and text with respect to
+        the width of the image.
 
         Parameters
         ----------
-        filename : string or None, optional
+        filename : string or `None`, optional
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original TEM file, with 
             '_exported.png' appended.
-        barsize : float or None, optional
+        barsize : float or `None`, optional
             size (in data units matching the original scale bar, e.g. nm) of 
-            the scale bar to use. The default is the same as the original bar.
-        crop : tuple of form `((xmin,ymin),(xmax,ymax))` or None, optional
+            the scale bar to use. The default `None`, wich takes the desired 
+            length for the current scale and round this to the nearest option
+            from a list of "nice" values.
+        crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
-            resolution) to crop out for the export image. The default is None 
-            which takes the entire image.
+            resolution) to crop out for the export image. Can have two forms:
+                
+            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
+            left and bottom right corners respectively.
+                
+            - `(xmin,ymin,w,h)` with the integer indices of the top left corner
+            and the width and heigth of the cropped image in pixels (prior to 
+            optional rescaling using `resolution`).
+            
+            The default is `None` which takes the entire image.
         scale : float, optional
             factor to change the size of the scalebar+text with respect to the
-            width of the image. The default is 1.
+            width of the image. Scale is chosen such, that at `scale=1` the
+            font size of the scale bar text is approximately 10 pt when 
+            the image is printed at half the width of the text in a typical A4
+            paper document (e.g. two images side-by-side). The default is 1.
         loc : int, one of [`0`,`1`,`2`,`3`], optional
-            Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
-            the top left, top right, bottom left and bottom right respectively.
-            The default is 2, which is the bottom left corner.
+            Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
+            refer to the top left, top right, bottom left and bottom right 
+            respectively. The default is `2`, which is the bottom left corner.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
-            for the exported image. The default is None, which uses the size of
-            the original image.
+            for the exported image. The default is `None`, which uses the size 
+            of the original image (after optional cropping using `crop`).
         box : bool, optional
             Whether to put a semitransparent box around the scalebar and text
-            to enhance contrast. The default is True.
+            to enhance contrast. The default is `True`.
         invert : bool, optional
-            If True, a white scalebar and text on a black box are used. The 
-            default is False which gives black text on a white background.
+            If `True`, a white scalebar and text on a black box are used. The 
+            default is `False` which gives black text on a white background.
         convert : str, one of [`nm`, `um`, `µm`], optional
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
-            unit. The default is None, which uses the unit of the original image.
+            unit. The default is `None`, which uses the unit of scalebar on the
+            original image.
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -377,44 +392,59 @@ class phenom:
                              loc=2,resolution=None,box=True,invert=False,
                              convert=None):
         """
-        saves an exported image of the TEM image with a scalebar in one of the 
+        saves an exported image of the SEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
-        nm) and scale the overall scaling of the scalebar and text on the image
+        nm) and scale the overall size of the scalebar and text with respect to
+        the width of the image.
 
         Parameters
         ----------
-        filename : string or None, optional
+        filename : string or `None`, optional
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original TEM file, with 
             '_exported.png' appended.
-        barsize : float or None, optional
+        barsize : float or `None`, optional
             size (in data units matching the original scale bar, e.g. nm) of 
-            the scale bar to use. The default is the same as the original bar.
-        crop : tuple of form `((xmin,ymin),(xmax,ymax))` or None, optional
+            the scale bar to use. The default `None`, wich takes the desired 
+            length for the current scale and round this to the nearest option
+            from a list of "nice" values.
+        crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
-            resolution) to crop out for the export image. The default is None 
-            which takes the entire image.
+            resolution) to crop out for the export image. Can have two forms:
+                
+            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
+            left and bottom right corners respectively.
+                
+            - `(xmin,ymin,w,h)` with the integer indices of the top left corner
+            and the width and heigth of the cropped image in pixels (prior to 
+            optional rescaling using `resolution`).
+            
+            The default is `None` which takes the entire image.
         scale : float, optional
             factor to change the size of the scalebar+text with respect to the
-            width of the image. The default is 1.
+            width of the image. Scale is chosen such, that at `scale=1` the
+            font size of the scale bar text is approximately 10 pt when 
+            the image is printed at half the width of the text in a typical A4
+            paper document (e.g. two images side-by-side). The default is 1.
         loc : int, one of [`0`,`1`,`2`,`3`], optional
-            Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
-            the top left, top right, bottom left and bottom right respectively.
-            The default is 2, which is the bottom left corner.
+            Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
+            refer to the top left, top right, bottom left and bottom right 
+            respectively. The default is `2`, which is the bottom left corner.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
-            for the exported image. The default is None, which uses the size of
-            the original image.
+            for the exported image. The default is `None`, which uses the size 
+            of the original image (after optional cropping using `crop`).
         box : bool, optional
             Whether to put a semitransparent box around the scalebar and text
-            to enhance contrast. The default is True.
+            to enhance contrast. The default is `True`.
         invert : bool, optional
-            If True, a white scalebar and text on a black box are used. The 
-            default is False which gives black text on a white background.
+            If `True`, a white scalebar and text on a black box are used. The 
+            default is `False` which gives black text on a white background.
         convert : str, one of [`nm`, `um`, `µm`], optional
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
-            unit. The default is None, which uses the unit of the original image.
+            unit. The default is `None`, which uses the unit of scalebar on the
+            original image.
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -558,44 +588,59 @@ class xl30sfeg:
                              loc=2,resolution=None,box=True,invert=False, 
                              convert=None):
         """
-        saves an exported image of the TEM image with a scalebar in one of the 
+        saves an exported image of the SEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
-        nm) and scale the overall scaling of the scalebar and text on the image
+        nm) and scale the overall size of the scalebar and text with respect to
+        the width of the image.
 
         Parameters
         ----------
-        filename : string or None, optional
+        filename : string or `None`, optional
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original TEM file, with 
             '_exported.png' appended.
-        barsize : float or None, optional
+        barsize : float or `None`, optional
             size (in data units matching the original scale bar, e.g. nm) of 
-            the scale bar to use. The default is the same as the original bar.
-        crop : tuple of form `((xmin,ymin),(xmax,ymax))` or None, optional
+            the scale bar to use. The default `None`, wich takes the desired 
+            length for the current scale and round this to the nearest option
+            from a list of "nice" values.
+        crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
-            resolution) to crop out for the export image. The default is None 
-            which takes the entire image.
+            resolution) to crop out for the export image. Can have two forms:
+                
+            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
+            left and bottom right corners respectively.
+                
+            - `(xmin,ymin,w,h)` with the integer indices of the top left corner
+            and the width and heigth of the cropped image in pixels (prior to 
+            optional rescaling using `resolution`).
+            
+            The default is `None` which takes the entire image.
         scale : float, optional
             factor to change the size of the scalebar+text with respect to the
-            width of the image. The default is 1.
+            width of the image. Scale is chosen such, that at `scale=1` the
+            font size of the scale bar text is approximately 10 pt when 
+            the image is printed at half the width of the text in a typical A4
+            paper document (e.g. two images side-by-side). The default is 1.
         loc : int, one of [`0`,`1`,`2`,`3`], optional
-            Location of the scalebar on the image, where 0, 1, 2 and 3 refer to
-            the top left, top right, bottom left and bottom right respectively.
-            The default is 2, which is the bottom left corner.
+            Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
+            refer to the top left, top right, bottom left and bottom right 
+            respectively. The default is `2`, which is the bottom left corner.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
-            for the exported image. The default is None, which uses the size of
-            the original image.
+            for the exported image. The default is `None`, which uses the size 
+            of the original image (after optional cropping using `crop`).
         box : bool, optional
             Whether to put a semitransparent box around the scalebar and text
-            to enhance contrast. The default is True.
+            to enhance contrast. The default is `True`.
         invert : bool, optional
-            If True, a white scalebar and text on a black box are used. The 
-            default is False which gives black text on a white background.
+            If `True`, a white scalebar and text on a black box are used. The 
+            default is `False` which gives black text on a white background.
         convert : str, one of [`nm`, `um`, `µm`], optional
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
-            unit. The default is None, which uses the unit of the original image.
+            unit. The default is `None`, which uses the unit of scalebar on the
+            original image.
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
