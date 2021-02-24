@@ -11,7 +11,7 @@ setup(
     install_requires=[
         "numpy>=1.19.2",
         "scipy>=1.6.0",
-        "opencv>=3.0.0",
+        "opencv>=4.0.1",
         "pillow>=6.2.1",
     ],
 )
