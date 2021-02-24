@@ -105,17 +105,19 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     ax.callbacks.connect("ylim_changed", _on_lim_change)
     
     #convert unit
-    if type(convert) != type(None):
-        if convert == unit:
-            pass
-        elif (convert == 'um' or convert == 'µm') and unit == 'nm':
-            unit = 'µm'
-            pixelsize = pixelsize/1000
-        elif convert == 'nm' and unit == 'µm':
-            unit = convert
-            pixelsize = pixelsize*1000
-        else:
-            raise ValueError
+    if type(convert) != type(None) and convert != unit:
+        
+        #always use mu for micrometer
+        if convert == 'um':
+            convert = 'µm'
+        
+        #check input against list of possible units
+        units = ['pm','nm','µm','mm','m']
+        if not unit in units:
+            raise ValueError('"'+str(unit)+'" is not a valid unit')
+        
+        #factor 10**3 for every step from list, use indices to calculate
+        pixelsize = pixelsize*10**(3*(units.index(unit)-units.index(convert)))
     
     #(optionally) crop
     if type(crop) != type(None):
