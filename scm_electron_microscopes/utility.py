@@ -103,6 +103,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     #attach callback to limit change
     ax.callbacks.connect("xlim_changed", _on_lim_change)
     ax.callbacks.connect("ylim_changed", _on_lim_change)
+    plt.show()
     
     #convert unit
     if type(convert) != type(None) and convert != unit:
@@ -264,6 +265,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     plt.title('exported image')
     plt.axis('off')
     plt.tight_layout()
+    plt.show()
     
     #save image
     cv2.imwrite(filename,exportim)
