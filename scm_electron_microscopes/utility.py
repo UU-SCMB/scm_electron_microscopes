@@ -87,12 +87,18 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     plt.axis('off')
     plt.tight_layout()
     
+    #check if alternative form of cropping is used
+    if type(crop) != type(None) and len(crop) == 4:
+        altcrop = True
+    else:
+        altcrop = False
+    
     #print current axes limits for easy cropping
     def _on_lim_change(call):
         [txt.set_visible(False) for txt in ax.texts]
         xmin,xmax = ax.get_xlim()
         ymax,ymin = ax.get_ylim()
-        if type(crop) != type(None) and len(crop) == 4:
+        if altcrop:
             croptext = 'current crop: ({:}, {:}, {:}, {:})'
             croptext = croptext.format(int(xmin),int(ymin),int(xmax-xmin+1),int(ymax-ymin+1))
         else:
