@@ -79,7 +79,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     import matplotlib.pyplot as plt
     from PIL import ImageFont, ImageDraw, Image
     
-    #show original figure
+    #draw original figure before changing exportim
     fig,ax = plt.subplots(1,1)
     ax.imshow(exportim,cmap='gray',vmin=0,vmax=255)
     plt.title('original image')
@@ -91,7 +91,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
         [txt.set_visible(False) for txt in ax.texts]
         xmin,xmax = ax.get_xlim()
         ymax,ymin = ax.get_ylim()
-        if len(crop) == 4:
+        if type(crop) != type(None) and len(crop) == 4:
             croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
             croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
         else:
@@ -103,7 +103,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     #attach callback to limit change
     ax.callbacks.connect("xlim_changed", _on_lim_change)
     ax.callbacks.connect("ylim_changed", _on_lim_change)
-    plt.show()
+    plt.show(block=False)
     
     #convert unit
     if type(convert) != type(None) and convert != unit:
@@ -265,7 +265,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
     plt.title('exported image')
     plt.axis('off')
     plt.tight_layout()
-    plt.show()
+    plt.show(block=False)
     
     #save image
     cv2.imwrite(filename,exportim)
