@@ -92,11 +92,11 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
         xmin,xmax = ax.get_xlim()
         ymax,ymin = ax.get_ylim()
         if type(crop) != type(None) and len(crop) == 4:
-            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
-            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
-        else:
             croptext = 'current crop: ({:}, {:}, {:}, {:})'
             croptext = croptext.format(int(xmin),int(ymin),int(xmax-xmin+1),int(ymax-ymin+1))
+        else:
+            croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
+            croptext = croptext.format(int(xmin),int(ymin),int(xmax+1),int(ymax+1))
         ax.text(0.01,0.01,croptext,fontsize=12,ha='left',va='bottom',
                 transform=ax.transAxes,color='red')
     
