@@ -170,6 +170,7 @@ class tecnai:
             plt.scatter(corners[0][:,0,0],corners[0][:,0,1],color='r',label='corners')
             plt.scatter(corners[0][[1,7],0,0],corners[0][[1,7],0,1],color='green',label='used for calibration')
             plt.legend()
+            plt.show(block=False)
         
         #take the text of the databar
         bartext = self.scalebar[:,
@@ -222,6 +223,7 @@ class tecnai:
             if debug:
                 plt.figure('[DEBUG MODE] scale bar text')
                 plt.imshow(bartext)
+                plt.show(block=False)
                 print('- text:',text)
                 
             #split value and unit

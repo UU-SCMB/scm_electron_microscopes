@@ -68,6 +68,7 @@ class util:
         plt.hist(np.ravel(image),bins=bins,log=log)
         plt.xlabel('grey value')
         plt.ylabel('occurrence')
+        plt.show(block=False)
 
 import cv2
 def _export_with_scalebar(exportim,pixelsize,unit,filename,barsize,crop,scale,
