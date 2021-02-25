@@ -202,8 +202,15 @@ class tecnai:
             #load tesseract-OCR for reading the text
             import pytesseract
             
-            #settings vary per version
-            tesseract_version = float(str(pytesseract.get_tesseract_version())[:3])
+            #switch error handling from a ValueError (we may also raise later
+            #in case of text recognition problems) to one we can only raise 
+            #here, so we can give the correct warning
+            try:
+                tesseract_version = float(str(pytesseract.get_tesseract_version())[:3])
+            except ValueError:
+                raise FileNotFoundError
+            
+            #settings vary per version, so use tesseract_verion to use correct
             if tesseract_version == 4.0:
                 text = pytesseract.image_to_string(
                     bartext,
@@ -229,9 +236,20 @@ class tecnai:
             #split value and unit
             value = float(re.findall(r'\d+',text)[0])
             unit = re.findall(r'[a-z]+',text)[0]
-            
+        
+        #give different warnings for missing installation or reading problems
+        except ImportError:
+            print('pytesseract not found, defaulting to manual mode')
+            unit = input('give scale bar unit: ')
+            value = float(input('give scale bar size in '+unit+': '))
+        except FileNotFoundError:
+            print('[WARNING] tecnai.get_pixelsize(): tesseract OCR engine was'+
+                  ' not found by pytesseract. Switching to manual mode.')
+            unit = input('give scale bar unit: ')
+            value = float(input('give scale bar size in '+unit+': '))
         except:
-            print('[WARNING] tecnai.get_pixelsize(): could not read scale bar text')
+            print('[WARNING] tecnai.get_pixelsize(): could not read scale bar'+
+                  ' text, perhaps try debug=True. Switching to manual mode.')
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         
