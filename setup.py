@@ -11,6 +11,7 @@ setup(
     install_requires=[
         "numpy>=1.19.2",
         "scipy>=1.6.0",
+        "matplotlib>=3.0.0",
         "opencv-python>=3.0.0",
         "pillow>=6.2.1",
     ],
