@@ -8,32 +8,43 @@ Set of functions for dealing with data from the electron microscopes at Utrecht 
 - Email: m.bransen@uu.nl
 
 ## Installation
+### PIP
 This package can be installed directly from GitHub using pip:
 ```
-pip install git+https://github.com/MaartenBransen/scm_confocal
+pip install git+https://github.com/MaartenBransen/scm_electron_microscopes
 ```
 ### Anaconda
 When using the Anaconda distribution, it is safer to run the conda version of pip as follows:
 ```
 conda install pip
 conda install git
-pip install git+https://github.com/MaartenBransen/scm_confocal
+pip install git+https://github.com/MaartenBransen/scm_electron_microscopes
+```
+### Updating
+To update to the most recent version, use `pip install` with the `--upgrade` flag set:
+```
+pip install --upgrade git+https://github.com/MaartenBransen/scm_electron_microscopes
 ```
 
 ### Installing pytesseract / tesseract-OCR
 To use automatic scale bar calibration for the Tecnai and Talos microscopes, the [tesseract optical character recognition](https://github.com/tesseract-ocr/tesseract) tool is used, which must be installed separately. Installation files can be found [here](https://tesseract-ocr.github.io/tessdoc/Home.html). This is interfaced through the `pytesseract` package which can be installed normally using e.g. conda. Since this is an optional dependency, `pytesseract` is not installed by default. It may be necessary to point it towards your tesseract installation by changing the `pytesseract.pytesseract.tesseract_cmd` variable to the correct path, something like `tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'`. If pytesseract or tesseract-OCR is not found the function switches to semi-automatic mode where the user is asked to give the size and unit written next to the scalebar. For the other microscopes, the pixelsize is correctly encoded in the normal image metadata and these dependencies are not neccesary.
 
 ## Usage
-
 ### Tecnai 12, Tecnai 20, Tecnai 20feg, Talos120, Talos200
 For these microscopes use the [tecnai](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.tecnai) or [talos](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.talos) class (these are identical, the alias `talos` is just provided for convenience), and create a class instance using the filename of the TEM image. This automatically loads the image, which is available as numpy.array as the `image` attribute:
 ```
 from scm_electron_microscopes import tecnai
+import matplotlib.pyplot as plt
 
 em_data = tecnai('myimage.tif')
 image = em_data.image
+
+plt.figure()
+plt.imshow(image,cmap='Greys_r')
+plt.axis('off')
+plt.show()
 ```
-Note that this is only the image data, with the scalebar stripped off. The imagedata for the scale bar is available through the `scalebar` attribute, but more likely you are interested in the pixel size which can be determined semi or fully automatically using:
+Note that this is only the image data, with the scalebar stripped off. The imagedata for the scale bar is available through the `scalebar` attribute, but more likely you are interested in the pixel size which can be determined semi or fully automatically using `tecnai.get_pixelsize()`:
 ```
 pixelsize,unit = em_data.get_pixelsize()
 ```
