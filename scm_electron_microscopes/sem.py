@@ -263,7 +263,7 @@ class helios:
         try:
             exportim = self.image.copy()
         except AttributeError:
-            exportim = self.load_image()
+            exportim = self.load_image().copy()
         
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
@@ -465,7 +465,7 @@ class phenom:
         try:
             exportim = self.image.copy()
         except AttributeError:
-            exportim = self.load_image()
+            exportim = self.load_image().copy()
         
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
@@ -661,7 +661,7 @@ class xl30sfeg:
         try:
             exportim = self.image.copy()
         except AttributeError:
-            exportim = self.load_image()
+            exportim = self.load_image().copy()
         
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar

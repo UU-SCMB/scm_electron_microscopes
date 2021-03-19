@@ -1,3 +1,5 @@
+__version__ = '1.0.1'
+
 from .tem import tecnai
 from .sem import helios,phenom,xl30sfeg
 from .utility import util
