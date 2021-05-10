@@ -717,7 +717,7 @@ class ZeissSEM:
                 while thekey in metadata:
                     i+=1
                     thekey = key+f' {i:02d}'
-                metadata[key] = val
+                metadata[thekey] = val
             #ignore rest
             except ValueError:
                 pass
