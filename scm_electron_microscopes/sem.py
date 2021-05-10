@@ -710,9 +710,10 @@ class ZeissSEM:
             try:
                 key,val = line.split(' = ')
                 i = 0
-                while key in metadata:
+                thekey = key.copy()
+                while thekey in metadata:
                     i+=1
-                    key+=f' {i:02d}'
+                    thekey = key+f' {i:02d}'
                 metadata[key] = val
             #ignore rest
             except ValueError:
