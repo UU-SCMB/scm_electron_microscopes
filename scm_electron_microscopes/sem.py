@@ -668,3 +668,54 @@ class xl30sfeg:
         _export_with_scalebar(exportim, pixelsize, unit, filename, barsize, 
                               crop, scale, loc, resolution, box, invert, 
                               convert)
+
+
+
+class ZeissSEM:
+    """
+    
+    """
+    def __init__(self,filename):
+        """initialize class by storing the file name"""
+        
+        #raise error if wrong format or file does not exist
+        if type(filename) != str:
+            raise TypeError('filename must be a string')
+        if os.path.exists(filename):
+            self.filename = filename
+        elif os.path.exists(filename+'.tif'):
+                self.filename = filename + '.tif'
+        else:
+            raise FileNotFoundError('The file "'+filename+'" could not be '
+                                    'found.')
+
+    
+    def load_image(self):
+        """load the image and (if present) scalebar"""
+        self.image = cv2.imread(self.filename,0)
+        self.shape = np.shape(self.image)
+        return self.image
+    
+    def get_metadata(self):
+
+        from PIL.Image import open as PIL_open
+
+        tifftags = PIL_open(self.filename).tag
+        md1 = tifftags[34118][0].replace('\r','').split('\n')
+        md2 = tifftags[34119][0].replace('\x00','').replace('\r','').split('\n')
+        
+        metadata = dict()
+        for line in md1+md2:
+            #only accept if there's a '=' in the line
+            try:
+                key,val = line.split(' = ')
+                i = 0
+                while key in metadata:
+                    i+=1
+                    key+=f' {i:02d}'
+                metadata[key] = val
+            #ignore rest
+            except ValueError:
+                pass
+                
+        return metadata
