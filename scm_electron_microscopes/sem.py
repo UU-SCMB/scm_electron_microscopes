@@ -677,7 +677,6 @@ class ZeissSEM:
     """
     def __init__(self,filename):
         """initialize class by storing the file name"""
-        
         #raise error if wrong format or file does not exist
         if type(filename) != str:
             raise TypeError('filename must be a string')
@@ -691,26 +690,30 @@ class ZeissSEM:
 
     
     def load_image(self):
-        """load the image and (if present) scalebar"""
+        """load the image data"""
         self.image = cv2.imread(self.filename,0)
         self.shape = np.shape(self.image)
         return self.image
     
     def get_metadata(self):
-
+        
+        #don't reread if we already have it
+        if hasattr(self,'metadata'):
+            return self.metadata
+        
+        #get correct tiftags from 
         from PIL.Image import open as PIL_open
 
         tifftags = PIL_open(self.filename).tag
-        md1 = tifftags[34118][0].replace('\r','').split('\n')
-        md2 = tifftags[34119][0].replace('\x00','').replace('\r','').split('\n')
+        md = tifftags[34118][0].replace('\r','').split('\n')
         
         metadata = dict()
-        for line in md1+md2:
+        for line in md:
             #only accept if there's a '=' in the line
             try:
                 key,val = line.split(' = ')
                 i = 0
-                thekey = key.copy()
+                thekey = key
                 while thekey in metadata:
                     i+=1
                     thekey = key+f' {i:02d}'
@@ -718,5 +721,24 @@ class ZeissSEM:
             #ignore rest
             except ValueError:
                 pass
-                
-        return metadata
+        
+        self.metadata = metadata
+        
+        return self.metadata
+
+    def get_pixelsize(self):
+        """gets the physical size of a pixel from the metadata
+
+        Returns
+        -------
+        pixelsize : float
+            physical size of the pixels in x and y
+        unit : str
+            physical unit corresponding to the pixelsize.
+
+        """   
+        metadata = self.get_metadata()
+        pixelsize,unit = metadata['Image Pixel Size'].split()
+        
+        return float(pixelsize), unit
+        
