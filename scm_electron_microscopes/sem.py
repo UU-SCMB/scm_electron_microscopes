@@ -6,24 +6,19 @@ from .utility import util
 class helios:
     """
     Set of convenience functions for the Helios SEM.
+    
+    Parameters
+    ----------
+    filename : string
+        name of the file to load. Can but is not required to include .tif
+        as extension.
+
+
+    Returns
+    -------
+    helios class instance
     """
     def __init__(self,filename):
-        """
-        initialize class by loading the file
-
-        Parameters
-        ----------
-        filename : string
-            name of the file to load. Can but is not required to include .tif
-            as extension.
-
-
-        Returns
-        -------
-        None.
-
-        """
-        
         #raise error if wrong format or file does not exist
         if type(filename) != str:
             raise TypeError('The argument to the helios class must be a string containing the filename.')
@@ -278,10 +273,17 @@ class helios:
 class phenom:
     """
     Set of convenience functions for the phenom SEM microscopes.
+    
+    Parameters
+    ----------
+    filename : str
+        filename of the image to load
+        
+    Returns
+    -------
+    phenom class instance
     """
     def __init__(self,filename):
-        """Initialize the class instance"""
-        
         #raise error if wrong format or file does not exist
         if type(filename) != str:
             raise TypeError('The argument to the helios class must be a string containing the filename.')
@@ -477,10 +479,17 @@ class phenom:
 class xl30sfeg:
     """
     Set of convenience functions for the xl30sfeg SEM microscope.
+    
+    Parameters
+    ----------
+    filename : str
+        filename of the image to load
+        
+    Returns
+    -------
+    xl30sfeg class instance
     """
     def __init__(self,filename):
-        """initialize class by storing the file name"""
-        
         #raise error if wrong format or file does not exist
         if type(filename) != str:
             raise TypeError('The argument to the xl30sfeg class must be a string containing the filename.')
@@ -673,10 +682,18 @@ class xl30sfeg:
 
 class ZeissSEM:
     """
+    Class for the Zeiss EVO and Gemini SEMs'
     
+    Parameters
+    ----------
+    filename : str
+        filename of the image to load
+        
+    Returns
+    -------
+    ZeissSEM class instance
     """
     def __init__(self,filename):
-        """initialize class by storing the file name"""
         #raise error if wrong format or file does not exist
         if type(filename) != str:
             raise TypeError('filename must be a string')
@@ -690,13 +707,18 @@ class ZeissSEM:
 
     
     def load_image(self):
-        """load the image data"""
+        """loads the image data
+        
+        Returns
+        -------
+        PIL.Image instance
+        """
         self.image = cv2.imread(self.filename,0)
         self.shape = np.shape(self.image)
         return self.image
     
     def get_metadata(self):
-        
+        """extracts embedded metadata from the image file
         #don't reread if we already have it
         if hasattr(self,'metadata'):
             return self.metadata
