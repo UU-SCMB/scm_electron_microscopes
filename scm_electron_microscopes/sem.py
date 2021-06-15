@@ -718,7 +718,7 @@ class ZeissSEM:
         return self.image
     
     def get_metadata(self):
-        """extracts embedded metadata from the image file
+        """extracts embedded metadata from the image file"""
         #don't reread if we already have it
         if hasattr(self,'metadata'):
             return self.metadata
@@ -747,9 +747,11 @@ class ZeissSEM:
         self.metadata = metadata
         
         return self.metadata
+        
 
     def get_pixelsize(self):
-        """gets the physical size of a pixel from the metadata
+        """
+        gets the physical size of a pixel from the metadata
 
         Returns
         -------
