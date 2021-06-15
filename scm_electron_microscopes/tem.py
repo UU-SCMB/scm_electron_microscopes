@@ -1,6 +1,6 @@
-import cv2
 import numpy as np
 import os
+from PIL import Image
 
 class tecnai:
     """
@@ -34,7 +34,8 @@ class tecnai:
         self.filename = filename
         
         #load the image
-        im = cv2.imread(filename,0)
+        self.PIL_image = Image.open(filename)
+        im = np.array(self.PIL_image)
         self.shape = np.shape(im)
         self.image = im[:self.shape[1]]
         self.scalebar = im[self.shape[1]:]
@@ -122,6 +123,52 @@ class tecnai:
         print('-----------------------------------------------------\n')
             
     
+    def get_pixelsize(self):
+        """
+        Gets the physical size represented by the pixels from the image 
+        metadata
+        
+        Returns
+        -------
+        pixelsize : float
+            the physical size of a pixel in the given unit
+        unit : str
+            physical unit of the pixel size
+        """
+        #tiff tags 65450 and 65451 contain an int value for pixels per `x` cm,
+        #where x is a power of 10, e.g. 586350674 pixels per 100 cm is 
+        #encoded as (586350674, 100) and gives 1.7 nm/pixel
+        pixelsize_x = self.PIL_image.tag[65450][0]
+        pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
+        
+        #pixelsize_y = self.PIL_image.tag[65451][0]
+        #pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
+        
+        #find the right unit and rescale for convenience
+        if pixelsize_x >= 10e-3:
+            unit = 'm'
+        elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
+            unit = 'mm'
+            pixelsize_x = 1e3*pixelsize_x
+            #pixelsize_y = 1e3*pixelsize_y
+        elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
+            unit = 'µm'
+            pixelsize_x = 1e6*pixelsize_x
+            #pixelsize_y = 1e6*pixelsize_y
+        elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
+            unit = 'nm'
+            pixelsize_x = 1e9*pixelsize_x
+            #pixelsize_y = 1e9*pixelsize_y
+        else:
+            unit = 'pm'
+            pixelsize_x = 1e12*pixelsize_x
+            #pixelsize_y = 1e9*pixelsize_y
+        
+        #store and return
+        self.pixelsize = pixelsize_x
+        self.unit = unit
+        return (pixelsize_x,unit)
+    
     def get_pixelsize_legacy(self, debug=False):
         """
         *THIS FUNCTION IS DEPRECATED. USE `tecnai.get_pixelsize()`*
@@ -145,6 +192,7 @@ class tecnai:
 
         """
         import re
+        import cv2
         
         #find contour corners sorted left to right
         if len(self.scalebar) == 0:
@@ -276,56 +324,6 @@ class tecnai:
         self.scalebarlength_px = barlength
         
         return pixelsize,unit
-    
-    def get_pixelsize(self):
-        """
-        Gets the physical size represented by the pixels from the image 
-        metadata
-        
-        Returns
-        -------
-        pixelsize : float
-            the physical size of a pixel in the given unit
-        unit : str
-            physical unit of the pixel size
-        """
-        from PIL import Image
-        tags = Image.open(self.filename).tag
-        
-        #tiff tags 65450 and 65451 contain an int value for pixels per `x` cm,
-        #where x is a power of 10, e.g. 586350674 pixels per 100 cm is 
-        #encoded as (586350674, 100) and gives 1.7 nm/pixel
-        pixelsize_x = tags[65450][0]
-        pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
-        
-        #pixelsize_y = tags[65451][0]
-        #pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
-        
-        #find the right unit and rescale for convenience
-        if pixelsize_x >= 10e-3:
-            unit = 'm'
-        elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
-            unit = 'mm'
-            pixelsize_x = 1e3*pixelsize_x
-            #pixelsize_y = 1e3*pixelsize_y
-        elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
-            unit = 'µm'
-            pixelsize_x = 1e6*pixelsize_x
-            #pixelsize_y = 1e6*pixelsize_y
-        elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
-            unit = 'nm'
-            pixelsize_x = 1e9*pixelsize_x
-            #pixelsize_y = 1e9*pixelsize_y
-        else:
-            unit = 'pm'
-            pixelsize_x = 1e12*pixelsize_x
-            #pixelsize_y = 1e9*pixelsize_y
-        
-        #store and return
-        self.pixelsize = pixelsize_x
-        self.unit = unit
-        return (pixelsize_x,unit)
-        
         
     def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
                              loc=2,resolution=None,box=True,invert=False,
