@@ -40,14 +40,15 @@ class tecnai:
         self.image = im[:self.shape[1]]
         self.scalebar = im[self.shape[1]:]
     
-    def load_metadata(self,asdict=True):
+    def load_metadata(self,asdict=False):
         """
-        loads xml metadata from .tif file and returns xml tree object
+        loads xml metadata from .tif file and returns xml tree object or dict
 
         Parameters
         ----------
         asdict : bool, optional
-            whether to export as dictionary. The default is True.
+            whether to export as a dictionary. When False, an 
+            `xml.etree.ElementTree` is returned. The default is False.
 
         Returns
         -------
@@ -56,28 +57,17 @@ class tecnai:
             xml_root.find('<element name>')
 
         """
-        import io
-        import re
-
-        metadata = ''
-        read = False
-        
-        with io.open(self.filename, 'r', errors='ignore', encoding='utf8') as f:
-            #iterate through file line by line to avoid loading too much into memory
-            for line in f:
-                #start reading at the first line containing an xml tag
-                if '<Root' in line:
-                    read = True
-                if read:
-                    metadata += line
-                    if '</Root' in line:
-                        break #stop at line with end tag
-            
-        #trim strings down to only xml
-        metadata = metadata[metadata.find('<Root'):]
-        metadata = metadata[:metadata.find('</Root')+7]
+        #try to get metadata tag, raise warning if not found
+        try:
+            metadata = self.PIL_image.tag[34682][0]
+        except KeyError:
+            from warnings import warn
+            warn('no metadata found')
+            return None
         
         if asdict:
+            import re
+            
             #convert to dictionary
             metadatadict = {}
             for item in re.findall(r'<Data>(.*?)</Data>',metadata):
@@ -86,13 +76,12 @@ class tecnai:
                 value = re.findall(r'<Value>(.*?)</Value>',item)[0]
                 
                 metadatadict[label] = {"value":value,"unit":unit}
+            
             #add pixelsize if already known for this class instance
             try:
                 value = self.pixelsize
                 unit = self.unit
-                sblen = self.scalebarlength
                 metadatadict['Pixel size'] = {'value':value,'unit':unit}
-                metadatadict['Scale bar size'] = {'value':sblen,'unit':unit}
             except AttributeError:
                 pass
             
@@ -107,26 +96,36 @@ class tecnai:
     
     def print_metadata(self):
         """prints formatted output of the file's metadata"""
+        metadata = self.load_metadata(asdict=True)
         
-        metadata = self.load_metadata()
+        #don't print anything when metadata is empty
+        if metadata is None or len(metadata) == 0:
+            return
         
+        #get max depth
         l = max(len(i) for i in metadata)
         
+        #print header, contents and footer
         print('\n-----------------------------------------------------')
         print('METADATA')
+        print(self.filename)
         print('-----------------------------------------------------')
-        
         for i,k in metadata.items():
             string = i+':\t'+str(k['value'])+' '+str(k['unit'])
             print(string.expandtabs(l+2))
-        
         print('-----------------------------------------------------\n')
             
     
-    def get_pixelsize(self):
+    def get_pixelsize(self,convert=None):
         """
         Gets the physical size represented by the pixels from the image 
         metadata
+        
+        Parameters
+        ----------
+        convert : one of ['m', 'mm', 'um', 'µm', 'nm', 'pm', None], optional
+            physical unit to use for the pixel size. The default is None, which
+            chooses one of the above automatically based on the value.
         
         Returns
         -------
@@ -135,8 +134,8 @@ class tecnai:
         unit : str
             physical unit of the pixel size
         """
-        #tiff tags 65450 and 65451 contain an int value for pixels per `x` cm,
-        #where x is a power of 10, e.g. 586350674 pixels per 100 cm is 
+        #tiff tags 65450 and 65451 contain an int value for pixels per `n` cm,
+        #where n is a power of 10, e.g. 586350674 pixels per 100 cm is 
         #encoded as (586350674, 100) and gives 1.7 nm/pixel
         pixelsize_x = self.PIL_image.tag[65450][0]
         pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
@@ -145,25 +144,41 @@ class tecnai:
         #pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
         
         #find the right unit and rescale for convenience
-        if pixelsize_x >= 10e-3:
-            unit = 'm'
-        elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
-            unit = 'mm'
-            pixelsize_x = 1e3*pixelsize_x
-            #pixelsize_y = 1e3*pixelsize_y
-        elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
-            unit = 'µm'
-            pixelsize_x = 1e6*pixelsize_x
-            #pixelsize_y = 1e6*pixelsize_y
-        elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
-            unit = 'nm'
-            pixelsize_x = 1e9*pixelsize_x
-            #pixelsize_y = 1e9*pixelsize_y
+        if convert is None:
+            if pixelsize_x >= 10e-3:
+                unit = 'm'
+            elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
+                unit = 'mm'
+                pixelsize_x = 1e3*pixelsize_x
+                #pixelsize_y = 1e3*pixelsize_y
+            elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
+                unit = 'µm'
+                pixelsize_x = 1e6*pixelsize_x
+                #pixelsize_y = 1e6*pixelsize_y
+            elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
+                unit = 'nm'
+                pixelsize_x = 1e9*pixelsize_x
+                #pixelsize_y = 1e9*pixelsize_y
+            else:
+                unit = 'pm'
+                pixelsize_x = 1e12*pixelsize_x
+                #pixelsize_y = 1e9*pixelsize_y
+        #else use given unit
         else:
-            unit = 'pm'
-            pixelsize_x = 1e12*pixelsize_x
-            #pixelsize_y = 1e9*pixelsize_y
-        
+            #allow um for convenience
+            if convert == 'um':
+                convert = 'µm'
+            
+            #check against list of allowed units
+            units = ['pm','nm','µm','mm','m']
+            if not unit in units:
+                raise ValueError('"'+str(unit)+'" is not a valid unit')
+            
+            #factor 10**3 for every step from list, use indices to calculate
+            pixelsize_x = pixelsize_x*10**(
+                3*(units.index(unit)-units.index(convert))
+            )
+            
         #store and return
         self.pixelsize = pixelsize_x
         self.unit = unit
@@ -320,8 +335,7 @@ class tecnai:
         
         self.pixelsize = pixelsize
         self.unit = unit
-        self.scalebarlength = value
-        self.scalebarlength_px = barlength
+
         
         return pixelsize,unit
         
