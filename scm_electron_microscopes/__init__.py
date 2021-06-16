@@ -1,4 +1,4 @@
-__version__ = '1.0.1'
+__version__ = '2.0.0'
 
 from .tem import tecnai
 from .sem import helios,phenom,xl30sfeg,ZeissSEM

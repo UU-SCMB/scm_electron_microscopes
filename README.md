@@ -6,8 +6,10 @@ Set of functions for dealing with data from the electron microscopes at Utrecht 
 ## Info
 - Created by: Maarten Bransen
 - Email: m.bransen@uu.nl
+- Version: 2.0.0
 
 ## Installation
+
 ### PIP
 This package can be installed directly from GitHub using pip:
 ```
@@ -26,11 +28,12 @@ To update to the most recent version, use `pip install` with the `--upgrade` fla
 pip install --upgrade git+https://github.com/MaartenBransen/scm_electron_microscopes
 ```
 
-### Installing pytesseract / tesseract-OCR
-To use automatic scale bar calibration for the Tecnai and Talos microscopes, the [tesseract optical character recognition](https://github.com/tesseract-ocr/tesseract) tool is used, which must be installed separately. Installation files can be found [here](https://tesseract-ocr.github.io/tessdoc/Home.html). This is interfaced through the `pytesseract` package which can be installed normally using e.g. conda. Since this is an optional dependency, `pytesseract` is not installed by default. It may be necessary to point it towards your tesseract installation by changing the `pytesseract.pytesseract.tesseract_cmd` variable to the correct path, something like `tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'`. If pytesseract or tesseract-OCR is not found the function switches to semi-automatic mode where the user is asked to give the size and unit written next to the scalebar. For the other microscopes, the pixelsize is correctly encoded in the normal image metadata and these dependencies are not neccesary.
-
 ## Usage
 ### Tecnai 12, Tecnai 20, Tecnai 20feg, Talos120, Talos200
+
+**Note that since version 2.0.0 Pytesseract is no longer required as dependency**
+
+
 For these microscopes use the [tecnai](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.tecnai) or [talos](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.talos) class (these are identical, the alias `talos` is just provided for convenience), and create a class instance using the filename of the TEM image. This automatically loads the image, which is available as numpy.array as the `image` attribute:
 ```
 from scm_electron_microscopes import tecnai
@@ -56,7 +59,7 @@ For the Helios SEM use the [helios](https://maartenbransen.github.io/scm_electro
 from scm_electron_microscopes import helios
 
 em_data = helios('myimage.tif')
-image = em_data.load_image()
+image = em_data.get_image()
 ```
 
 Pixel sizes written in the metadata and available as a shortcut through a function:
@@ -74,3 +77,13 @@ This microscope is no longer around, but for older data you can use the `xl30sfe
 
 ### Utility functions
 Some utility functions for e.g. plotting a histogram are included in the [util](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.util) class
+
+
+## Changelog
+
+### Version 2.0.0
+Note that this version has some backwards incompatible changes:
+- `load_image` functions have been renamed to `get_image`
+- `load_metadata` functions have been renamed to `get_metadata`
+- `tecnai.get_pixelsize` no longer uses text recognition to read the scale bar. This is faster and removes Pytesseract and the Tesseract OCR as dependencies, but yields slightly different (and more accurate) values. The old scaling method is available through `get_pixelsize_legacy`.
+- all `get_metadata` functions now return an xml.etree.Elementtree object by default, rather than a dictionary which was used for some classes.
