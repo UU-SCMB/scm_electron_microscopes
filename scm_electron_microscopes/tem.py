@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from PIL import Image
+from warnings import warn
 
 class tecnai:
     """
@@ -40,7 +41,7 @@ class tecnai:
         self.image = im[:self.shape[1]]
         self.scalebar = im[self.shape[1]:]
     
-    def load_metadata(self,asdict=False):
+    def get_metadata(self,asdict=False):
         """
         loads xml metadata from .tif file and returns xml tree object or dict
 
@@ -61,7 +62,6 @@ class tecnai:
         try:
             metadata = self.PIL_image.tag[34682][0]
         except KeyError:
-            from warnings import warn
             warn('no metadata found')
             return None
         
@@ -96,7 +96,7 @@ class tecnai:
     
     def print_metadata(self):
         """prints formatted output of the file's metadata"""
-        metadata = self.load_metadata(asdict=True)
+        metadata = self.get_metadata(asdict=True)
         
         #don't print anything when metadata is empty
         if metadata is None or len(metadata) == 0:
@@ -341,9 +341,7 @@ class tecnai:
         
         return pixelsize,unit
         
-    def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
-                             loc=2,resolution=None,box=True,invert=False,
-                             convert=None):
+    def export_with_scalebar(self, filename=None, **kwargs):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
@@ -356,11 +354,6 @@ class tecnai:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original TEM file, with 
             '_exported.png' appended.
-        barsize : float or `None`, optional
-            size (in data units matching the original scale bar, e.g. nm) of 
-            the scale bar to use. The default `None`, wich takes the desired 
-            length for the current scale and round this to the nearest option
-            from a list of "nice" values.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -373,6 +366,19 @@ class tecnai:
             optional rescaling using `resolution`).
             
             The default is `None` which takes the entire image.
+        resolution : int, optional
+            the resolution along the x-axis (i.e. image width in pixels) to use
+            for the exported image. The default is `None`, which uses the size 
+            of the original image (after optional cropping using `crop`).
+        draw_bar : boolean, optional
+            whether to draw a scalebar on the image, such that this function 
+            may be used just to strip the original bar and crop. The default is
+            `True`.
+        barsize : float or `None`, optional
+            size (in data units matching the original scale bar, e.g. nm) of 
+            the scale bar to use. The default `None`, wich takes the desired 
+            length for the current scale and round this to the nearest option
+            from a list of "nice" values.
         scale : float, optional
             factor to change the size of the scalebar+text with respect to the
             width of the image. Scale is chosen such, that at `scale=1` the
@@ -383,22 +389,44 @@ class tecnai:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        resolution : int, optional
-            the resolution along the x-axis (i.e. image width in pixels) to use
-            for the exported image. The default is `None`, which uses the size 
-            of the original image (after optional cropping using `crop`).
-        box : bool, optional
-            Whether to put a semitransparent box around the scalebar and text
-            to enhance contrast. The default is `True`.
-        invert : bool, optional
-            If `True`, a white scalebar and text on a black box are used. The 
-            default is `False` which gives black text on a white background.
         convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
             the original image.
-        """      
+        font : str, optional
+            filename of an installed TrueType font ('.ttf' file) to use for the
+            text on the scalebar. The default is `'arialbd.ttf'`.
+        fontsize : int, optional
+            base font size to use for the scale bar text. The default is 16. 
+            Note that this size will be re-scaled according to `resolution` and
+            `scale`.
+        fontbaseline : int, optional
+            vertical offset for the baseline of the scale bar text in printer
+             points. The default is 0.
+        fontpad : int, optional
+            minimum size in printer points of the space/padding between the 
+            text and the bar and surrounding box. The default is 2.
+        barthickness : int, optional
+            thickness in printer points of the scale bar itself. The default is
+            16.
+        barpad : int, optional
+            size in printer points of the padding between the scale bar and the
+            surrounding box. The default is 10.
+        box : bool, optional
+            Whether to put a semitransparent box around the scalebar and text
+            to enhance contrast. The default is `True`.
+        boxalpha : float, optional
+            value between 0 and 1 for the opacity (inverse of transparency) of
+            the box behind the scalebar and text when `box=True`. The default 
+            is `0.6`.
+        invert : bool, optional
+            If `True`, a white scalebar and text on a black box are used. The 
+            default is `False` which gives black text on a white background.
+        boxpad : int, optional
+            size of the space/padding around the box (with respect to the sides
+            of the image) in printer points. The default is 10.
+        """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
             pixelsize,unit = self.pixelsize,self.unit
@@ -419,6 +447,4 @@ class tecnai:
         
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
-        _export_with_scalebar(exportim, pixelsize, unit, filename, barsize, 
-                              crop, scale, loc, resolution, box, invert, 
-                              convert)
+        _export_with_scalebar(exportim, pixelsize, unit, filename, **kwargs)
