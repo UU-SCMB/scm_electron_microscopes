@@ -170,14 +170,16 @@ class tecnai:
                 convert = 'µm'
             
             #check against list of allowed units
+            unit = 'm'
             units = ['pm','nm','µm','mm','m']
-            if not unit in units:
-                raise ValueError('"'+str(unit)+'" is not a valid unit')
+            if not convert in units:
+                raise ValueError('"'+str(convert)+'" is not a valid unit')
             
             #factor 10**3 for every step from list, use indices to calculate
             pixelsize_x = pixelsize_x*10**(
                 3*(units.index(unit)-units.index(convert))
             )
+            unit = convert
             
         #store and return
         self.pixelsize = pixelsize_x
