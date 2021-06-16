@@ -21,13 +21,14 @@ class helios:
     def __init__(self,filename):
         #raise error if wrong format or file does not exist
         if type(filename) != str:
-            raise TypeError('The argument to the helios class must be a string containing the filename.')
+            raise TypeError('The argument to the helios class must be a string'
+                            ' containing the filename.')
         if not os.path.exists(filename):
             if os.path.exists(filename + '.tif'):
                 filename = filename + '.tif'
             else:
-                raise FileNotFoundError('The file "'+filename+'" could not be found.')
-            
+                raise FileNotFoundError('The file "'+filename+
+                                        '" could not be found.')
         self.filename = filename
     
     def load_image(self):
