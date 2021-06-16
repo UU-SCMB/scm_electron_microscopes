@@ -1,6 +1,7 @@
-import cv2
 import numpy as np
 import os
+from PIL import Image
+from warnings import warn
 
 class tecnai:
     """
@@ -34,19 +35,21 @@ class tecnai:
         self.filename = filename
         
         #load the image
-        im = cv2.imread(filename,0)
+        self.PIL_image = Image.open(filename)
+        im = np.array(self.PIL_image)
         self.shape = np.shape(im)
         self.image = im[:self.shape[1]]
         self.scalebar = im[self.shape[1]:]
     
-    def load_metadata(self,asdict=True):
+    def get_metadata(self,asdict=False):
         """
-        loads xml metadata from .tif file and returns xml tree object
+        loads xml metadata from .tif file and returns xml tree object or dict
 
         Parameters
         ----------
         asdict : bool, optional
-            whether to export as dictionary. The default is True.
+            whether to export as a dictionary. When False, an 
+            `xml.etree.ElementTree` is returned. The default is False.
 
         Returns
         -------
@@ -55,28 +58,16 @@ class tecnai:
             xml_root.find('<element name>')
 
         """
-        import io
-        import re
-
-        metadata = ''
-        read = False
-        
-        with io.open(self.filename, 'r', errors='ignore', encoding='utf8') as f:
-            #iterate through file line by line to avoid loading too much into memory
-            for line in f:
-                #start reading at the first line containing an xml tag
-                if '<Root' in line:
-                    read = True
-                if read:
-                    metadata += line
-                    if '</Root' in line:
-                        break #stop at line with end tag
-            
-        #trim strings down to only xml
-        metadata = metadata[metadata.find('<Root'):]
-        metadata = metadata[:metadata.find('</Root')+7]
+        #try to get metadata tag, raise warning if not found
+        try:
+            metadata = self.PIL_image.tag[34682][0]
+        except KeyError:
+            warn('no metadata found')
+            return None
         
         if asdict:
+            import re
+            
             #convert to dictionary
             metadatadict = {}
             for item in re.findall(r'<Data>(.*?)</Data>',metadata):
@@ -85,13 +76,12 @@ class tecnai:
                 value = re.findall(r'<Value>(.*?)</Value>',item)[0]
                 
                 metadatadict[label] = {"value":value,"unit":unit}
+            
             #add pixelsize if already known for this class instance
             try:
                 value = self.pixelsize
                 unit = self.unit
-                sblen = self.scalebarlength
                 metadatadict['Pixel size'] = {'value':value,'unit':unit}
-                metadatadict['Scale bar size'] = {'value':sblen,'unit':unit}
             except AttributeError:
                 pass
             
@@ -106,24 +96,100 @@ class tecnai:
     
     def print_metadata(self):
         """prints formatted output of the file's metadata"""
+        metadata = self.get_metadata(asdict=True)
         
-        metadata = self.load_metadata()
+        #don't print anything when metadata is empty
+        if metadata is None or len(metadata) == 0:
+            return
         
+        #get max depth
         l = max(len(i) for i in metadata)
         
+        #print header, contents and footer
         print('\n-----------------------------------------------------')
         print('METADATA')
+        print(self.filename)
         print('-----------------------------------------------------')
-        
         for i,k in metadata.items():
             string = i+':\t'+str(k['value'])+' '+str(k['unit'])
             print(string.expandtabs(l+2))
-        
         print('-----------------------------------------------------\n')
             
     
-    def get_pixelsize(self, debug=False):
+    def get_pixelsize(self,convert=None):
         """
+        Gets the physical size represented by the pixels from the image 
+        metadata
+        
+        Parameters
+        ----------
+        convert : one of ['m', 'mm', 'um', 'µm', 'nm', 'pm', None], optional
+            physical unit to use for the pixel size. The default is None, which
+            chooses one of the above automatically based on the value.
+        
+        Returns
+        -------
+        pixelsize : float
+            the physical size of a pixel in the given unit
+        unit : str
+            physical unit of the pixel size
+        """
+        #tiff tags 65450 and 65451 contain an int value for pixels per `n` cm,
+        #where n is a power of 10, e.g. 586350674 pixels per 100 cm is 
+        #encoded as (586350674, 100) and gives 1.7 nm/pixel
+        pixelsize_x = self.PIL_image.tag[65450][0]
+        pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
+        
+        #pixelsize_y = self.PIL_image.tag[65451][0]
+        #pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
+        
+        #find the right unit and rescale for convenience
+        if convert is None:
+            if pixelsize_x >= 10e-3:
+                unit = 'm'
+            elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
+                unit = 'mm'
+                pixelsize_x = 1e3*pixelsize_x
+                #pixelsize_y = 1e3*pixelsize_y
+            elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
+                unit = 'µm'
+                pixelsize_x = 1e6*pixelsize_x
+                #pixelsize_y = 1e6*pixelsize_y
+            elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
+                unit = 'nm'
+                pixelsize_x = 1e9*pixelsize_x
+                #pixelsize_y = 1e9*pixelsize_y
+            else:
+                unit = 'pm'
+                pixelsize_x = 1e12*pixelsize_x
+                #pixelsize_y = 1e9*pixelsize_y
+        #else use given unit
+        else:
+            #allow um for convenience
+            if convert == 'um':
+                convert = 'µm'
+            
+            #check against list of allowed units
+            unit = 'm'
+            units = ['pm','nm','µm','mm','m']
+            if not convert in units:
+                raise ValueError('"'+str(convert)+'" is not a valid unit')
+            
+            #factor 10**3 for every step from list, use indices to calculate
+            pixelsize_x = pixelsize_x*10**(
+                3*(units.index(unit)-units.index(convert))
+            )
+            unit = convert
+            
+        #store and return
+        self.pixelsize = pixelsize_x
+        self.unit = unit
+        return (pixelsize_x,unit)
+    
+    def get_pixelsize_legacy(self, debug=False):
+        """
+        *THIS FUNCTION IS DEPRECATED. USE `tecnai.get_pixelsize()`*
+        
         Reads the scalebar from images of the Tecnai TEM microscopes using 
         text recognition via pytesseract or with manual input when pytesseract
         is not installed
@@ -143,6 +209,7 @@ class tecnai:
 
         """
         import re
+        import cv2
         
         #find contour corners sorted left to right
         if len(self.scalebar) == 0:
@@ -270,14 +337,11 @@ class tecnai:
         
         self.pixelsize = pixelsize
         self.unit = unit
-        self.scalebarlength = value
-        self.scalebarlength_px = barlength
+
         
         return pixelsize,unit
-    
-    def export_with_scalebar(self,filename=None,barsize=None,crop=None,scale=1,
-                             loc=2,resolution=None,box=True,invert=False,
-                             convert=None):
+        
+    def export_with_scalebar(self, filename=None, **kwargs):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
         four corners, where barsize is the scalebar size in data units (e.g. 
@@ -290,11 +354,6 @@ class tecnai:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original TEM file, with 
             '_exported.png' appended.
-        barsize : float or `None`, optional
-            size (in data units matching the original scale bar, e.g. nm) of 
-            the scale bar to use. The default `None`, wich takes the desired 
-            length for the current scale and round this to the nearest option
-            from a list of "nice" values.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -307,6 +366,19 @@ class tecnai:
             optional rescaling using `resolution`).
             
             The default is `None` which takes the entire image.
+        resolution : int, optional
+            the resolution along the x-axis (i.e. image width in pixels) to use
+            for the exported image. The default is `None`, which uses the size 
+            of the original image (after optional cropping using `crop`).
+        draw_bar : boolean, optional
+            whether to draw a scalebar on the image, such that this function 
+            may be used just to strip the original bar and crop. The default is
+            `True`.
+        barsize : float or `None`, optional
+            size (in data units matching the original scale bar, e.g. nm) of 
+            the scale bar to use. The default `None`, wich takes the desired 
+            length for the current scale and round this to the nearest option
+            from a list of "nice" values.
         scale : float, optional
             factor to change the size of the scalebar+text with respect to the
             width of the image. Scale is chosen such, that at `scale=1` the
@@ -317,22 +389,44 @@ class tecnai:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        resolution : int, optional
-            the resolution along the x-axis (i.e. image width in pixels) to use
-            for the exported image. The default is `None`, which uses the size 
-            of the original image (after optional cropping using `crop`).
-        box : bool, optional
-            Whether to put a semitransparent box around the scalebar and text
-            to enhance contrast. The default is `True`.
-        invert : bool, optional
-            If `True`, a white scalebar and text on a black box are used. The 
-            default is `False` which gives black text on a white background.
-        convert : str, one of [`pm`,`nm`,`um`,`µm`,`mm`,`m`], optional
+        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
             the original image.
-        """      
+        font : str, optional
+            filename of an installed TrueType font ('.ttf' file) to use for the
+            text on the scalebar. The default is `'arialbd.ttf'`.
+        fontsize : int, optional
+            base font size to use for the scale bar text. The default is 16. 
+            Note that this size will be re-scaled according to `resolution` and
+            `scale`.
+        fontbaseline : int, optional
+            vertical offset for the baseline of the scale bar text in printer
+             points. The default is 0.
+        fontpad : int, optional
+            minimum size in printer points of the space/padding between the 
+            text and the bar and surrounding box. The default is 2.
+        barthickness : int, optional
+            thickness in printer points of the scale bar itself. The default is
+            16.
+        barpad : int, optional
+            size in printer points of the padding between the scale bar and the
+            surrounding box. The default is 10.
+        box : bool, optional
+            Whether to put a semitransparent box around the scalebar and text
+            to enhance contrast. The default is `True`.
+        boxalpha : float, optional
+            value between 0 and 1 for the opacity (inverse of transparency) of
+            the box behind the scalebar and text when `box=True`. The default 
+            is `0.6`.
+        invert : bool, optional
+            If `True`, a white scalebar and text on a black box are used. The 
+            default is `False` which gives black text on a white background.
+        boxpad : int, optional
+            size of the space/padding around the box (with respect to the sides
+            of the image) in printer points. The default is 10.
+        """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
             pixelsize,unit = self.pixelsize,self.unit
@@ -353,6 +447,4 @@ class tecnai:
         
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
-        _export_with_scalebar(exportim, pixelsize, unit, filename, barsize, 
-                              crop, scale, loc, resolution, box, invert, 
-                              convert)
+        _export_with_scalebar(exportim, pixelsize, unit, filename, **kwargs)
