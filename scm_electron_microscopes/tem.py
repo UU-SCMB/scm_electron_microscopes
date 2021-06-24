@@ -9,19 +9,15 @@ class tecnai:
     12, 20, 20feg and Talos microscopes. Initializing the class takes a string
     containing the filename as only argument, and by default loads in the
     image.
+    
+    Parameters
+    ----------
+    filename : string
+        name of the file to load. Can but is not required to include .tif
+        as extension.
     """
     
     def __init__(self,filename):
-        """
-        initialize class by loading the file
-
-        Parameters
-        ----------
-        filename : string
-            name of the file to load. Can but is not required to include .tif
-            as extension.
-        """
-
         #raise error if wrong format or file does not exist
         if type(filename) != str:
             raise TypeError('The argument to the '+self.__name__+

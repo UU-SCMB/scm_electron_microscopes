@@ -759,7 +759,8 @@ class xl30sfeg:
 
 class ZeissSEM:
     """
-    Class for the Zeiss EVO and Gemini SEMs'
+    Class with convenience functions for the Zeiss EVO and Gemini SEMs. By 
+    default does not load the image into memory.
     
     Parameters
     ----------
