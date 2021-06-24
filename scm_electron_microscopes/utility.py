@@ -153,6 +153,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
             #factor 10**3 for every step from list, use indices to calculate
             pixelsize = pixelsize*10**(3*(units.index(unit)\
                                           -units.index(convert)))
+            unit = convert
     
     #(optionally) crop
     if type(crop) != type(None):
