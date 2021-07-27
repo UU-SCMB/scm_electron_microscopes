@@ -184,7 +184,12 @@ class tecnai:
     
     def get_pixelsize_legacy(self, debug=False):
         """
-        *THIS FUNCTION IS DEPRECATED. USE `tecnai.get_pixelsize()`*
+        .. deprecated::
+           This function has been deprecated and may give slightly inaccurate 
+           result (only accurate to the nearest whole pixel), use 
+           `tecnai.get_pixelsize()` for more accurate and faster calibration. 
+           Included for cases where results using the previous calibration 
+           method must be reproduced or compared with.
         
         Reads the scalebar from images of the Tecnai TEM microscopes using 
         text recognition via pytesseract or with manual input when pytesseract
