@@ -36,6 +36,7 @@ class tecnai:
         self.shape = np.shape(im)
         self.image = im[:self.shape[1]]
         self.scalebar = im[self.shape[1]:]
+        self.dtype = self.image.dtype
     
     def get_metadata(self,asdict=False):
         """
@@ -220,10 +221,13 @@ class tecnai:
             self.pixelsize = pixelsize
             return pixelsize,'nm'
         else:
+            sb = self.scalebar
+            if self.dtype != np.uint8:
+                sb = ((sb-sb.min())/((sb.max()-sb.min())/255)).astype(np.uint8)
             if int(cv2.__version__[0]) >= 4:
-                corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+                corners,_ = cv2.findContours(sb,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
             else:
-                _,corners,_ = cv2.findContours(self.scalebar,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+                _,corners,_ = cv2.findContours(sb,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
             corners = sorted(corners, key=lambda c: cv2.boundingRect(c)[0])
         
         #length in pixels between bottom left corners of vertical bars
