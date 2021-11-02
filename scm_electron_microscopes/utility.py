@@ -112,7 +112,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
     plt.tight_layout()
     
     #check if alternative form of cropping is used
-    if type(crop) != type(None) and len(crop) == 4:
+    if not crop is None and len(crop) == 4:
         altcrop = True
     else:
         altcrop = False
@@ -140,7 +140,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
     
     #convert unit when drawing scalebar
     if draw_bar:
-        if type(convert) != type(None) and convert != unit:
+        if not convert is None and convert != unit:
             
             #always use mu for micrometer
             if convert == 'um':
@@ -157,7 +157,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
             unit = convert
     
     #(optionally) crop
-    if type(crop) != type(None):
+    if not crop is None:
         
         #if (x,y,w,h) format, convert to other format
         if len(crop) == 4:
@@ -182,7 +182,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
     barsize_px = barsize/pixelsize
     
     #set default resolution or scale image and correct barsize_px
-    if type(resolution) == type(None):
+    if resolution is None:
         ny,nx = exportim.shape
         resolution = nx
     else:
