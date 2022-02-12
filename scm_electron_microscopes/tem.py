@@ -509,7 +509,7 @@ class velox:
                 filename = filenames[filename]
             except IndexError:
                 raise FileNotFoundError(f'{len(filenames)} .emd files were '
-                    f'found in current working directory, index {filenames} is'
+                    f'found in current working directory, index {filename} is'
                     ' out of bounds')
         
         #load the file, if not found try appending file extension
