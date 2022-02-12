@@ -21,8 +21,7 @@ class tia:
     def __init__(self,filename):
         #raise error if wrong format or file does not exist
         if type(filename) != str:
-            raise TypeError('The argument to the '+self.__name__+
-                            ' class must be a string containing the filename.')
+            raise TypeError('`filename` must be of type `str`')
         if not os.path.exists(filename):
             if os.path.exists(filename + '.tif'):
                 filename = filename + '.tif'
@@ -474,11 +473,30 @@ class tia:
 import h5py
 class velox:
     """
+    Class for importing the .emd file format used natively by the Velox 
+    software used on the Talos microscopes.
     
+    Note that one .emd file may contain multiple images / videos, (e.g. when
+    recording with multiple detectors simultaneously), and most functions are
+    available through the `velox_image` subclass accessible through the 
+    `get_image` function.
+    
+    Parameters
+    ----------
+    filename : str or int
+        The filename to load, extension optional. Alternatively an integer may
+        be given to load the nth file in the current working directory. The
+        default is to load the first file.
+    quiet : bool
+        whether to print a list of images contained in the file when the class
+        is initialized. The default is False.
+    
+    Returns
+    -------
+    `velox` class instance 
     """
     def __init__(self,filename=None,quiet=False):
         """init class instance, open file container"""
-        
         #optionally give None to find first emd file in folder
         if filename is None:
             filename = 0
@@ -486,15 +504,15 @@ class velox:
         #can also load nth file in folder
         if type(filename)==int:
             from glob import glob
-            filenames = glob('.emd')
+            filenames = glob('*.emd')
             try:
                 filename = filenames[filename]
             except IndexError:
                 raise FileNotFoundError(f'{len(filenames)} .emd files were '
                     f'found in current working directory, index {filenames} is'
-                    'out of bounds')
+                    ' out of bounds')
         
-        #load the file
+        #load the file, if not found try appending file extension
         try:
             self._emdfile = h5py.File(filename,'r')
         except FileNotFoundError:
@@ -540,23 +558,43 @@ class velox:
             raise IndexError(f'index {i} out of bounds for {len(self)} images')
         return self.get_image(i)
     
-    def get_image(self,im):
-        """returns velox_image class instance"""
-        return velox_image(self.filename,im)
+    def get_image(self,image):
+        """Returns velox_image class instance containing all data and metadata
+        for a particular image in the file.
+        
+        Parameters
+        ----------
+        image : str or int
+            the image to return the data for, given as the name/tag (when str)
+            or as its integer index in the file, i.e. `velox.get_image(0)` 
+            returns the data container for the first image.
+        
+        Returns
+        -------
+        `velox_image` class instance
+        """
+        return velox_image(self.filename,image)
     
     def print_file_struct(self):
-        """prints the structure of the file container"""
+        """prints a formatted overview of the structure of the .emd file 
+        container, useful for accessing additional data manually"""
         with h5py.File(self.filename,'r') as f:
             self._recursive_print(f)
 
     def _recursive_print(self,root,prefix='|'):
+        """see `print_file_struct"""
         for i in root:
+            #safeguard against infinite recursion
             if len(prefix)>20:
                 print(prefix+'-MAX RECURSION DEPTH')
+            
+            #for a tag, print and call function on child
             elif type(i)==str:
                 print(prefix+i)
                 if len(root[i])>0:
                     self._recursive_print(root[i],prefix=prefix+'-')
+            
+            #for data, print the root data __repr__ method
             else:
                 print(prefix+f'-{root.__repr__()}')
                 break
@@ -588,6 +626,7 @@ class velox_image(velox):
         #store some properties
         self._imageData = self._emdfile['Data/Image/'+im]
         self.name = im
+        self.index = self.image_list.index(im)
         self.shape = self._imageData['Data'].shape[::-1]
         self._len = self.shape[0]
 
@@ -603,13 +642,28 @@ class velox_image(velox):
         return self.get_frame(i)
 
     def get_frame(self,i):
-        """returns specific image / video frame"""
+        """returns specific image / video frame from the dataset
+        
+        Parameters
+        ----------
+        i : int
+            the index of the frame to load
+        
+        Returns
+        -------
+        numpy.array of pixel values
+        """
         if i >= len(self):
             raise IndexError(f'index {i} does not fit in length {len(self)}')
         return self._imageData['Data'][...,i] 
         
     def get_data(self):
-        """returns the full image data as numpy array"""
+        """Loads and returns the full image data as numpy array
+        
+        Returns
+        -------
+        numpy.ndarray of pixel value
+        s"""
         #note that loading per image is faster than loading the entire array
         #as it is stored in a different byte order than used in the HDF5 file
         return np.array(
@@ -617,7 +671,12 @@ class velox_image(velox):
         )
 
     def get_metadata(self):
-        """extracts the metadata corresponding to the image as JSON dict"""
+        """extracts the metadata corresponding to the image as JSON dict
+        
+        Returns
+        -------
+        dict containing the metadata
+        """
         #only need to read once, otherwise just return from previous read
         if hasattr(self,'metadata'):
             return self.metadata
@@ -789,7 +848,7 @@ class velox_image(velox):
         #set default export filename
         if type(filename) != str:
             filename = self.filename.rpartition('.')[0]+\
-                self.name+'_scalebar.png'
+                f'_image{self.index:02d}_scalebar.png'
         
         #check we're not overwriting the original file
         if filename==self.filename:
