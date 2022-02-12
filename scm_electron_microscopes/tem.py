@@ -750,6 +750,17 @@ class velox_image(velox):
         
         return self.pixelsize,self.unit
     
+    def get_frametime(self):
+        """
+        Returns the time in seconds it takes to scan one frame
+        
+        Returns
+        -------
+        float
+        """
+        return float(self.get_metadata()['Scan']['FrameTime'])
+    
+    
     def export_with_scalebar(self, frame=0, filename=None, **kwargs):
         """
         saves an exported image of the TEM image with a scalebar in one of the 
@@ -848,7 +859,7 @@ class velox_image(velox):
         #set default export filename
         if type(filename) != str:
             filename = self.filename.rpartition('.')[0]+\
-                f'_image{self.index:02d}_scalebar.png'
+                f'_image-{self.index:02d}_scalebar.png'
         
         #check we're not overwriting the original file
         if filename==self.filename:
