@@ -3,12 +3,12 @@ import os
 from PIL import Image
 from warnings import warn
 
-class tecnai:
+class tia:
     """
     Set of convenience functions for electron microscopy images of the tecnai
-    12, 20, 20feg and Talos microscopes. Initializing the class takes a string
-    containing the filename as only argument, and by default loads in the
-    image.
+    12, 20, 20feg and Talos microscopes when using the TIA software. 
+    Initializing the class takes a string containing the filename as only 
+    argument, and by default loads in the image.
     
     Parameters
     ----------
@@ -26,7 +26,8 @@ class tecnai:
             if os.path.exists(filename + '.tif'):
                 filename = filename + '.tif'
             else:
-                raise FileNotFoundError('The file "'+filename+'" could not be found.')
+                raise FileNotFoundError(f'The file "{filename}" could not be'
+                                        ' found.')
         
         self.filename = filename
         
@@ -196,13 +197,13 @@ class tecnai:
         .. deprecated::
            This function has been deprecated and may give slightly inaccurate 
            result (only accurate to the nearest whole pixel), use 
-           `tecnai.get_pixelsize()` for more accurate and faster calibration. 
+           `tia.get_pixelsize()` for more accurate and faster calibration. 
            Included for cases where results using the previous calibration 
            method must be reproduced or compared with.
         
-        Reads the scalebar from images of the Tecnai TEM microscopes using 
-        text recognition via pytesseract or with manual input when pytesseract
-        is not installed
+        Reads the scalebar from images of the Tecnai or Talos  TEM microscopes 
+        using text recognition via pytesseract or with manual input when 
+        pytesseract is not installed
 
         Parameters
         ----------
@@ -223,7 +224,8 @@ class tecnai:
         
         #find contour corners sorted left to right
         if len(self.scalebar) == 0:
-            print('[WARNING] tecnai.get_pixelsize: original scale bar not found!')
+            print('[WARNING] tia.get_pixelsize: original scale bar not '
+                  'found!')
             pixelsize = float(input('Please give pixelsize in nm: '))
             self.unit = 'nm'
             self.pixelsize = pixelsize
@@ -296,9 +298,12 @@ class tecnai:
                     bartext,
                     config="--oem 0 -c tessedit_char_whitelist=0123456789pnuµm --psm 7"
                 )
-                #oem 0 selects older version of tesseract which still takes the char_whitelist param
-                #tessedit_char_whitelist takes list of characters it searches for (to reduce reading errors)
-                #psm 7 is a mode that tells tesseract to assume a single line of text in the image
+                #oem 0 selects older version of tesseract which still takes 
+                #the char_whitelist param
+                #tessedit_char_whitelist takes list of characters it searches 
+                #for (to reduce reading errors)
+                #psm 7 is a mode that tells tesseract to assume a single line 
+                #of text in the image
             else:
                 text = pytesseract.image_to_string(
                     bartext,
@@ -323,13 +328,14 @@ class tecnai:
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         except FileNotFoundError:
-            print('[WARNING] tecnai.get_pixelsize(): tesseract OCR engine was'+
-                  ' not found by pytesseract. Switching to manual mode.')
+            print('[WARNING] tia.get_pixelsize(): tesseract OCR engine '
+                  'was not found by pytesseract. Switching to manual mode.')
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         except:
-            print('[WARNING] tecnai.get_pixelsize(): could not read scale bar'+
-                  ' text, perhaps try debug=True. Switching to manual mode.')
+            print('[WARNING] tia.get_pixelsize(): could not read scale '
+                  'bar text, perhaps try debug=True. Switching to manual mode.'
+                  )
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         
@@ -465,7 +471,6 @@ class tecnai:
         
 
 import h5py
-
 class velox:
     def __init__(self,filename=None,quiet=False):
         """init class instance, open file container"""
@@ -785,3 +790,45 @@ class velox_image(velox):
         #call main export_with_scalebar function with correct pixelsize etc
         from .utility import _export_with_scalebar
         _export_with_scalebar(exportim, pixelsize[1], unit, filename, **kwargs)
+        
+        
+#make talos/tecnai alias for backwards compatibility
+def tecnai(*args,**kwargs):
+    """
+    [DEPRECATED]
+    
+    The tecnai and Talos classes have been renamed to the `tia` class to avoid 
+    confusion between data aquired using the older TIA and newer Velox software
+    from version 3.0.0 onwards. The old names are available for backwards 
+    compatibility and should behave identically, but their use is discouraged.
+    
+    See also
+    --------
+    `tia`
+    """
+    warn('The tecnai and Talos classes have been renamed to the `tia` class to'
+         ' avoid confusion between data aquired using the older TIA and newer '
+         'Velox software from version 3.0.0 onwards. The old names are '
+         'available for backwards compatibility and should behave identically,'
+         ' but their use is discouraged.',DeprecationWarning,stacklevel=1)
+    return tia(*args,**kwargs)
+
+def talos(*args,**kwargs):
+    """
+    [DEPRECATED]
+    
+    The tecnai and Talos classes have been renamed to the `tia` class to avoid 
+    confusion between data aquired using the older TIA and newer Velox software
+    from version 3.0.0 onwards. The old names are available for backwards 
+    compatibility and should behave identically, but their use is discouraged.
+    
+    See also
+    --------
+    `tia`
+    """
+    warn('The tecnai and Talos classes have been renamed to the `tia` class to'
+         ' avoid confusion between data aquired using the older TIA and newer '
+         'Velox software from version 3.0.0 onwards. The old names are '
+         'available for backwards compatibility and should behave identically,'
+         ' but their use is discouraged.',DeprecationWarning,stacklevel=1)
+    return tia(*args,**kwargs)
