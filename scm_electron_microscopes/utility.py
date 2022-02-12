@@ -98,7 +98,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
     
     #normalize to 8 bit interval if not already uint8
     if exportim.dtype != np.uint8:
-        print('normalizing to uint8 range')
+        warn('normalizing image data to uint8 range',stacklevel=3)
         exportim = exportim.astype(float)
         exportim -= exportim.min()
         exportim *= 255.0/exportim.max()

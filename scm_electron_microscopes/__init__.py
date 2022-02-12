@@ -1,6 +1,6 @@
 __version__ = '2.0.2'
 
-from .tem import tecnai
+from .tem import tecnai,velox
 from .sem import helios,phenom,xl30sfeg,ZeissSEM
 from .utility import util
 
@@ -12,6 +12,7 @@ talos.__doc__ = 'Alias of `tecnai` class\n'+talos.__doc__
 __all__ = [
     'tecnai',
     'talos',
+    'velox',
     'helios',
     'phenom',
     'xl30sfeg',
