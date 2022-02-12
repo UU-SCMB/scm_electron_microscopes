@@ -6,9 +6,10 @@ from warnings import warn
 class tia:
     """
     Set of convenience functions for electron microscopy images of the tecnai
-    12, 20, 20feg and Talos microscopes when using the TIA software. 
-    Initializing the class takes a string containing the filename as only 
-    argument, and by default loads in the image.
+    12, 20, 20feg and Talos microscopes when using the TIA software and 
+    exporting the images as .tif files from TIA. Initializing the class takes a
+    string containing the filename as only argument, and by default loads in 
+    the image.
     
     Parameters
     ----------
@@ -472,6 +473,9 @@ class tia:
 
 import h5py
 class velox:
+    """
+    
+    """
     def __init__(self,filename=None,quiet=False):
         """init class instance, open file container"""
         
@@ -491,8 +495,16 @@ class velox:
                     'out of bounds')
         
         #load the file
+        try:
+            self._emdfile = h5py.File(filename,'r')
+        except FileNotFoundError:
+            try:
+                self._emdfile = h5py.File(filename+'.emd','r')
+                filename = filename+'.emd'
+            except FileNotFoundError:
+                raise FileNotFoundError(f"the file '{filename}' was not found")
+        
         self.filename = filename
-        self._emdfile = h5py.File(self.filename,'r')
         self.image_list = list(self._emdfile['Data/Image'].keys())
         
         if not quiet:
