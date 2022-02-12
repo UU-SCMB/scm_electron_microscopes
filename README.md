@@ -6,7 +6,7 @@ Set of functions for dealing with data from the electron microscopes at Utrecht 
 ## Info
 - Created by: Maarten Bransen
 - Email: m.bransen@uu.nl
-- Version: 2.0.2
+- Version: 3.0.0
 
 ## Installation
 
@@ -29,17 +29,16 @@ pip install --upgrade git+https://github.com/MaartenBransen/scm_electron_microsc
 ```
 
 ## Usage
-### Tecnai 12, Tecnai 20, Tecnai 20feg, Talos120, Talos200
+### Tecnai 12, Tecnai 20, Tecnai 20feg, Talos120, Talos200 using the TIA software
 
 **Note that since version 2.0.0 Pytesseract is no longer required as dependency**
 
-
-For these microscopes use the [tecnai](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.tecnai) or [talos](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.talos) class (these are identical, the alias `talos` is just provided for convenience), and create a class instance using the filename of the TEM image. This automatically loads the image, which is available as numpy.array as the `image` attribute:
+For these microscopes use the [tia](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.tia) class (aliasses `tecnai` and `talos` are just provided for convenience, they are identical). In TIA, data must be exported as a .tif file. To import data in python, create a class instance using the filename of the TEM image. This automatically loads the image, which is available as numpy.array as the `image` attribute:
 ```
-from scm_electron_microscopes import tecnai
+from scm_electron_microscopes import tia
 import matplotlib.pyplot as plt
 
-em_data = tecnai('myimage.tif')
+em_data = tia('myimage.tif')
 image = em_data.image
 
 plt.figure()
@@ -47,11 +46,21 @@ plt.imshow(image,cmap='Greys_r')
 plt.axis('off')
 plt.show()
 ```
-Note that this is only the image data, with the scalebar stripped off. The imagedata for the scale bar is available through the `scalebar` attribute, but more likely you are interested in the pixel size which can be determined semi or fully automatically using `tecnai.get_pixelsize()`:
+Note that this is only the image data, with the scalebar stripped off. The imagedata for the scale bar is available through the `scalebar` attribute, but more likely you are interested in the pixel size which can be determined semi or fully automatically using `tia.get_pixelsize()`:
 ```
 pixelsize,unit = em_data.get_pixelsize()
 ```
-Other information about the microscope is read from the file and can be printed with `tecnai.print_metadata()`. Files can be exported with a nicer and customizable scalebar using the `tecnai.export_with_scalebar()` function.
+Other information about the microscope is read from the file and can be printed with `tia.print_metadata()`. Files can be exported with a nicer and customizable scalebar using the `tecnai.export_with_scalebar()` function.
+
+### Talos 120, 200 and Spectra microscopes using the Velox software
+The native .emd file format used by Velox can be opened using the [velox](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.velox) class, and images / videos contained within can be extracted using the `get_image` method. By default, the actual image data is not loaded into memory (as this would be ineffecient for large datasets). Instead, a `get_frame` method is available to extract specific video frames as well as a `get_data` method for explicitely loading the full image data:
+```
+from scm_electron_microscopes import velox
+
+em_data = velox('myimage.emd').get_image(0)
+
+myarray = em_data.load_data()
+```
 
 ### Helios
 For the Helios SEM use the [helios](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.helios) class, which unlike the `tecnai` and `talos` classes does not load the image into memory by default, such that it is possible to quickly read out metadata of e.g. a slice-and-view series without having to load all the image data. Image data is available through the `load_image()` function:
@@ -80,6 +89,10 @@ Some utility functions for e.g. plotting a histogram are included in the [util](
 
 
 ## Changelog
+
+### Version 3.0.0
+- `tecnai` and `talos` class names are deprecated as they are renamed to the `tia` class to prevent confusion with data recorded with the TIA vs the Velox software
+- a new velox class is available that reads the native .emd file format of the more modern Velox software installed on the Talos microscopes
 
 ### Version 2.0.0
 Note that this version has some backwards incompatible changes:

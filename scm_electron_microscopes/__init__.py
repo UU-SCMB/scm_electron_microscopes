@@ -1,17 +1,14 @@
-__version__ = '2.0.2'
+__version__ = '3.0.0'
 
-from .tem import tecnai
+from .tem import tia,velox,tecnai,talos
 from .sem import helios,phenom,xl30sfeg,ZeissSEM
 from .utility import util
 
-#make talos alias for identical tecnai/talos class
-talos = type('talos', tecnai.__bases__, dict(tecnai.__dict__))
-talos.__doc__ = 'Alias of `tecnai` class\n'+talos.__doc__
-
-#make visible for 'from stackscroller import *'
+#make visible for 'from scm_electron_microscopes import *'
 __all__ = [
     'tecnai',
     'talos',
+    'velox',
     'helios',
     'phenom',
     'xl30sfeg',
