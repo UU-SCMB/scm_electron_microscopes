@@ -53,7 +53,7 @@ pixelsize,unit = em_data.get_pixelsize()
 Other information about the microscope is read from the file and can be printed with `tia.print_metadata()`. Files can be exported with a nicer and customizable scalebar using the `tecnai.export_with_scalebar()` function.
 
 ### Talos 120, 200 and Spectra microscopes using the Velox software
-The native .emd file format used by Velox can be opened using the `velox` class, and images / videos contained within can be extracted using the `get_image` method. By default, the actual image data is not loaded into memory (as this would be ineffecient for large datasets). Instead, a `get_frame` method is available to extract specific video frames as well as a `get_data` method for explicitely loading the full image data:
+The native .emd file format used by Velox can be opened using the [velox](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.velox) class, and images / videos contained within can be extracted using the `get_image` method. By default, the actual image data is not loaded into memory (as this would be ineffecient for large datasets). Instead, a `get_frame` method is available to extract specific video frames as well as a `get_data` method for explicitely loading the full image data:
 ```
 from scm_electron_microscopes import velox
 
