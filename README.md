@@ -91,7 +91,6 @@ Some utility functions for e.g. plotting a histogram are included in the [util](
 ## Changelog
 
 ### Version 3.0.0
-Note that this version has some backwards incompatible changes:
 - `tecnai` and `talos` class names are deprecated as they are renamed to the `tia` class to prevent confusion with data recorded with the TIA vs the Velox software
 - a new velox class is available that reads the native .emd file format of the more modern Velox software installed on the Talos microscopes
 
