@@ -385,6 +385,12 @@ class tia:
             optional rescaling using `resolution`).
             
             The default is `None` which takes the entire image.
+        intensity_range : tuple or `None` or `'automatic'`
+            tuple of `(lower,upper)` ranges for the (original) pixel values to 
+            scale the brightness/contrast in the image to, or `'automatic'` to 
+            autoscale the intensity to the 0.1th and 99.9th percentile of the 
+            input image, or None for the min and max value in the original 
+            image. The default is `None`.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
             for the exported image. The default is `None`, which uses the size 
@@ -819,6 +825,12 @@ class velox_image(velox):
             optional rescaling using `resolution`).
             
             The default is `None` which takes the entire image.
+        intensity_range : tuple or `None` or `'automatic'`
+            tuple of `(lower,upper)` ranges for the (original) pixel values to 
+            scale the brightness/contrast in the image to, or `'automatic'` to 
+            autoscale the intensity to the 0.1th and 99.9th percentile of the 
+            input image, or None for the min and max value in the original 
+            image. The default is `None`.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
             for the exported image. The default is `None`, which uses the size 

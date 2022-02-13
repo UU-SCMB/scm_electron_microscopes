@@ -76,10 +76,10 @@ class util:
 
 import cv2
 def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
-                          resolution=None,draw_bar=True,barsize=None,scale=1,
-                          loc=2,convert=None,font='arialbd.ttf',fontsize=16,
-                          fontbaseline=0,fontpad=2,barthickness=16,barpad=10,
-                          box=True,invert=False,boxalpha=0.6,boxpad=10):
+        intensity_range=None,resolution=None,draw_bar=True,barsize=None,
+        scale=1,loc=2,convert=None,font='arialbd.ttf',fontsize=16,
+        fontbaseline=0,fontpad=2,barthickness=16,barpad=10,box=True,
+        invert=False,boxalpha=0.6,boxpad=10):
     """
     see top level export_with_scalebar functions for docs
     """
@@ -96,17 +96,9 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
         else:
             raise ValueError('image must be 2-dimensional')
     
-    #normalize to 8 bit interval if not already uint8
-    if exportim.dtype != np.uint8:
-        warn('normalizing image data to uint8 range',stacklevel=3)
-        exportim = exportim.astype(float)
-        exportim -= exportim.min()
-        exportim *= 255.0/exportim.max()
-        exportim = exportim.astype(np.uint8)
-    
     #draw original figure before changing exportim
     fig,ax = plt.subplots(1,1)
-    ax.imshow(exportim,cmap='gray',vmin=0,vmax=255)
+    ax.imshow(exportim,cmap='gray')
     plt.title('original image')
     plt.axis('off')
     plt.tight_layout()
@@ -137,6 +129,31 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
     ax.callbacks.connect("xlim_changed", _on_lim_change)
     ax.callbacks.connect("ylim_changed", _on_lim_change)
     plt.show(block=False)
+    
+    #get intensity range for None or automatic options
+    if intensity_range is None:#min and max
+        intensity_range = (exportim.min(),exportim.max())
+    elif intensity_range == 'auto' or intensity_range == 'automatic':
+        intensity_range = (
+            np.percentile(exportim,0.1),
+            np.percentile(exportim,99.9)
+        )
+    elif not type(intensity_range) in [tuple,list] or len(intensity_range)!=2:
+        raise TypeError("`intensity_range` must be None, 'automatic' or "
+                        "2-tuple of values")
+    
+    #rescale the intensity without int overflow
+    imin, imax = intensity_range
+    exportim[exportim < imin] = imin  
+    exportim[:,:] = exportim[:,:] - imin
+    imax = imax - imin
+    mask = exportim < imax
+    exportim[~mask] = 255
+    exportim[mask] = exportim[mask]*(255/imax)
+    
+    #convert datatype if not already uint8
+    if exportim.dtype != np.uint8:
+        exportim = exportim.astype(np.uint8)
     
     #convert unit when drawing scalebar
     if draw_bar:
