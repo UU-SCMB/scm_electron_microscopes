@@ -135,8 +135,8 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,crop=None,
         intensity_range = (exportim.min(),exportim.max())
     elif intensity_range == 'auto' or intensity_range == 'automatic':
         intensity_range = (
-            np.percentile(exportim,0.1),
-            np.percentile(exportim,99.9)
+            np.percentile(exportim,0.01),
+            np.percentile(exportim,99.99)
         )
     elif not type(intensity_range) in [tuple,list] or len(intensity_range)!=2:
         raise TypeError("`intensity_range` must be None, 'automatic' or "

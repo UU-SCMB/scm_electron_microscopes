@@ -388,7 +388,7 @@ class tia:
         intensity_range : tuple or `None` or `'automatic'`
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
-            autoscale the intensity to the 0.1th and 99.9th percentile of the 
+            autoscale the intensity to the 0.01th and 99.99th percentile of the 
             input image, or None for the min and max value in the original 
             image. The default is `None`.
         resolution : int, optional
@@ -828,7 +828,7 @@ class velox_image(velox):
         intensity_range : tuple or `None` or `'automatic'`
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
-            autoscale the intensity to the 0.1th and 99.9th percentile of the 
+            autoscale the intensity to the 0.01th and 99.99th percentile of the 
             input image, or None for the min and max value in the original 
             image. The default is `None`.
         resolution : int, optional
