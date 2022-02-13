@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="scm_electron_microscopes",
-    version="3.0.1",
+    version="3.0.2",
     author="Maarten Bransen",
     author_email="m.bransen@uu.nl",
     license='GNU General Public License v3.0',
