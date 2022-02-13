@@ -385,6 +385,12 @@ class tia:
             optional rescaling using `resolution`).
             
             The default is `None` which takes the entire image.
+        intensity_range : tuple or `None` or `'automatic'`
+            tuple of `(lower,upper)` ranges for the (original) pixel values to 
+            scale the brightness/contrast in the image to, or `'automatic'` to 
+            autoscale the intensity to the 0.01th and 99.99th percentile of the 
+            input image, or None for the min and max value in the original 
+            image. The default is `None`.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
             for the exported image. The default is `None`, which uses the size 
@@ -509,7 +515,7 @@ class velox:
                 filename = filenames[filename]
             except IndexError:
                 raise FileNotFoundError(f'{len(filenames)} .emd files were '
-                    f'found in current working directory, index {filenames} is'
+                    f'found in current working directory, index {filename} is'
                     ' out of bounds')
         
         #load the file, if not found try appending file extension
@@ -640,6 +646,26 @@ class velox_image(velox):
     def __getitem__(self,i):
         """make class indexable by returning appropriate video frame"""
         return self.get_frame(i)
+    
+    def __iter__(self):
+        """initialize iterator for next function"""
+        self._iter_n = 0
+        return self
+
+    def __next__(self):
+        "make iterable where it returns one image at a time"
+        #make sure __iter__ has been called
+        if not hasattr(self,'_iter_n'):
+            self.__iter__()
+        
+        #increment iterator before return call
+        self._iter_n += 1
+        
+        #check end condition or return using __getitem__
+        if self._iter_n > len(self):
+            raise StopIteration
+        else:
+            return self[self._iter_n-1]
 
     def get_frame(self,i):
         """returns specific image / video frame from the dataset
@@ -760,6 +786,17 @@ class velox_image(velox):
         """
         return float(self.get_metadata()['Scan']['FrameTime'])
     
+    def get_detector(self):
+        """
+        Returns metadata for the detector which was used to take this image
+        
+        Returns
+        -------
+        dict
+        """
+        md = self.get_metadata()
+        return md['Detectors']['Detector-'+md['BinaryResult']['DetectorIndex']]
+    
     
     def export_with_scalebar(self, frame=0, filename=None, **kwargs):
         """
@@ -788,6 +825,12 @@ class velox_image(velox):
             optional rescaling using `resolution`).
             
             The default is `None` which takes the entire image.
+        intensity_range : tuple or `None` or `'automatic'`
+            tuple of `(lower,upper)` ranges for the (original) pixel values to 
+            scale the brightness/contrast in the image to, or `'automatic'` to 
+            autoscale the intensity to the 0.01th and 99.99th percentile of the 
+            input image, or None for the min and max value in the original 
+            image. The default is `None`.
         resolution : int, optional
             the resolution along the x-axis (i.e. image width in pixels) to use
             for the exported image. The default is `None`, which uses the size 
