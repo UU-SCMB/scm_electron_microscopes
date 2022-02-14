@@ -475,8 +475,6 @@ class tia:
         _export_with_scalebar(exportim, pixelsize, unit, filename, **kwargs)
         
         
-
-import h5py
 class velox:
     """
     Class for importing the .emd file format used natively by the Velox 
@@ -503,6 +501,8 @@ class velox:
     """
     def __init__(self,filename=None,quiet=False):
         """init class instance, open file container"""
+        import h5py
+        
         #optionally give None to find first emd file in folder
         if filename is None:
             filename = 0
@@ -584,8 +584,7 @@ class velox:
     def print_file_struct(self):
         """prints a formatted overview of the structure of the .emd file 
         container, useful for accessing additional data manually"""
-        with h5py.File(self.filename,'r') as f:
-            self._recursive_print(f)
+        self._recursive_print(self._emdfile)
 
     def _recursive_print(self,root,prefix='|'):
         """see `print_file_struct"""
