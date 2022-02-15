@@ -529,7 +529,21 @@ class velox:
                 raise FileNotFoundError(f"the file '{filename}' was not found")
         
         self.filename = filename
-        self.image_list = list(self._emdfile['Data/Image'].keys())
+        
+        self.data_list =  []
+        self.data_names = []
+        self._data_type = []
+        
+        i = 0
+        for key,val in self._emdfile['Data'].items():
+            for v in val.values():
+                if 'Data' in v:
+                    self.data_list.append(v)
+                    self.data_names.append(key+f'{i:03d}')
+                    self._data_type.append(key)
+                    i+=1
+        
+        self._len = len(self.data_list)
         
         if not quiet:
             print(self)
@@ -545,18 +559,14 @@ class velox:
     def __str__(self):
         """string method for printing class instance"""
         s = self.__repr__()+'\n'
-        for i,im in enumerate(self.image_list):
-            imshape = self._emdfile['Data/Image/'+im+'/Data'].shape[::-1]
-            s+=f"{i}: name='{im}', shape={imshape}\n"
+        for i,n in enumerate(self.data_names):
+            imshape = self.data_list[i]['Data'].shape
+            s+=f"{i}: name='{n}', shape={imshape}\n"
         return s[:-1]#strips last newline
     
     def __len__(self):
         """allows for `len(velox)` to return number of images"""
-        if hasattr(self, '_len'):
-            return self._len
-        else:
-            self._len = len(self.image_list)
-            return self._len
+        return self._len
         
     def __getitem__(self,i):
         """make class indexable by returning image"""
@@ -625,14 +635,15 @@ class velox_image(velox):
         super().__init__(filename,quiet=True)
         
         #allow for image index as well as its name/tag
-        if type(im) == int:
-            im = self.image_list[im]
+        if type(im) == str:
+            im = self.data_names.index(im)
         
         #store some properties
-        self._imageData = self._emdfile['Data/Image/'+im]
-        self.name = im
-        self.index = self.image_list.index(im)
-        self.shape = self._imageData['Data'].shape[::-1]
+        self._imageData = self.data_list[im]
+        self.name = self.data_names[im]
+        self.index = im
+        self.shape = self._imageData['Data'].shape
+        self.shape = (self.shape[-1],*self.shape[:-1])
         self._len = self.shape[0]
 
     def __repr__(self):
