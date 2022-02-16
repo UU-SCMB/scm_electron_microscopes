@@ -537,7 +537,8 @@ class velox:
         i = 0
         for key,val in self._emdfile['Data'].items():
             for v in val.values():
-                if 'Data' in v:
+                #if 'Data' in v:
+                if key in ['Image','SpectrumStream']:
                     self.data_list.append(v)
                     self.data_names.append(key+f'{i:03d}')
                     self._data_type.append(key)
@@ -968,7 +969,7 @@ class velox_image(velox_dataset):
         
 class velox_edx(velox_dataset):
     """
-    
+    subclass for emd files with edx data
     """
     def __init__(self,parent,im):
         #init parent class and get attribs
@@ -977,21 +978,26 @@ class velox_edx(velox_dataset):
         #change dim order to (frame,y,x) and store length as number of frames
         self.shape = (self.shape[-1],*self.shape[:-1])
         self._len = self.shape[0]
+        self._pixelflag = 2**16-1
     
     def get_image(self,energy_ranges=None,frame_range=None):
         """
-        
+        returns edx/eds image where the pixel value is the total number of 
+        photon counts within the specified energy range(s) and frame range.
 
         Parameters
         ----------
-        energy_ranges : TYPE, optional
-            DESCRIPTION. The default is None.
-        frame_range : TYPE, optional
-            DESCRIPTION. The default is None.
+        energy_ranges : list of tuples, optional
+            List of (min,max) energy range(s) specifying which photons to 
+            count, given in keV. The default is None which takes all photon 
+            counts.
+        frame_range : tuple, optional
+            Tuple of (min,max) for the frame indices to sum the counts for. The
+            default is None which sums all frames.
 
         Returns
         -------
-        None.
+        2D numpy.array
 
         """
         framelocs = list(self._imageData['FrameLocationTable'][:,0])
@@ -999,15 +1005,15 @@ class velox_edx(velox_dataset):
         md = self.get_metadata()
         nx = int(md['Scan']['ScanSize']['width'])
         ny = int(md['Scan']['ScanSize']['height'])
-        nf = len(framelocs)
-        ne = 2**12#this is hardcoded for now, cannot find it in metadata
+        #nf = len(framelocs)
+        #ne = 2**12#this is hardcoded for now, cannot find it in metadata
         
-        pixelflag = 2**16-1
+        pixelflag = self._pixelflag
         
         det_md = self.get_detector()
         energy_offset = float(det_md['OffsetEnergy'])/1000
         energy_step = float(det_md['Dispersion'])/1000
-        energy_start = float(det_md['BeginEnergy'])
+        energy_start = float(det_md['BeginEnergy'])/1000
         
         rawdata = self.get_raw_data()
         
@@ -1018,15 +1024,25 @@ class velox_edx(velox_dataset):
         else:
             rawdata = rawdata[:]
         
+        
+        #when specific energy ranges are specified,take flag values and 'or'
+        # each range onto the boolean mask
         if not energy_ranges is None:
             mask = rawdata==pixelflag
             for start,stop in energy_ranges:
                 start = (start-energy_offset)/energy_step
-                stop = (start-energy_offset)/energy_step
+                stop = (stop-energy_offset)/energy_step
                 mask = np.logical_or(
                     mask,
                     np.logical_and(start<=rawdata,rawdata<stop)
                 )
+            rawdata = rawdata[mask]
+        
+        #otherwise skip just values below the energy_start value
+        else:
+            rawdata = rawdata[
+                (rawdata==pixelflag)|(rawdata>=energy_start)
+            ]
         
         from numba import jit
         @jit()
@@ -1034,17 +1050,15 @@ class velox_edx(velox_dataset):
             res = np.zeros((ny,nx),dtype=np.uint16)
             x = 0
             y = 0
-            
             #loop over all stream values
             for i,v in enumerate(stream):
-    
-                #check if new pixel flag
+                #if new pixel flag, increment x
                 if v == pixelflag:
                     x += 1
-                    if x == nx:
+                    if x == nx:#if imwidth reached, reset x and incr y
                         x = 0
                         y += 1
-                        if y == ny:
+                        if y == ny:#if imheight reached, reset y
                             y = 0
                 else:
                     res[y,x] += 1
@@ -1053,6 +1067,38 @@ class velox_edx(velox_dataset):
         
         return _construct_spectrumim(rawdata)
     
+    def get_spectrum(self):
+        """
+        get overall spectral data for the edx dataset
+
+        Returns
+        -------
+        energies : numpy.array
+            energies in keV
+        counts : numpy.array
+            number of photon counts per energy
+
+        """
+        #get calibrations
+        det_md = self.get_detector()
+        energy_offset = float(det_md['OffsetEnergy'])/1000
+        energy_step = float(det_md['Dispersion'])/1000
+        #energy_start = float(det_md['BeginEnergy'])/1000
+        
+        #make list of energy values
+        energies = np.arange(2**12)*energy_step + energy_offset
+        #mask = energies>=energy_start
+        #energies = energies[mask]
+        
+        if 'Spectrum' in self._emdfile['Data']:
+            spectrum = self._emdfile['Data/Spectrum']
+            counts = spectrum[list(spectrum.keys())[0]]['Data'][:,0][:]
+        else:
+            data = self.get_raw_data()[:]
+            counts = np.bincount(data[data!=2**16-1],minlength=2**12)
+       
+        return energies,counts
+            
         
 #make talos/tecnai alias for backwards compatibility
 def tecnai(*args,**kwargs):
