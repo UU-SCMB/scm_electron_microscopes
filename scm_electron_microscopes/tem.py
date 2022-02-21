@@ -980,7 +980,7 @@ class velox_edx(velox_dataset):
         self._len = self.shape[0]
         self._pixelflag = 2**16-1
     
-    def get_image(self,energy_ranges=None,frame_range=None):
+    def get_image(self,energy_ranges=None,frame_range=None,binning=1):
         """
         returns edx/eds image where the pixel value is the total number of 
         photon counts within the specified energy range(s) and frame range.
@@ -1047,7 +1047,7 @@ class velox_edx(velox_dataset):
         from numba import jit
         @jit()
         def _construct_spectrumim(stream):
-            res = np.zeros((ny,nx),dtype=np.uint16)
+            res = np.zeros((ny//binning,nx//binning),dtype=np.uint16)
             x = 0
             y = 0
             #loop over all stream values
@@ -1061,7 +1061,7 @@ class velox_edx(velox_dataset):
                         if y == ny:#if imheight reached, reset y
                             y = 0
                 else:
-                    res[y,x] += 1
+                    res[y//binning,x//binning] += 1
             
             return res
         
