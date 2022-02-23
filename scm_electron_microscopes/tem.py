@@ -135,14 +135,15 @@ class tia:
         #tiff tags 65450 and 65451 contain an int value for pixels per `n` cm,
         #where n is a power of 10, e.g. 586350674 pixels per 100 cm is 
         #encoded as (586350674, 100) and gives 1.7 nm/pixel
-        try:
+        if 65450 in self.PIL_image.tag:
             pixelsize_x = self.PIL_image.tag[65450][0]
-        except KeyError:
-            #old tecnai 12 has it in key 282 and 283 instead
-            try:
-                pixelsize_x = self.PIL_image.tag[282][0]
-            except KeyError:
-                raise KeyError('pixel size not found in file data')
+        #old tecnai 12 images have it in key 282 and 283 instead
+        elif 282 in self.PIL_image.tag:
+            warn('pixel size metadata in unusual format, value may be '
+                 'incorrect',stacklevel=1)
+            pixelsize_x = self.PIL_image.tag[282][0]
+        else:
+            raise KeyError('pixel size not encoded in file')
         
         pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
         
