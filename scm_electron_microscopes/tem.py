@@ -699,9 +699,9 @@ class velox_dataset:
 
 class velox_image(velox_dataset):
     """
-    Subclass of the `velox` class for individual images (or image series) 
-    in an .emd file, such as when simultaneously recording HAADF-STEM and 
-    BF-STEM. Not indended to be called directly, rather to be initialized 
+    Subclass of the `velox_dataset` class for individual images (or image 
+    series) in an .emd file, such as when simultaneously recording HAADF-STEM 
+    and BF-STEM. Not indended to be called directly, rather to be initialized 
     trough the `get_image` method of the `scm_electron_microscopes.velox` 
     class.
     
