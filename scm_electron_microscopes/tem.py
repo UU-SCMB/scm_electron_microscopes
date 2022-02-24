@@ -135,14 +135,15 @@ class tia:
         #tiff tags 65450 and 65451 contain an int value for pixels per `n` cm,
         #where n is a power of 10, e.g. 586350674 pixels per 100 cm is 
         #encoded as (586350674, 100) and gives 1.7 nm/pixel
-        try:
+        if 65450 in self.PIL_image.tag:
             pixelsize_x = self.PIL_image.tag[65450][0]
-        except KeyError:
-            #old tecnai 12 has it in key 282 and 283 instead
-            try:
-                pixelsize_x = self.PIL_image.tag[282][0]
-            except KeyError:
-                raise KeyError('pixel size not found in file data')
+        #old tecnai 12 images have it in key 282 and 283 instead
+        elif 282 in self.PIL_image.tag:
+            warn('pixel size metadata in unusual format, value may be '
+                 'incorrect',stacklevel=2)
+            pixelsize_x = self.PIL_image.tag[282][0]
+        else:
+            raise KeyError('pixel size not encoded in file')
         
         pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
         
@@ -475,8 +476,6 @@ class tia:
         _export_with_scalebar(exportim, pixelsize, unit, filename, **kwargs)
         
         
-
-import h5py
 class velox:
     """
     Class for importing the .emd file format used natively by the Velox 
@@ -503,6 +502,8 @@ class velox:
     """
     def __init__(self,filename=None,quiet=False):
         """init class instance, open file container"""
+        import h5py
+        
         #optionally give None to find first emd file in folder
         if filename is None:
             filename = 0
@@ -529,7 +530,22 @@ class velox:
                 raise FileNotFoundError(f"the file '{filename}' was not found")
         
         self.filename = filename
-        self.image_list = list(self._emdfile['Data/Image'].keys())
+        
+        self.data_list =  []
+        self.data_names = []
+        self._data_type = []
+        
+        i = 0
+        for key,val in self._emdfile['Data'].items():
+            for v in val.values():
+                #if 'Data' in v:
+                if key in ['Image','SpectrumStream']:
+                    self.data_list.append(v)
+                    self.data_names.append(key+f'{i:03d}')
+                    self._data_type.append(key)
+                    i+=1
+        
+        self._len = len(self.data_list)
         
         if not quiet:
             print(self)
@@ -545,26 +561,22 @@ class velox:
     def __str__(self):
         """string method for printing class instance"""
         s = self.__repr__()+'\n'
-        for i,im in enumerate(self.image_list):
-            imshape = self._emdfile['Data/Image/'+im+'/Data'].shape[::-1]
-            s+=f"{i}: name='{im}', shape={imshape}\n"
+        for i,n in enumerate(self.data_names):
+            imshape = self.data_list[i]['Data'].shape
+            s+=f"{i}: name='{n}', shape={imshape}\n"
         return s[:-1]#strips last newline
     
     def __len__(self):
         """allows for `len(velox)` to return number of images"""
-        if hasattr(self, '_len'):
-            return self._len
-        else:
-            self._len = len(self.image_list)
-            return self._len
+        return self._len
         
     def __getitem__(self,i):
         """make class indexable by returning image"""
         if i >= len(self):
             raise IndexError(f'index {i} out of bounds for {len(self)} images')
-        return self.get_image(i)
+        return self.get_dataset(i)
     
-    def get_image(self,image):
+    def get_dataset(self,dataset):
         """Returns velox_image class instance containing all data and metadata
         for a particular image in the file.
         
@@ -577,15 +589,23 @@ class velox:
         
         Returns
         -------
-        `velox_image` class instance
+        `velox_dataset` or `velox_image` class instance
         """
-        return velox_image(self.filename,image)
+        #allow for dataset index as well as its name/tag
+        if type(dataset) == str:
+            dataset = self.data_names.index(dataset)
+        
+        if self._data_type[dataset] == 'Image':
+            return velox_image(self,dataset)
+        elif self._data_type[dataset] == 'SpectrumStream':
+            return velox_edx(self,dataset)
+        else:
+            return velox_dataset(self,dataset)
     
     def print_file_struct(self):
         """prints a formatted overview of the structure of the .emd file 
         container, useful for accessing additional data manually"""
-        with h5py.File(self.filename,'r') as f:
-            self._recursive_print(f)
+        self._recursive_print(self._emdfile)
 
     def _recursive_print(self,root,prefix='|'):
         """see `print_file_struct"""
@@ -606,7 +626,78 @@ class velox:
                 break
     
 
-class velox_image(velox):
+class velox_dataset:
+    """
+    general subclass for individual datasets of a velox file, acts 
+    mainly as intermediate to the specific subclasses
+    """
+    def __init__(self,parent,im):        
+        #store some properties of the velox class parent and keep a reference
+        self._parent = parent
+        self._emdfile = parent._emdfile
+        self._imageData = parent.data_list[im]
+        
+        #store public attributes
+        self.filename = parent.filename
+        self.name = parent.data_names[im]
+        self.data_type = parent._data_type[im]
+        self.index = im
+        self.shape = self._imageData['Data'].shape
+        self.dtype = self._imageData['Data'].dtype
+    
+    def get_raw_data(self):
+        """
+        returns a reference to the raw data of the dataset (without any 
+        re-indexing being applied or so)
+        """
+        return self._imageData['Data']
+
+    def get_metadata(self,i=0):
+        """extracts the metadata corresponding to the image as JSON dict
+        
+        Returns
+        -------
+        dict containing the metadata
+        """
+        #only need to read once, otherwise just return from previous read
+        if hasattr(self,'metadata'):
+            return self.metadata
+        
+        #load metadata as int numpy array and convert back to bytes, this is
+        #because the datatype is incorrectly listed as int in the HDF5 file. By
+        #default a large block is reserved in the file, unused space contains
+        #trailing zeros, have to be stripped before it can be converted by JSON
+        metadata = np.trim_zeros(self._imageData['Metadata'][:,i]).tobytes()
+        
+        #convert json to dict and store
+        import json
+        self.metadata = json.loads(metadata)
+        return self.metadata
+
+    def get_detector(self):
+        """
+        Returns metadata for the detector which was used to take this image
+        
+        Returns
+        -------
+        dict
+        """
+        md = self.get_metadata()
+        try:
+            det = md['Detectors']['Detector-'+md['BinaryResult']['DetectorIndex']]
+        except KeyError:
+            det = md['BinaryResult']['Detector']
+            flag = True
+            for d in md['Detectors'].values():
+                if det in d['DetectorName']:
+                    det = d
+                    flag = False
+                    break
+            if flag:
+                raise KeyError('No detector data found')
+        return det
+
+class velox_image(velox_dataset):
     """
     Subclass of the `velox` class for individual images (or image series) 
     in an .emd file, such as when simultaneously recording HAADF-STEM and 
@@ -621,19 +712,12 @@ class velox_image(velox):
     im : str or int
         name / tag or integer index of the image to initialize
     """
-    def __init__(self,filename,im):
+    def __init__(self,parent,im):
         #init parent class and get attribs
-        super().__init__(filename,quiet=True)
+        super().__init__(parent,im)
         
-        #allow for image index as well as its name/tag
-        if type(im) == int:
-            im = self.image_list[im]
-        
-        #store some properties
-        self._imageData = self._emdfile['Data/Image/'+im]
-        self.name = im
-        self.index = self.image_list.index(im)
-        self.shape = self._imageData['Data'].shape[::-1]
+        #change dim order to (frame,y,x) and store length as number of frames
+        self.shape = (self.shape[-1],*self.shape[:-1])
         self._len = self.shape[0]
 
     def __repr__(self):
@@ -667,6 +751,21 @@ class velox_image(velox):
         else:
             return self[self._iter_n-1]
 
+    def get_data(self):
+        """Loads and returns the full image data as numpy array
+        
+        Returns
+        -------
+        numpy.ndarray of pixel value
+        s"""
+        #note that loading per image is faster than loading the entire array
+        #as it is stored in a different byte order than used in the HDF5 file
+        
+        rawdata = self.get_raw_data()
+        return np.array(
+            [rawdata[:,:,i] for i in range(len(self))]
+        )
+
     def get_frame(self,i):
         """returns specific image / video frame from the dataset
         
@@ -681,42 +780,7 @@ class velox_image(velox):
         """
         if i >= len(self):
             raise IndexError(f'index {i} does not fit in length {len(self)}')
-        return self._imageData['Data'][...,i] 
-        
-    def get_data(self):
-        """Loads and returns the full image data as numpy array
-        
-        Returns
-        -------
-        numpy.ndarray of pixel value
-        s"""
-        #note that loading per image is faster than loading the entire array
-        #as it is stored in a different byte order than used in the HDF5 file
-        return np.array(
-            [self._imageData['Data'][:,:,i] for i in range(len(self))]
-        )
-
-    def get_metadata(self):
-        """extracts the metadata corresponding to the image as JSON dict
-        
-        Returns
-        -------
-        dict containing the metadata
-        """
-        #only need to read once, otherwise just return from previous read
-        if hasattr(self,'metadata'):
-            return self.metadata
-        
-        #load metadata as int numpy array and convert back to bytes, this is
-        #because the datatype is incorrectly listed as int in the HDF5 file. By
-        #default a large block is reserved in the file, unused space contains
-        #trailing zeros, have to be stripped before it can be converted by JSON
-        metadata = np.trim_zeros(self._imageData['Metadata'][:,0]).tobytes()
-        
-        #convert json to dict and store
-        import json
-        self.metadata = json.loads(metadata)
-        return self.metadata
+        return self.get_raw_data()[...,i] 
     
     def get_pixelsize(self,convert=None):
         """
@@ -786,16 +850,69 @@ class velox_image(velox):
         """
         return float(self.get_metadata()['Scan']['FrameTime'])
     
-    def get_detector(self):
+    def export_tiff(self,filename_prefix=None,frame_range=None,**kwargs):
         """
-        Returns metadata for the detector which was used to take this image
         
+
+        Parameters
+        ----------
+        filename_prefix : str
+            filename to use for saved file without file extension 
+        frame_range : TYPE
+            DESCRIPTION.
+
         Returns
         -------
-        dict
+        None.
+
         """
-        md = self.get_metadata()
-        return md['Detectors']['Detector-'+md['BinaryResult']['DetectorIndex']]
+        from tifffile import imsave,memmap
+        
+        #default file name
+        if filename_prefix is None:
+            filename = self.filename[:-4]+'_'+self.name+'.tiff'
+        else:
+            filename = filename_prefix+'.tiff'
+        
+        #default to full frame range
+        if frame_range is None:
+            frame_range = (0,len(self))
+        
+        #get some useful data
+        pixelsize = self.get_pixelsize(convert='m')[0]
+        pixels_per_cm = (
+            int(1/(pixelsize[1]*100)),
+            int(1/(pixelsize[0]*100))
+        )
+        
+        #save single image directle
+        if type(frame_range)==int:
+            imsave(
+                filename_prefix,
+                data = self.get_frame(frame_range),
+                metadata = self.get_metadata(frame_range),
+                resolution = (*pixels_per_cm,'CENTIMETER'),
+                software = 'scm_electron_miscroscopes.py',
+                **kwargs
+            )
+    
+        else:
+            #allocate empty file of correct shape
+            imsave(
+                filename,
+                shape=(len(range(*frame_range)),*self.shape[1:]),
+                dtype=self.dtype,
+                metadata=self.get_metadata(),
+                resolution = (*pixels_per_cm,'CENTIMETER'),
+                software = 'scm_electron_miscroscopes.py',
+                **kwargs
+            )
+            
+            #write data to file iteratively to avoid loading all to memory
+            file = memmap(filename)
+            for i in range(*frame_range):
+                file[i] = self.get_frame(i)
+                file.flush()
     
     
     def export_with_scalebar(self, frame=0, filename=None, **kwargs):
@@ -916,6 +1033,139 @@ class velox_image(velox):
         from .utility import _export_with_scalebar
         _export_with_scalebar(exportim, pixelsize[1], unit, filename, **kwargs)
         
+        
+class velox_edx(velox_dataset):
+    """
+    subclass for emd files with edx data
+    """
+    def __init__(self,parent,im):
+        #init parent class and get attribs
+        super().__init__(parent,im)
+        
+        #change dim order to (frame,y,x) and store length as number of frames
+        self.shape = (self.shape[-1],*self.shape[:-1])
+        self._len = self.shape[0]
+        self._pixelflag = 2**16-1
+    
+    def get_image(self,energy_ranges=None,frame_range=None,binning=1):
+        """
+        returns edx/eds image where the pixel value is the total number of 
+        photon counts within the specified energy range(s) and frame range.
+
+        Parameters
+        ----------
+        energy_ranges : list of tuples, optional
+            List of (min,max) energy range(s) specifying which photons to 
+            count, given in keV. The default is None which takes all photon 
+            counts.
+        frame_range : tuple, optional
+            Tuple of (min,max) for the frame indices to sum the counts for. The
+            default is None which sums all frames.
+
+        Returns
+        -------
+        2D numpy.array
+
+        """
+        framelocs = list(self._imageData['FrameLocationTable'][:,0])
+        
+        md = self.get_metadata()
+        nx = int(md['Scan']['ScanSize']['width'])
+        ny = int(md['Scan']['ScanSize']['height'])
+        #nf = len(framelocs)
+        #ne = 2**12#this is hardcoded for now, cannot find it in metadata
+        
+        pixelflag = self._pixelflag
+        
+        det_md = self.get_detector()
+        energy_offset = float(det_md['OffsetEnergy'])/1000
+        energy_step = float(det_md['Dispersion'])/1000
+        energy_start = float(det_md['BeginEnergy'])/1000
+        
+        rawdata = self.get_raw_data()
+        
+        if not frame_range is None:
+            start,stop = frame_range
+            framelocs = framelocs+[len(rawdata)]
+            rawdata = rawdata[framelocs[start]:framelocs[stop]]
+        else:
+            rawdata = rawdata[:]
+        
+        
+        #when specific energy ranges are specified,take flag values and 'or'
+        # each range onto the boolean mask
+        if not energy_ranges is None:
+            mask = rawdata==pixelflag
+            for start,stop in energy_ranges:
+                start = (start-energy_offset)/energy_step
+                stop = (stop-energy_offset)/energy_step
+                mask = np.logical_or(
+                    mask,
+                    np.logical_and(start<=rawdata,rawdata<stop)
+                )
+            rawdata = rawdata[mask]
+        
+        #otherwise skip just values below the energy_start value
+        else:
+            rawdata = rawdata[
+                (rawdata==pixelflag)|(rawdata>=energy_start)
+            ]
+        
+        from numba import jit
+        @jit()
+        def _construct_spectrumim(stream):
+            res = np.zeros((ny//binning,nx//binning),dtype=np.uint16)
+            x = 0
+            y = 0
+            #loop over all stream values
+            for i,v in enumerate(stream):
+                #if new pixel flag, increment x
+                if v == pixelflag:
+                    x += 1
+                    if x == nx:#if imwidth reached, reset x and incr y
+                        x = 0
+                        y += 1
+                        if y == ny:#if imheight reached, reset y
+                            y = 0
+                else:
+                    res[y//binning,x//binning] += 1
+            
+            return res
+        
+        return _construct_spectrumim(rawdata)
+    
+    def get_spectrum(self):
+        """
+        get overall spectral data for the edx dataset
+
+        Returns
+        -------
+        energies : numpy.array
+            energies in keV
+        counts : numpy.array
+            number of photon counts per energy
+
+        """
+        #get calibrations
+        det_md = self.get_detector()
+        energy_offset = float(det_md['OffsetEnergy'])/1000
+        energy_step = float(det_md['Dispersion'])/1000
+        #energy_start = float(det_md['BeginEnergy'])/1000
+        
+        #make list of energy values
+        energies = np.arange(2**12)*energy_step + energy_offset
+        #mask = energies>=energy_start
+        #energies = energies[mask]
+        
+        if 'Spectrum' in self._emdfile['Data']:
+            spectrum = self._emdfile['Data/Spectrum']
+            counts = spectrum[list(spectrum.keys())[0]]['Data'][:,0][:]
+        else:
+            data = self.get_raw_data()[:]
+            counts = np.bincount(data[data!=2**16-1],minlength=2**12)
+       
+        return energies,counts
+            
         
 #make talos/tecnai alias for backwards compatibility
 def tecnai(*args,**kwargs):
