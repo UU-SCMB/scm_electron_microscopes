@@ -852,14 +852,20 @@ class velox_image(velox_dataset):
     
     def export_tiff(self,filename_prefix=None,frame_range=None,**kwargs):
         """
-        
+        stores the image data to a tiff file with metadata stored in the image
+        description for futher processing or viewing in other software.
 
         Parameters
         ----------
         filename_prefix : str
             filename to use for saved file without file extension 
-        frame_range : TYPE
-            DESCRIPTION.
+        frame_range : int or tuple of int
+            int specifying which frame, or tuple of (start,stop) ints
+            specifying which framess, to save in the tiff file. The default is
+            all frames in the dataset
+        kwargs : dict
+            any further keyword arguments will be passed on to 
+            `tifffile.imsave`.
 
         Returns
         -------
@@ -878,7 +884,8 @@ class velox_image(velox_dataset):
         if frame_range is None:
             frame_range = (0,len(self))
         
-        #get some useful data
+        #get pixels per cm for the .tiff XResolution and YResolution tags 
+        # (tag 282 and 283) and ResolutionUnit (tag 296)
         pixelsize = self.get_pixelsize(convert='m')[0]
         pixels_per_cm = (
             int(1/(pixelsize[1]*100)),

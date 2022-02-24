@@ -1,6 +1,6 @@
 __version__ = '3.1.0'
 
-from .tem import tia,velox,velox_image,tecnai,talos
+from .tem import tia,velox,velox_image,velox_edx,tecnai,talos
 from .sem import helios,phenom,xl30sfeg,ZeissSEM
 from .utility import util
 
@@ -8,8 +8,10 @@ from .utility import util
 __all__ = [
     'tecnai',
     'talos',
+    'tia',
     'velox',
     'velox_image',
+    'velox_edx',
     'helios',
     'phenom',
     'xl30sfeg',
