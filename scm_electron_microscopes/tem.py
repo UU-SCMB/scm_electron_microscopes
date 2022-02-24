@@ -643,6 +643,7 @@ class velox_dataset:
         self.data_type = parent._data_type[im]
         self.index = im
         self.shape = self._imageData['Data'].shape
+        self.dtype = self._imageData['Data'].dtype
     
     def get_raw_data(self):
         """
@@ -848,6 +849,71 @@ class velox_image(velox_dataset):
         float
         """
         return float(self.get_metadata()['Scan']['FrameTime'])
+    
+    def export_tiff(self,filename_prefix=None,frame_range=None,**kwargs):
+        """
+        
+
+        Parameters
+        ----------
+        filename_prefix : str
+            filename to use for saved file without file extension 
+        frame_range : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+        from tifffile import imsave,memmap
+        
+        #default file name
+        if filename_prefix is None:
+            filename = self.filename[:-4]+'_'+self.name+'.tiff'
+        else:
+            filename = filename_prefix+'.tiff'
+        
+        #default to full frame range
+        if frame_range is None:
+            frame_range = (0,len(self))
+        
+        #get some useful data
+        pixelsize = self.get_pixelsize(convert='m')[0]
+        pixels_per_cm = (
+            int(1/(pixelsize[1]*100)),
+            int(1/(pixelsize[0]*100))
+        )
+        
+        #save single image directle
+        if type(frame_range)==int:
+            imsave(
+                filename_prefix,
+                data = self.get_frame(frame_range),
+                metadata = self.get_metadata(frame_range),
+                resolution = (*pixels_per_cm,'CENTIMETER'),
+                software = 'scm_electron_miscroscopes.py',
+                **kwargs
+            )
+    
+        else:
+            #allocate empty file of correct shape
+            imsave(
+                filename,
+                shape=(len(range(*frame_range)),*self.shape[1:]),
+                dtype=self.dtype,
+                metadata=self.get_metadata(),
+                resolution = (*pixels_per_cm,'CENTIMETER'),
+                software = 'scm_electron_miscroscopes.py',
+                **kwargs
+            )
+            
+            #write data to file iteratively to avoid loading all to memory
+            file = memmap(filename)
+            for i in range(*frame_range):
+                file[i] = self.get_frame(i)
+                file.flush()
+    
     
     def export_with_scalebar(self, frame=0, filename=None, **kwargs):
         """
