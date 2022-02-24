@@ -140,7 +140,7 @@ class tia:
         #old tecnai 12 images have it in key 282 and 283 instead
         elif 282 in self.PIL_image.tag:
             warn('pixel size metadata in unusual format, value may be '
-                 'incorrect',stacklevel=1)
+                 'incorrect',stacklevel=2)
             pixelsize_x = self.PIL_image.tag[282][0]
         else:
             raise KeyError('pixel size not encoded in file')
