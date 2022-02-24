@@ -18,7 +18,7 @@ jobs:
     - name: Build docs with pdoc
       run: |
         # build docs to docs dir
-        pdoc --html --config show_source_code=False show_inherited_members=True scm_electron_microscopes
+        pdoc --html --config show_source_code=False --config show_inherited_members=True scm_electron_microscopes
     - name: Deploy to GitHub Pages
       if: success()
       uses: crazy-max/ghaction-github-pages@v2
