@@ -8,6 +8,7 @@ from .utility import util
 __all__ = [
     'tecnai',
     'talos',
+    'tia',
     'velox',
     'velox_image',
     'velox_edx',
