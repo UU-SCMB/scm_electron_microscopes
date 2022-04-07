@@ -917,8 +917,8 @@ class velox_image(velox_dataset):
             
             #write data to file iteratively to avoid loading all to memory
             file = memmap(filename)
-            for i in range(*frame_range):
-                file[i] = self.get_frame(i)
+            for i,j in enumerate(range(*frame_range)):
+                file[i] = self.get_frame(j)
                 file.flush()
     
     
