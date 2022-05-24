@@ -139,7 +139,8 @@ class tia:
             pixelsize_x = self.PIL_image.tag[65450][0]
             pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
         
-        #old tecnai 10 uses another tag and a more complex format
+        #old tecnai 10 uses another tag and a more complex format based on
+        #Olympus analySIS software format. Only pixelsize is implemented atm
         elif 33560 in self.PIL_image.tag:
             #see https://github.com/ome/bioformats/blob/develop/components/formats-gpl/src/loci/formats/in/SISReader.java
             from struct import unpack
