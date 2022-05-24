@@ -137,18 +137,33 @@ class tia:
         #encoded as (586350674, 100) and gives 1.7 nm/pixel
         if 65450 in self.PIL_image.tag:
             pixelsize_x = self.PIL_image.tag[65450][0]
+            pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
+        
+        #old tecnai 10 uses another tag and a more complex format
+        elif 33560 in self.PIL_image.tag:
+            #see https://github.com/ome/bioformats/blob/develop/components/formats-gpl/src/loci/formats/in/SISReader.java
+            from struct import unpack
+            with open(self.filename,'rb') as f:
+                #find location of metadata, which is at 64 bytes past start 
+                #of metadata
+                f.seek(self.PIL_image.tag[33560][0] + 64)
+                metadataloc = int.from_bytes(f.read(4), 'little')
+                #go to metadataloc, skip first 10 bytes to get to pixelsize
+                f.seek(metadataloc+10)
+                exp = unpack('h',f.read(2))[0]#read short, =unit as power of 10
+                pixelsize_x = unpack('d',f.read(8))[0]#read double, = pixelsize
+                #pixelsize_y = unpack('d',f.read(8))
+            pixelsize_x *= 10**exp
+        
         #old tecnai 12 images have it in key 282 and 283 instead
         elif 282 in self.PIL_image.tag:
             warn('pixel size metadata in unusual format, value may be '
                  'incorrect',stacklevel=2)
             pixelsize_x = self.PIL_image.tag[282][0]
+            pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
         else:
             raise KeyError('pixel size not encoded in file')
         
-        pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
-        
-        #pixelsize_y = self.PIL_image.tag[65451][0]
-        #pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
         
         #find the right unit and rescale for convenience
         if convert is None:
