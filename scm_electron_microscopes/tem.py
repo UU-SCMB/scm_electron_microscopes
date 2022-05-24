@@ -374,6 +374,12 @@ class tia:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original TEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -452,6 +458,9 @@ class tia:
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -937,6 +946,12 @@ class velox_image(velox_dataset):
             '_exported.png' appended.
         frame : int
             the frame to export, see `get_frame()`. The default is 0.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -1015,6 +1030,9 @@ class velox_image(velox_dataset):
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         #note we only pass the x pixelsize to the scalebar function

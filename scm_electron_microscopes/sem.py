@@ -183,6 +183,12 @@ class helios:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -255,6 +261,9 @@ class helios:
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -422,6 +431,12 @@ class phenom:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -494,6 +509,9 @@ class phenom:
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -658,6 +676,12 @@ class xl30sfeg:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -730,6 +754,9 @@ class xl30sfeg:
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -872,6 +899,12 @@ class ZeissSEM:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -943,6 +976,9 @@ class ZeissSEM:
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
