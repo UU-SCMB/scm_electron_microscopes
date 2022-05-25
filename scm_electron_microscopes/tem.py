@@ -138,24 +138,7 @@ class tia:
         if 65450 in self.PIL_image.tag:
             pixelsize_x = self.PIL_image.tag[65450][0]
             pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
-        
-        #old tecnai 10 uses another tag and a more complex format based on
-        #Olympus analySIS software format. Only pixelsize is implemented atm
-        elif 33560 in self.PIL_image.tag:
-            #see https://github.com/ome/bioformats/blob/develop/components/formats-gpl/src/loci/formats/in/SISReader.java
-            from struct import unpack
-            with open(self.filename,'rb') as f:
-                #find location of metadata, which is at 64 bytes past start 
-                #of metadata
-                f.seek(self.PIL_image.tag[33560][0] + 64)
-                metadataloc = int.from_bytes(f.read(4), 'little')
-                #go to metadataloc, skip first 10 bytes to get to pixelsize
-                f.seek(metadataloc+10)
-                exp = unpack('h',f.read(2))[0]#read short, =unit as power of 10
-                pixelsize_x = unpack('d',f.read(8))[0]#read double, = pixelsize
-                #pixelsize_y = unpack('d',f.read(8))
-            pixelsize_x *= 10**exp
-        
+
         #old tecnai 12 images have it in key 282 and 283 instead
         elif 282 in self.PIL_image.tag:
             warn('pixel size metadata in unusual format, value may be '
@@ -1207,7 +1190,272 @@ class velox_edx(velox_dataset):
        
         return energies,counts
             
+     
+
+class sis:
+    """
+    Set of convenience functions for electron microscopy images of the now 
+    defunct tecnai 10 microscope which operated the Olympus Soft Imaging System
+    software (analySIS) which exported to .tif. Initializing the class takes a
+    string containing the filename as only argument, and by default loads in 
+    the image.
+    
+    Parameters
+    ----------
+    filename : string
+        name of the file to load. Can but is not required to include .tif
+        as extension.
+    """
+    
+    def __init__(self,filename):
+        #raise error if wrong format or file does not exist
+        if type(filename) != str:
+            raise TypeError('`filename` must be of type `str`')
+        if not os.path.exists(filename):
+            if os.path.exists(filename + '.tif'):
+                filename = filename + '.tif'
+            else:
+                raise FileNotFoundError(f'The file "{filename}" could not be'
+                                        ' found.')
         
+        self.filename = filename
+        
+        #load the image
+        self.PIL_image = Image.open(filename)
+        im = np.array(self.PIL_image)
+        self.shape = np.shape(im)
+        self.image = im[:self.shape[1]]
+        self.dtype = self.image.dtype
+    
+    def get_metadata(self):
+        """
+        Loads metadata from the file.
+        
+        NOT IMPLEMENTED
+        """
+        #see https://github.com/ome/bioformats/blob/develop/components/formats-gpl/src/loci/formats/in/SISReader.java
+        #and get_pixelsize for implementation details
+        raise NotImplementedError('metadata for analySIS-tif not implemented,'
+                                  'use the Bioformats module')
+    
+    
+    def get_pixelsize(self,convert=None):
+        """
+        Gets the physical size represented by the pixels from the image 
+        metadata
+        
+        Parameters
+        ----------
+        convert : one of ['m', 'mm', 'um', 'µm', 'nm', 'pm', None], optional
+            physical unit to use for the pixel size. The default is None, which
+            chooses one of the above automatically based on the value.
+        
+        Returns
+        -------
+        pixelsize : float
+            the physical size of a pixel in the given unit
+        unit : str
+            physical unit of the pixel size
+        """
+        #old tecnai 10 uses 33560 tag and a more complex format based on
+        #Olympus analySIS software format. Only pixelsize is implemented atm
+        #see https://github.com/ome/bioformats/blob/develop/components/formats-gpl/src/loci/formats/in/SISReader.java
+        from struct import unpack
+        try:
+            with open(self.filename,'rb') as f:
+                #find location of metadata from tag, then 64 bytes further the
+                #start position of calibration metadata is written
+                f.seek(self.PIL_image.tag[33560][0] + 64)
+                metadataloc = int.from_bytes(f.read(4), 'little')
+                #check loc with respect to length/size of file
+                f.seek(0,2)
+                flen = f.tell()
+                if metadataloc+18 > flen:
+                    raise EOFError()
+                #go to metadataloc, skip first 10 bytes to get to pixelsize
+                f.seek(metadataloc+10)
+                unit = unpack('h',f.read(2))[0]#read short,=unit as power of 10
+                if -12>=unit or unit>1:#check if value is reasonable
+                    raise EOFError()
+                pixelsize_x = unpack('d',f.read(8))[0]#read double, = pixelsize
+                #pixelsize_y = unpack('d',f.read(8))[0]#same for y pixelsize
+            
+        except (KeyError, EOFError):
+            raise KeyError('pixel size not encoded in file, are you sure this'
+                           ' is the unmodified .tif file from the microscope?')
+      
+        #set the pixelsize to meter using the unit exponent/power of 10
+        pixelsize_x *= 10**unit
+        #pixelsize_y *= 10**unit
+        
+        
+        #find the right unit and rescale for convenience
+        if convert is None:
+            if pixelsize_x >= 10e-3:
+                unit = 'm'
+            elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
+                unit = 'mm'
+                pixelsize_x = 1e3*pixelsize_x
+                #pixelsize_y = 1e3*pixelsize_y
+            elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
+                unit = 'µm'
+                pixelsize_x = 1e6*pixelsize_x
+                #pixelsize_y = 1e6*pixelsize_y
+            elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
+                unit = 'nm'
+                pixelsize_x = 1e9*pixelsize_x
+                #pixelsize_y = 1e9*pixelsize_y
+            else:
+                unit = 'pm'
+                pixelsize_x = 1e12*pixelsize_x
+                #pixelsize_y = 1e9*pixelsize_y
+        #else use given unit
+        else:
+            #allow um for convenience
+            if convert == 'um':
+                convert = 'µm'
+            
+            #check against list of allowed units
+            unit = 'm'
+            units = ['pm','nm','µm','mm','m']
+            if not convert in units:
+                raise ValueError('"'+str(convert)+'" is not a valid unit')
+            
+            #factor 10**3 for every step from list, use indices to calculate
+            pixelsize_x = pixelsize_x*10**(
+                3*(units.index(unit)-units.index(convert))
+            )
+            unit = convert
+            
+        #store and return
+        self.pixelsize = pixelsize_x
+        self.unit = unit
+        return (pixelsize_x,unit)
+        
+    def export_with_scalebar(self, filename=None, **kwargs):
+        """
+        saves an exported image of the TEM image with a scalebar in one of the 
+        four corners, where barsize is the scalebar size in data units (e.g. 
+        nm) and scale the overall size of the scalebar and text with respect to
+        the width of the image.
+
+        Parameters
+        ----------
+        filename : string or `None`, optional
+            Filename + extension to use for the export file. The default is the
+            filename sans extension of the original TEM file, with 
+            '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
+        crop : tuple or `None`, optional 
+            range describing a area of the original image (before rescaling the
+            resolution) to crop out for the export image. Can have two forms:
+                
+            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
+            left and bottom right corners respectively.
+                
+            - `(xmin,ymin,w,h)` with the integer indices of the top left corner
+            and the width and heigth of the cropped image in pixels (prior to 
+            optional rescaling using `resolution`).
+            
+            The default is `None` which takes the entire image.
+        intensity_range : tuple or `None` or `'automatic'`
+            tuple of `(lower,upper)` ranges for the (original) pixel values to 
+            scale the brightness/contrast in the image to, or `'automatic'` to 
+            autoscale the intensity to the 0.01th and 99.99th percentile of the 
+            input image, or None for the min and max value in the original 
+            image. The default is `None`.
+        resolution : int, optional
+            the resolution along the x-axis (i.e. image width in pixels) to use
+            for the exported image. The default is `None`, which uses the size 
+            of the original image (after optional cropping using `crop`).
+        draw_bar : boolean, optional
+            whether to draw a scalebar on the image, such that this function 
+            may be used just to strip the original bar and crop. The default is
+            `True`.
+        barsize : float or `None`, optional
+            size (in data units matching the original scale bar, e.g. nm) of 
+            the scale bar to use. The default `None`, wich takes the desired 
+            length for the current scale and round this to the nearest option
+            from a list of "nice" values.
+        scale : float, optional
+            factor to change the size of the scalebar+text with respect to the
+            width of the image. Scale is chosen such, that at `scale=1` the
+            font size of the scale bar text is approximately 10 pt when 
+            the image is printed at half the width of the text in a typical A4
+            paper document (e.g. two images side-by-side). The default is 1.
+        loc : int, one of [`0`,`1`,`2`,`3`], optional
+            Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
+            refer to the top left, top right, bottom left and bottom right 
+            respectively. The default is `2`, which is the bottom left corner.
+        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+            Unit that will be used for the scale bar, the value will be 
+            automatically converted if this unit differs from the pixel size
+            unit. The default is `None`, which uses the unit of the scalebar on
+            the original image.
+        font : str, optional
+            filename of an installed TrueType font ('.ttf' file) to use for the
+            text on the scalebar. The default is `'arialbd.ttf'`.
+        fontsize : int, optional
+            base font size to use for the scale bar text. The default is 16. 
+            Note that this size will be re-scaled according to `resolution` and
+            `scale`.
+        fontbaseline : int, optional
+            vertical offset for the baseline of the scale bar text in printer
+             points. The default is 0.
+        fontpad : int, optional
+            minimum size in printer points of the space/padding between the 
+            text and the bar and surrounding box. The default is 2.
+        barthickness : int, optional
+            thickness in printer points of the scale bar itself. The default is
+            16.
+        barpad : int, optional
+            size in printer points of the padding between the scale bar and the
+            surrounding box. The default is 10.
+        box : bool, optional
+            Whether to put a semitransparent box around the scalebar and text
+            to enhance contrast. The default is `True`.
+        boxalpha : float, optional
+            value between 0 and 1 for the opacity (inverse of transparency) of
+            the box behind the scalebar and text when `box=True`. The default 
+            is `0.6`.
+        invert : bool, optional
+            If `True`, a white scalebar and text on a black box are used. The 
+            default is `False` which gives black text on a white background.
+        boxpad : int, optional
+            size of the space/padding around the box (with respect to the sides
+            of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
+        """
+        #check if pixelsize already calculated, otherwise call get_pixelsize
+        try:
+            pixelsize,unit = self.pixelsize,self.unit
+        except AttributeError:
+            pixelsize,unit = self.get_pixelsize()
+        
+        #set default export filename
+        if type(filename) != str:
+            filename = self.filename.rpartition('.')[0]+'_scalebar.png'
+        
+        #check we're not overwriting the original file
+        if filename==self.filename:
+            raise ValueError('overwriting original TEM file not reccomended, '+
+                             'use a different filename for exporting.')
+        
+        #get image
+        exportim = self.image.copy()
+        
+        #call main export_with_scalebar function with correct pixelsize etc
+        from .utility import _export_with_scalebar
+        _export_with_scalebar(exportim, pixelsize, unit, filename, **kwargs)
+
+
 #make talos/tecnai alias for backwards compatibility
 def tecnai(*args,**kwargs):
     """
