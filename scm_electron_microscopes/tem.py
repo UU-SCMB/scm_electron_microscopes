@@ -145,6 +145,7 @@ class tia:
                  'incorrect',stacklevel=2)
             pixelsize_x = self.PIL_image.tag[282][0]
             pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
+            #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]#fix for imagej modified data
         else:
             raise KeyError('pixel size not encoded in file')
         
