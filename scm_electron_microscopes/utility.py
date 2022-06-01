@@ -88,13 +88,19 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
     if store_settings:
         items = locals()
         [items.pop(item) for item in ['exportim','pixelsize','unit']]
-        
+        #try and get source code for preprocess function instead of pointer
+        if not preprocess is None:
+            try:
+                from inspect import getsource
+                items['preprocess'] = ''.join(
+                    '\n\t'+s for s in getsource(preprocess).split('\n')[:-1]
+                )
+            except (ImportError,NameError):
+                pass
+        #store to disk
         with open(filename.rpartition('.')[0]+'_settings.txt','w') as f:
             for key,val in items.items():
-                if type(val)==str:
-                    f.write(key+" = '"+val+"',\n")
-                else:
-                    f.write(key+" = "+str(val)+",\n")
+                f.write(key+" = "+str(val)+",\n")
     #imports
     import matplotlib.pyplot as plt
     if draw_bar or draw_text:
@@ -126,16 +132,16 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         if not crop is None:
             from matplotlib.patches import Rectangle
             if len(crop) == 4:
-                crp = [c if c>0 else s+c for s,c 
+                crp = [c if c>=0 else s+c for s,c 
                        in zip(exportim.shape,crop[:2])] + list(crop[2:])
                 altcrop = True
-                xy,w,h = (crp[0],crp[1]), crp[2], crp[3]
+                x,y,w,h = crp
             else:
                 crp = [[cc if cc>0 else s+cc for cc in c]\
                        for s,c in zip(exportim.shape,crop)]
-                xy = (crp[0][0],crp[0][1])
+                x,y = crp[0][0],crp[0][1]
                 w,h = crp[1][0]-crp[0][0], crp[1][1]-crp[0][1]
-            ax.add_patch(Rectangle(xy,w,h,ec='r',fc='none'))
+            ax.add_patch(Rectangle((x,y),w,h,ec='r',fc='none'))
     
         #print current axes limits for easy cropping
         def _on_lim_change(call):
@@ -185,8 +191,8 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         #crop
         exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
         print('cropped to {:} × {:} pixels, {:.4g} × {:.4g} '.format(
-            *exportim.shape,exportim.shape[0]*pixelsize,
-            exportim.shape[1]*pixelsize)+unit)
+            exportim.shape[1],exportim.shape[0],exportim.shape[1]*pixelsize,
+            exportim.shape[0]*pixelsize)+unit)
     
     #get intensity range for None or automatic options
     if intensity_range is None:#min and max
