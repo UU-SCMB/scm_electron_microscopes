@@ -79,7 +79,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         crop=None,intensity_range=None,resolution=None,draw_bar=True,
         barsize=None,scale=1,loc=2,convert=None,text=None,draw_text=True,
         font='arialbd.ttf',fontsize=16,fontbaseline=0,fontpad=2,
-        barthickness=16,barpad=10,draw_box=True,invert=False,boxalpha=0.6,
+        barthickness=16,barpad=10,draw_box=True,invert=False,boxalpha=0.8,
         boxpad=10,save=True,show_figure=True,store_settings=False):
     """
     see top level export_with_scalebar functions for docs
@@ -100,7 +100,10 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         #store to disk
         with open(filename.rpartition('.')[0]+'_settings.txt','w') as f:
             for key,val in items.items():
-                f.write(key+" = "+str(val)+",\n")
+                if isinstance(val,str):
+                    f.write(key+" = '"+val+"',\n")
+                else:
+                    f.write(key+" = "+str(val)+",\n")
     #imports
     import matplotlib.pyplot as plt
     if draw_bar or draw_text:

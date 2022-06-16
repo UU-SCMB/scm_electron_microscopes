@@ -254,7 +254,7 @@ class helios:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
@@ -502,7 +502,7 @@ class phenom:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
@@ -747,7 +747,7 @@ class xl30sfeg:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
@@ -969,7 +969,7 @@ class ZeissSEM:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
