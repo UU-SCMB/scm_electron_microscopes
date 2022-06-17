@@ -237,11 +237,11 @@ class helios:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -485,11 +485,11 @@ class phenom:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -730,11 +730,11 @@ class xl30sfeg:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -952,11 +952,11 @@ class ZeissSEM:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
