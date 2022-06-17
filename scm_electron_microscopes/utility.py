@@ -78,7 +78,7 @@ import cv2
 def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         crop=None,intensity_range=None,resolution=None,draw_bar=True,
         barsize=None,scale=1,loc=2,convert=None,text=None,draw_text=True,
-        font='arialbd.ttf',fontsize=16,fontbaseline=0,fontpad=2,
+        font='arialbd.ttf',fontsize=16,fontbaseline=10,fontpad=10,
         barthickness=16,barpad=10,draw_box=True,invert=False,boxalpha=0.8,
         boxpad=10,save=True,show_figure=True,store_settings=False):
     """
@@ -277,11 +277,9 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         
             #get size of text
             font = ImageFont.truetype(font,size=int(fontsize))
-            textsize = ImageDraw.Draw(Image.fromarray(exportim)).textsize(
-                text,font=font)
-            
+            textsize = font.getsize(text)
             offset = font.getoffset(text)
-            textsize = (textsize[0]+offset[0],textsize[1]+offset[1]+fontbaseline)    
+            textsize = (textsize[0]-offset[0],textsize[1]-offset[1]+fontbaseline)    
             
             #correct baseline for mu in case of micrometer
             if 'µ' in text:
@@ -293,11 +291,11 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         
         #determine box height with appropriate paddings
         if draw_text and draw_bar:#both
-            boxheight = barpad + barthickness + 2*fontpad + textsize[1]
+            boxheight = barpad + barthickness + fontpad + textsize[1]
             boxwidth = max([2*barpad+barsize_px,2*fontpad+textsize[0]])
         elif draw_bar:#bar only
             boxheight = 2*barpad + barthickness
-            boxwidth = 2*barpad+barsize_px
+            boxwidth = 2*barpad + barsize_px
         else:#text only
             boxheight = 2*fontpad + textsize[1]
             boxwidth = 2*fontpad + textsize[0]
@@ -360,8 +358,8 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             )
         
         if draw_text:
-            textx = (2*x + boxwidth)/2 - textsize[0]/2
-            texty = y + fontpad
+            textx = (2*x + boxwidth)/2 - (textsize[0]+offset[0])/2
+            texty = y+fontpad-offset[1]
         
             #draw text
             exportim = Image.fromarray(exportim)
