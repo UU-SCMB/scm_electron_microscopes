@@ -62,6 +62,9 @@ em_data = velox('myimage.emd').get_image(0)
 myarray = em_data.load_data()
 ```
 
+### Tecnai 10
+For the now long defunct Tecnai 10, the analySIS program was used, which was the predecessor to TIA and looks similar but inconveniently stored metadata differently. For this the SIS class is available.
+
 ### Helios
 For the Helios SEM use the [helios](https://maartenbransen.github.io/scm_electron_microscopes/#scm_electron_microscopes.helios) class, which unlike the `tecnai` and `talos` classes does not load the image into memory by default, such that it is possible to quickly read out metadata of e.g. a slice-and-view series without having to load all the image data. Image data is available through the `load_image()` function:
 ```
