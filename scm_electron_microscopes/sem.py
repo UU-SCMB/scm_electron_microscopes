@@ -183,6 +183,12 @@ class helios:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -231,11 +237,11 @@ class helios:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -248,13 +254,16 @@ class helios:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -422,6 +431,12 @@ class phenom:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -470,11 +485,11 @@ class phenom:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -487,13 +502,16 @@ class phenom:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -658,6 +676,12 @@ class xl30sfeg:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -706,11 +730,11 @@ class xl30sfeg:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -723,13 +747,16 @@ class xl30sfeg:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
@@ -872,6 +899,12 @@ class ZeissSEM:
             Filename + extension to use for the export file. The default is the
             filename sans extension of the original SEM file, with 
             '_exported.png' appended.
+        preprocess : callable, optional
+            callable to pre-process the image before any other processing is 
+            done, useful for e.g. smoothing. Must take and return a 
+            numpy.ndarray containing the image data as only arguments, and must
+            not change e.g. the pixel size or the scale bar may be incorrectly 
+            sized. The default is None.
         crop : tuple or `None`, optional 
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
@@ -919,11 +952,11 @@ class ZeissSEM:
             Note that this size will be re-scaled according to `resolution` and
             `scale`.
         fontbaseline : int, optional
-            vertical offset for the baseline of the scale bar text in printer
-             points. The default is 0.
+            vertical offset for the baseline of the scale bar text from the top
+            of the scale bar, in printer points. The default is 10.
         fontpad : int, optional
             minimum size in printer points of the space/padding between the 
-            text and the bar and surrounding box. The default is 2.
+            text and the bar and surrounding box. The default is 10.
         barthickness : int, optional
             thickness in printer points of the scale bar itself. The default is
             16.
@@ -936,13 +969,16 @@ class ZeissSEM:
         boxalpha : float, optional
             value between 0 and 1 for the opacity (inverse of transparency) of
             the box behind the scalebar and text when `box=True`. The default 
-            is `0.6`.
+            is `0.8`.
         invert : bool, optional
             If `True`, a white scalebar and text on a black box are used. The 
             default is `False` which gives black text on a white background.
         boxpad : int, optional
             size of the space/padding around the box (with respect to the sides
             of the image) in printer points. The default is 10.
+        store_settings : bool, optional
+            when `True`, a .txt file is saved along with the image containing
+            all settings passed to this function. The default is False
         """
         #check if pixelsize already calculated, otherwise call get_pixelsize
         try:
