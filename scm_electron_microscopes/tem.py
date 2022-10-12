@@ -294,7 +294,7 @@ class tia:
                 raise FileNotFoundError
             
             #settings vary per version, so use tesseract_verion to use correct
-            if tesseract_version == 4.0:
+            if tesseract_version <= 4.0:
                 text = pytesseract.image_to_string(
                     bartext,
                     config="--oem 0 -c tessedit_char_whitelist=0123456789pnuµm --psm 7"
@@ -895,10 +895,10 @@ class velox_image(velox_dataset):
         
         #get pixels per cm for the .tiff XResolution and YResolution tags 
         # (tag 282 and 283) and ResolutionUnit (tag 296)
-        pixelsize = self.get_pixelsize(convert='m')[0]
+        pixelsize = self.get_pixelsize(convert='cm')[0]
         pixels_per_cm = (
-            int(1/(pixelsize[1]*100)),
-            int(1/(pixelsize[0]*100))
+            int(1/(pixelsize[1])),
+            int(1/(pixelsize[0]))
         )
         
         #save single image directle
