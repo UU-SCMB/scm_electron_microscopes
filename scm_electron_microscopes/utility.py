@@ -245,7 +245,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         ny = int(exportim.shape[0]/exportim.shape[1]*nx)
         barsize_px = barsize_px/exportim.shape[1]*resolution
         exportim = cv2.resize(exportim, (int(nx),int(ny)), 
-                              interpolation=cv2.INTER_AREA)
+                              interpolation=cv2.INTER_NEAREST_EXACT)
     
     #can skip this whole part when not actually drawing the scalebar
     if draw_bar or draw_text:
