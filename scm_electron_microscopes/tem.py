@@ -901,7 +901,7 @@ class velox_image(velox_dataset):
             int(1/(pixelsize[0]))
         )
         
-        #save single image directle
+        #save single image directly
         if type(frame_range)==int:
             imsave(
                 filename_prefix,
