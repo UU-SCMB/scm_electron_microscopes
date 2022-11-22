@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from PIL import Image
-from warnings import warn
+from warnings import warn,filterwarnings
 
 class tia:
     """
@@ -1458,42 +1458,55 @@ class sis:
 
 
 #make talos/tecnai alias for backwards compatibility
-def tecnai(*args,**kwargs):
+filterwarnings("default", category=DeprecationWarning,module='tecnai')
+class tecnai(tia):
     """
-    [DEPRECATED]
+    .. deprecated::
+        The tecnai and Talos classes have been renamed to the `tia` class to 
+        avoid confusion between data aquired using the older TIA and newer 
+        Velox software from version 3.0.0 onwards. The old names are available 
+        for backwards compatibility and should behave identically, but their 
+        use is discouraged.
     
-    The tecnai and Talos classes have been renamed to the `tia` class to avoid 
-    confusion between data aquired using the older TIA and newer Velox software
-    from version 3.0.0 onwards. The old names are available for backwards 
-    compatibility and should behave identically, but their use is discouraged.
+    
+    Class of functions for TEM images from the tecnai microscopes operated with
+    the TIA software
     
     See also
     --------
     `tia`
     """
-    warn('The tecnai and Talos classes have been renamed to the `tia` class to'
-         ' avoid confusion between data aquired using the older TIA and newer '
-         'Velox software from version 3.0.0 onwards. The old names are '
-         'available for backwards compatibility and should behave identically,'
-         ' but their use is discouraged.',DeprecationWarning,stacklevel=1)
-    return tia(*args,**kwargs)
+    def __init__(self,*args,**kwargs):
+        warn('The tecnai and Talos classes have been renamed to the `tia` '
+             'class to avoid confusion between data aquired using the older '
+             'TIA and newer Velox software from version 3.0.0 onwards. The old'
+             ' names are available for backwards compatibility and should '
+             'behave identically, but their use is discouraged.',
+             DeprecationWarning,stacklevel=2)
+        super().__init__(*args,**kwargs)
 
-def talos(*args,**kwargs):
+filterwarnings("default", category=DeprecationWarning,module='talos')
+class talos(tia):
     """
-    [DEPRECATED]
+    .. deprecated::
+        The tecnai and Talos classes have been renamed to the `tia` class to 
+        avoid confusion between data aquired using the older TIA and newer 
+        Velox software from version 3.0.0 onwards. The old names are available 
+        for backwards compatibility and should behave identically, but their 
+        use is discouraged.
     
-    The tecnai and Talos classes have been renamed to the `tia` class to avoid 
-    confusion between data aquired using the older TIA and newer Velox software
-    from version 3.0.0 onwards. The old names are available for backwards 
-    compatibility and should behave identically, but their use is discouraged.
+    Class of functions for TEM images from the Talos microscopes operated with
+    the TIA software
     
     See also
     --------
     `tia`
     """
-    warn('The tecnai and Talos classes have been renamed to the `tia` class to'
-         ' avoid confusion between data aquired using the older TIA and newer '
-         'Velox software from version 3.0.0 onwards. The old names are '
-         'available for backwards compatibility and should behave identically,'
-         ' but their use is discouraged.',DeprecationWarning,stacklevel=1)
-    return tia(*args,**kwargs)
+    def __init__(self,*args,**kwargs):
+        warn('The tecnai and Talos classes have been renamed to the `tia` '
+             'class to avoid confusion between data aquired using the older '
+             'TIA and newer Velox software from version 3.0.0 onwards. The old'
+             ' names are available for backwards compatibility and should '
+             'behave identically, but their use is discouraged.',
+             DeprecationWarning,stacklevel=2)
+        super().__init__(*args,**kwargs)
