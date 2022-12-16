@@ -870,7 +870,7 @@ class velox_image(velox_dataset):
             filename to use for saved file without file extension 
         frame_range : int or tuple of int
             int specifying which frame, or tuple of (start,stop) ints
-            specifying which framess, to save in the tiff file. The default is
+            specifying which frames, to save in the tiff file. The default is
             all frames in the dataset
         kwargs : dict
             any further keyword arguments will be passed on to 
@@ -895,10 +895,10 @@ class velox_image(velox_dataset):
         
         #get pixels per cm for the .tiff XResolution and YResolution tags 
         # (tag 282 and 283) and ResolutionUnit (tag 296)
-        pixelsize = self.get_pixelsize(convert='cm')[0]
+        pixelsize = self.get_pixelsize(convert='mm')[0]
         pixels_per_cm = (
-            int(1/(pixelsize[1])),
-            int(1/(pixelsize[0]))
+            int(10/(pixelsize[1])),
+            int(10/(pixelsize[0]))
         )
         
         #save single image directly
