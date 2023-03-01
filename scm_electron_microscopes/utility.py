@@ -168,21 +168,8 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         plt.show(block=False)
     
     #convert unit
-    if not convert is None and convert != unit and (draw_bar or draw_text):
-        
-        #always use mu for micrometer
-        if convert == 'um':
-            convert = 'µm'
-        
-        #check input against list of possible units
-        units = ['pm','nm','µm','mm','m']
-        if not unit in units:
-            raise ValueError('"'+str(unit)+'" is not a valid unit')
-        
-        #factor 10**3 for every step from list, use indices to calculate
-        pixelsize = pixelsize*10**(3*(units.index(unit)\
-                                      -units.index(convert)))
-        unit = convert
+    if not convert is None and (draw_bar or draw_text):
+        pixelsize,unit = _convert_length(pixelsize, unit, convert)
     
     #(optionally) crop
     if not crop is None:
@@ -386,3 +373,61 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         cv2.imwrite(filename,exportim)
 
     return exportim
+
+def _convert_length(value,unit,convert=None):
+    """
+    helper function to convert between units of length
+
+    Parameters
+    ----------
+    value : float
+        the value of the length in units of `unit`
+    unit : str
+        the unit of `value`.
+    convert : str
+        the desired unit
+
+    Returns
+    -------
+    value : float
+        the converted length in units of `unit`
+    unit : str
+        the unit of `value`
+    """
+    #set default unit to µm
+    if convert is None:
+        convert = 'µm'
+    
+    #convert aliases to correct characters
+    if convert == 'um':
+        convert = 'µm'
+    elif convert == 'A':
+        convert = 'Å'
+    
+    if unit == 'um':
+        unit = 'µm'
+    elif unit == 'A':
+        unit = 'Å'
+    
+    if convert != unit:
+        #list of all units in steps of 10
+        units = [
+            'fm', '', '',
+            'pm', '', 'Å',
+            'nm', '', '',
+            'µm', '', '',
+            'mm', 'cm', 'dm',
+            'm', 'dam', 'hm',
+            'km',
+        ]
+        if unit=='' or convert=='':
+            raise ValueError('unit and convert cannot be empty strings')
+        if not unit in units:
+            raise ValueError('"'+str(unit)+'" is not a valid unit')
+        if not convert in units:
+            raise ValueError('"'+str(convert)+'" is not a valid unit')
+        
+        # ×10 for every step in list, use indices to calculate difference
+        value = value*10**(units.index(unit)-units.index(convert))
+        
+    return value,convert

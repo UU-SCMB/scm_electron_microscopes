@@ -224,7 +224,7 @@ class helios:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : str, one of [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`]
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
@@ -472,7 +472,7 @@ class phenom:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : str, one of [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`]
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
@@ -717,7 +717,7 @@ class xl30sfeg:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : str, [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`]
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
@@ -939,7 +939,7 @@ class ZeissSEM:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : one of str, one of [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`]
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on

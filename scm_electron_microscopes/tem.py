@@ -121,7 +121,7 @@ class tia:
         
         Parameters
         ----------
-        convert : one of ['m', 'mm', 'um', 'µm', 'nm', 'pm', None], optional
+        convert : str, one of [`fm`,`pm`,`Å`,'A',`nm`,`um`,`µm`,`mm`,`cm`,`dm`,`m`], optional
             physical unit to use for the pixel size. The default is None, which
             chooses one of the above automatically based on the value.
         
@@ -172,21 +172,8 @@ class tia:
                 #pixelsize_y = 1e9*pixelsize_y
         #else use given unit
         else:
-            #allow um for convenience
-            if convert == 'um':
-                convert = 'µm'
-            
-            #check against list of allowed units
-            unit = 'm'
-            units = ['pm','nm','µm','mm','m']
-            if not convert in units:
-                raise ValueError('"'+str(convert)+'" is not a valid unit')
-            
-            #factor 10**3 for every step from list, use indices to calculate
-            pixelsize_x = pixelsize_x*10**(
-                3*(units.index(unit)-units.index(convert))
-            )
-            unit = convert
+            from .utility import _convert_length
+            pixelsize_x,unit = _convert_length(pixelsize_x, 'm', convert)
             
         #store and return
         self.pixelsize = pixelsize_x
@@ -421,7 +408,7 @@ class tia:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : str, one of [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`]
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
@@ -812,6 +799,7 @@ class velox_image(velox_dataset):
         md = self.get_metadata()['BinaryResult']
         pixelsize = md['PixelSize']
         pixelsize = [float(pixelsize['height']),float(pixelsize['width'])]
+        unit = [md['PixelUnitY'],md['PixelUnitX']]
         
         #if no unit is given, determine from y-pizelsize
         if convert is None:
@@ -825,23 +813,11 @@ class velox_image(velox_dataset):
                 convert = 'nm'
             else:
                 convert = 'pm'
-        
-        #allow um for convenience
-        if convert == 'um':
-            convert = 'µm'
-        
-        #check against list of allowed units
-        units = ['pm','nm','µm','mm','m']
-        if not convert in units:
-            raise ValueError('"'+str(convert)+'" is not a valid unit')
-        
-        unit = [md['PixelUnitY'],md['PixelUnitX']]
-        
-        #factor 10**3 for every step from list, use indices to calculate
+            
+        #convert unit
+        from .utility import _convert_length
         for i in range(len(pixelsize)):
-            pixelsize[i] = pixelsize[i]*10**(
-                3*(units.index(unit[i])-units.index(convert))
-            )
+            pixelsize[i] = _convert_length(pixelsize[i], unit[i], convert)[0]
 
         #store and return
         self.pixelsize = pixelsize
@@ -993,7 +969,7 @@ class velox_image(velox_dataset):
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : str, one of [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`], optional
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
@@ -1312,21 +1288,8 @@ class sis:
                 #pixelsize_y = 1e9*pixelsize_y
         #else use given unit
         else:
-            #allow um for convenience
-            if convert == 'um':
-                convert = 'µm'
-            
-            #check against list of allowed units
-            unit = 'm'
-            units = ['pm','nm','µm','mm','m']
-            if not convert in units:
-                raise ValueError('"'+str(convert)+'" is not a valid unit')
-            
-            #factor 10**3 for every step from list, use indices to calculate
-            pixelsize_x = pixelsize_x*10**(
-                3*(units.index(unit)-units.index(convert))
-            )
-            unit = convert
+            from .utility import _convert_length
+            pixelsize_x,unit = _convert_length(pixelsize_x, 'm', convert)
             
         #store and return
         self.pixelsize = pixelsize_x
@@ -1393,7 +1356,7 @@ class sis:
             Location of the scalebar on the image, where `0`, `1`, `2` and `3` 
             refer to the top left, top right, bottom left and bottom right 
             respectively. The default is `2`, which is the bottom left corner.
-        convert : one of ['pm', 'nm', 'um', 'µm', 'mm', 'm', None], optional
+        convert : str, one of [`'fm'`,`'pm'`,`'Å'` or `A`,`'nm'`,`'µm'` or `'um'`,`'mm'`,`'cm'`,`'dm'`,`'m'`]
             Unit that will be used for the scale bar, the value will be 
             automatically converted if this unit differs from the pixel size
             unit. The default is `None`, which uses the unit of the scalebar on
