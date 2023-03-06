@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="scm_electron_microscopes",
-    version="3.2.1",
+    version="3.2.2",
     author="Maarten Bransen",
     author_email="m.bransen@uu.nl",
     license='GNU General Public License v3.0',
@@ -12,7 +12,6 @@ setup(
         "numpy>=1.19.2",
         "scipy>=1.6.0",
         "matplotlib>=3.0.0",
-        "opencv-python>=3.0.0",
         "pillow>=8.4.0",
         "h5py>=3.6.0",
     ],

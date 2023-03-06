@@ -74,7 +74,6 @@ class util:
         plt.ylabel('occurrence')
         plt.show(block=False)
 
-import cv2
 def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         crop=None,intensity_range=None,resolution=None,draw_bar=True,
         barsize=None,scale=1,loc=2,convert=None,text=None,draw_text=True,
@@ -106,8 +105,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
                     f.write(key+" = "+str(val)+",\n")
     #imports
     import matplotlib.pyplot as plt
-    if draw_bar or draw_text:
-        from PIL import ImageFont, ImageDraw, Image
+    from PIL import Image
     
     #optionally call preprocess function
     if not preprocess is None:
@@ -168,21 +166,8 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         plt.show(block=False)
     
     #convert unit
-    if not convert is None and convert != unit and (draw_bar or draw_text):
-        
-        #always use mu for micrometer
-        if convert == 'um':
-            convert = 'µm'
-        
-        #check input against list of possible units
-        units = ['pm','nm','µm','mm','m']
-        if not unit in units:
-            raise ValueError('"'+str(unit)+'" is not a valid unit')
-        
-        #factor 10**3 for every step from list, use indices to calculate
-        pixelsize = pixelsize*10**(3*(units.index(unit)\
-                                      -units.index(convert)))
-        unit = convert
+    if not convert is None and (draw_bar or draw_text):
+        pixelsize,unit = _convert_length(pixelsize, unit, convert)
     
     #(optionally) crop
     if not crop is None:
@@ -236,16 +221,19 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
     #determine len of scalebar on im
     barsize_px = barsize/pixelsize
     
+    #convert to PIL image object
+    exportim = Image.fromarray(exportim,'L')
+    
     #set default resolution or scale image and correct barsize_px
     if resolution is None:
-        ny,nx = exportim.shape
+        nx,ny = exportim.size
         resolution = nx
     else:
         nx = resolution
-        ny = int(exportim.shape[0]/exportim.shape[1]*nx)
-        barsize_px = barsize_px/exportim.shape[1]*resolution
-        exportim = cv2.resize(exportim, (int(nx),int(ny)), 
-                              interpolation=cv2.INTER_NEAREST_EXACT)
+        ny = int(exportim.size[1]/exportim.size[0]*nx)
+        barsize_px = barsize_px/exportim.size[0]*resolution
+        exportim = exportim.resize((int(nx),int(ny)),
+                                   resample=Image.Resampling.NEAREST)
     
     #can skip this whole part when not actually drawing the scalebar
     if draw_bar or draw_text:
@@ -276,6 +264,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
                             text = '{:.3f} '.format(round(barsize,3))+unit
         
             #get size of text
+            from PIL import ImageFont
             font = ImageFont.truetype(font,size=int(fontsize))
             textsize = font.getsize(text)
             offset = font.getoffset(text)
@@ -321,61 +310,76 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             raise ValueError("loc must be 0, 1, 2 or 3 for top left, top right"
                              ", bottom left or bottom right respectively.")
         
-        #put semitransparent box
+        #put box behind bar / text for enhanced contrast
         if draw_box:
-            #get rectangle from im and create box
+            exportim = np.array(exportim)
             subim = exportim[int(y):int(y+boxheight), int(x):int(x+boxwidth)]
-            white_box = np.ones(subim.shape, dtype=np.uint8) * 255
-            
-            #add or subtract box from im, and put back in im
             if invert:
-                exportim[int(y):int(y+boxheight), int(x):int(x+boxwidth)] = \
-                    cv2.addWeighted(subim, 1-boxalpha, -white_box, boxalpha, 
-                                    1.0)
+                subim = np.average(
+                    [np.zeros(subim.shape),subim],
+                    axis=0,
+                    weights=[boxalpha,1-boxalpha]
+                )
             else:
-                exportim[int(y):int(y+boxheight), int(x):int(x+boxwidth)] = \
-                    cv2.addWeighted(subim, 1-boxalpha, white_box, boxalpha, 
-                                    1.0)
-    
-        #color for bar and text
-        if invert:
-            color = 255
-        else:
-            color = 0
+                subim = np.average(
+                    [np.ones(subim.shape)*255,subim],
+                    axis=0,
+                    weights=[boxalpha,1-boxalpha]
+                )
+            exportim[int(y):int(y+boxheight), int(x):int(x+boxwidth)] = subim
+            exportim = Image.fromarray(exportim,'L')
             
+        #make draw object if needed
+        if draw_bar or draw_text:
+            from PIL import ImageDraw
+            draw = ImageDraw.Draw(exportim,'L')
+        
+        #put on the actual scale bar
         if draw_bar:
+            
             #calculate positions for bar
             barx = (2*x + boxwidth)/2 - barsize_px/2
             bary = y+boxheight-barpad-barthickness
-        
+            
+            if invert:
+                barcol = 255
+            else:
+                barcol = 0
+
+            
             #draw scalebar
-            exportim = cv2.rectangle(
-                exportim,
-                (int(barx),int(bary)),
-                (int(barx+barsize_px),int(bary+barthickness)),
-                color,
-                -1
+            draw.rectangle(
+                (int(barx), int(bary),
+                 int(barx+barsize_px-1), int(bary+barthickness-1)),
+                fill=barcol,
+                width=0,
             )
         
+        #draw the text
         if draw_text:
+            
+            #calculate position for text (horizontally centered in box)
             textx = (2*x + boxwidth)/2 - (textsize[0]+offset[0])/2
-            texty = y+fontpad-offset[1]
+            texty = y + fontpad-offset[1]
+        
+            if invert:
+                texcol = 255
+            else:
+                texcol = 0
+
         
             #draw text
-            exportim = Image.fromarray(exportim)
-            draw = ImageDraw.Draw(exportim)
             draw.text(
                 (textx,texty),
                 text,
-                fill=color,
+                fill=texcol,
                 font=font
             )
-        exportim = np.array(exportim)
     
     #show result
     if show_figure:
         plt.figure()
-        plt.imshow(exportim,cmap='gray',vmin=0,vmax=255)
+        plt.imshow(np.array(exportim),cmap='gray',vmin=0,vmax=255)
         plt.title('exported image')
         plt.axis('off')
         plt.tight_layout()
@@ -383,6 +387,65 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
     
     #save image
     if save:
-        cv2.imwrite(filename,exportim)
+        exportim.save(filename)
+        print('Image saved as "'+filename+'"')
 
     return exportim
+
+def _convert_length(value,unit,convert=None):
+    """
+    helper function to convert between units of length
+
+    Parameters
+    ----------
+    value : float
+        the value of the length in units of `unit`
+    unit : str
+        the unit of `value`.
+    convert : str
+        the desired unit
+
+    Returns
+    -------
+    value : float
+        the converted length in units of `unit`
+    unit : str
+        the unit of `value`
+    """
+    #set default unit to µm
+    if convert is None:
+        convert = 'µm'
+    
+    #convert aliases to correct characters
+    if convert == 'um':
+        convert = 'µm'
+    elif convert == 'A':
+        convert = 'Å'
+    
+    if unit == 'um':
+        unit = 'µm'
+    elif unit == 'A':
+        unit = 'Å'
+    
+    if convert != unit:
+        #list of all units in steps of 10
+        units = [
+            'fm', '', '',
+            'pm', '', 'Å',
+            'nm', '', '',
+            'µm', '', '',
+            'mm', 'cm', 'dm',
+            'm', 'dam', 'hm',
+            'km',
+        ]
+        if unit=='' or convert=='':
+            raise ValueError('unit and convert cannot be empty strings')
+        if not unit in units:
+            raise ValueError('"'+str(unit)+'" is not a valid unit')
+        if not convert in units:
+            raise ValueError('"'+str(convert)+'" is not a valid unit')
+        
+        # ×10 for every step in list, use indices to calculate difference
+        value = value*10**(units.index(unit)-units.index(convert))
+        
+    return value,convert
