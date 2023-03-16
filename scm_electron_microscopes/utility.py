@@ -268,7 +268,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             font = ImageFont.truetype(font,size=int(fontsize))
             textsize = font.getsize(text)
             offset = font.getoffset(text)
-            textsize = (textsize[0]-offset[0],textsize[1]-offset[1]+fontbaseline)    
+            textsize = (textsize[0]-offset[0],textsize[1]-offset[1]+fontbaseline)
             
             #correct baseline for mu in case of micrometer
             if 'µ' in text:
