@@ -173,17 +173,17 @@ class tia:
         
         #find the right unit and rescale for convenience
         if convert is None:
-            if pixelsize_x >= 10e-3:
+            if pixelsize_x >= 1e-3:
                 unit = 'm'
-            elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
+            elif pixelsize_x < 1e-3 and pixelsize_x >= 1e-6:
                 unit = 'mm'
                 pixelsize_x = 1e3*pixelsize_x
                 pixelsize_y = 1e3*pixelsize_y
-            elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
+            elif pixelsize_x < 1e-6 and pixelsize_x >= 1e-9:
                 unit = 'µm'
                 pixelsize_x = 1e6*pixelsize_x
                 pixelsize_y = 1e6*pixelsize_y
-            elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
+            elif pixelsize_x < 1e-9 and pixelsize_x >= 1e-12:
                 unit = 'nm'
                 pixelsize_x = 1e9*pixelsize_x
                 pixelsize_y = 1e9*pixelsize_y
