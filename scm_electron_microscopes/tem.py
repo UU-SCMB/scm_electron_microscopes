@@ -892,14 +892,17 @@ class velox_image(velox_dataset):
         
         #default to full frame range
         if frame_range is None:
-            frame_range = (0,len(self))
+            if len(self) == 1:
+                frame_range = 0
+            else:
+                frame_range = (0,len(self))
         
         #get pixels per cm for the .tiff XResolution and YResolution tags 
         # (tag 282 and 283) and ResolutionUnit (tag 296)
-        pixelsize = self.get_pixelsize(convert='mm')[0]
+        pixelsize = self.get_pixelsize(convert='cm')[0]
         pixels_per_cm = (
-            int(10/(pixelsize[1])),
-            int(10/(pixelsize[0]))
+            int(1/(pixelsize[1])),
+            int(1/(pixelsize[0]))
         )
         
         #save single image directly
