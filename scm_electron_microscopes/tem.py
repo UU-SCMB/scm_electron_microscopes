@@ -132,53 +132,78 @@ class tia:
         unit : str
             physical unit of the pixel size
         """
-        #tiff tags 65450 and 65451 contain an int value for pixels per `n` cm,
-        #where n is a power of 10, e.g. 586350674 pixels per 100 cm is 
-        #encoded as (586350674, 100) and gives 1.7 nm/pixel
-        if 65450 in self.PIL_image.tag:
+        #tiff tags 65450 to 65452 give the x resolution, y resolution and unit
+        #similar to how tiff tags 2822, 283 and 296 are defined in the tiff 
+        #specification. Specifically, a two-tuple of ints giving pixels per `n` 
+        #resolution units, e.g. 586350674 pixels per 100 cm is encoded as 
+        #(586350674, 100) and gives 1.7 nm/pixel. Tag 65452 is 1 for no unit, 
+        #2 for inch and 3 for cm
+        if all([t in self.PIL_image.tag for t in [65450,65451,65452]]):
             pixelsize_x = self.PIL_image.tag[65450][0]
-            pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
-
-        #old tecnai 12 images have it in key 282 and 283 instead
-        elif 282 in self.PIL_image.tag:
+            pixelsize_y = self.PIL_image.tag[65451][0]
+            baseunit = self.PIL_image.tag[65452][0]
+        
+        #old tecnai 10 uses different software requiring different class (sis)
+        elif 33560 in self.PIL_image.tag:
+            raise KeyError('pixel size not encoded in file but your image '
+                           'looks like an Olympus SIS tiff. Did you mean to '
+                           'use the `sis` class for e.g. the tecnai 10?')
+            
+        #old tecnai 12 images have it in the standard keys 282 and 283 instead
+        elif all([t in self.PIL_image.tag for t in [282,283,296]]):
             warn('pixel size metadata in unusual format, value may be '
                  'incorrect',stacklevel=2)
             pixelsize_x = self.PIL_image.tag[282][0]
-            pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
-            #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]#fix for imagej modified data
+            pixelsize_y = self.PIL_image.tag[283][0]
+            baseunit = self.PIL_image.tag[296][0]
+            #fix for imagej modified data
+            #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]
         else:
             raise KeyError('pixel size not encoded in file')
         
+        #convert pixels per baseunit to meter/pixel
+        if baseunit==2:#pixels per inch
+            baseunit = 2.54e-2
+        elif baseunit==3:#pixels per cm
+            baseunit = 1e-2
+        else:
+            raise ValueError('unknown unit in metadata')
+        pixelsize_x = baseunit*pixelsize_x[1]/pixelsize_x[0]
+        pixelsize_y = baseunit*pixelsize_y[1]/pixelsize_y[0]
         
         #find the right unit and rescale for convenience
         if convert is None:
-            if pixelsize_x >= 10e-3:
+            if pixelsize_x >= 1e-3:
                 unit = 'm'
-            elif pixelsize_x < 10e-3 and pixelsize_x >= 10e-6:
+            elif pixelsize_x < 1e-3 and pixelsize_x >= 1e-6:
                 unit = 'mm'
                 pixelsize_x = 1e3*pixelsize_x
-                #pixelsize_y = 1e3*pixelsize_y
-            elif pixelsize_x < 10e-6 and pixelsize_x >= 10e-9:
+                pixelsize_y = 1e3*pixelsize_y
+            elif pixelsize_x < 1e-6 and pixelsize_x >= 1e-9:
                 unit = 'µm'
                 pixelsize_x = 1e6*pixelsize_x
-                #pixelsize_y = 1e6*pixelsize_y
-            elif pixelsize_x < 10e-9 and pixelsize_x >= 10e-12:
+                pixelsize_y = 1e6*pixelsize_y
+            elif pixelsize_x < 1e-9 and pixelsize_x >= 1e-12:
                 unit = 'nm'
                 pixelsize_x = 1e9*pixelsize_x
-                #pixelsize_y = 1e9*pixelsize_y
+                pixelsize_y = 1e9*pixelsize_y
             else:
                 unit = 'pm'
                 pixelsize_x = 1e12*pixelsize_x
-                #pixelsize_y = 1e9*pixelsize_y
+                pixelsize_y = 1e12*pixelsize_y
         #else use given unit
         else:
             from .utility import _convert_length
             pixelsize_x,unit = _convert_length(pixelsize_x, 'm', convert)
+            pixelsize_y,unit = _convert_length(pixelsize_y, 'm', convert)
             
         #store and return
+        if pixelsize_x != pixelsize_y:
+            warn('x and y pixelsize not the same, only x pixelsize returned',
+                 stacklevel=2)
         self.pixelsize = pixelsize_x
         self.unit = unit
-        return (pixelsize_x,unit)
+        return (self.pixelsize,unit)
     
     def get_pixelsize_legacy(self, debug=False):
         """
@@ -867,20 +892,23 @@ class velox_image(velox_dataset):
         
         #default to full frame range
         if frame_range is None:
-            frame_range = (0,len(self))
+            if len(self) == 1:
+                frame_range = 0
+            else:
+                frame_range = (0,len(self))
         
         #get pixels per cm for the .tiff XResolution and YResolution tags 
         # (tag 282 and 283) and ResolutionUnit (tag 296)
-        pixelsize = self.get_pixelsize(convert='mm')[0]
+        pixelsize = self.get_pixelsize(convert='cm')[0]
         pixels_per_cm = (
-            int(10/(pixelsize[1])),
-            int(10/(pixelsize[0]))
+            int(1/(pixelsize[1])),
+            int(1/(pixelsize[0]))
         )
         
         #save single image directly
-        if type(frame_range)==int:
+        if isinstance(frame_range,int):
             imsave(
-                filename_prefix,
+                filename,
                 data = self.get_frame(frame_range),
                 metadata = self.get_metadata(frame_range),
                 resolution = (*pixels_per_cm,'CENTIMETER'),

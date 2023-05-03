@@ -213,7 +213,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         barsize = scale*0.12*exportim.shape[1]*pixelsize
         lst = [
             0.01, 0.02, 0.025, 0.03, 0.04, 0.05, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5,
-            1, 2, 2.5, 3, 4, 5, 10, 20, 25, 30, 40, 50, 100, 200, 250, 300,
+            1, 2, 3, 4, 5, 10, 20, 25, 30, 40, 50, 100, 200, 250, 300,
             400, 500, 1000, 2000, 2500, 3000, 4000, 5000, 6000, 8000, 10000
         ]
         barsize = lst[min(range(len(lst)), key=lambda i: abs(lst[i]-barsize))]
@@ -268,7 +268,7 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             font = ImageFont.truetype(font,size=int(fontsize))
             textsize = font.getsize(text)
             offset = font.getoffset(text)
-            textsize = (textsize[0]-offset[0],textsize[1]-offset[1]+fontbaseline)    
+            textsize = (textsize[0]-offset[0],textsize[1]-offset[1]+fontbaseline)
             
             #correct baseline for mu in case of micrometer
             if 'µ' in text:
