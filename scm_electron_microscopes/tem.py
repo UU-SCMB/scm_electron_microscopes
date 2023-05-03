@@ -906,9 +906,9 @@ class velox_image(velox_dataset):
         )
         
         #save single image directly
-        if type(frame_range)==int:
+        if isinstance(frame_range,int):
             imsave(
-                filename_prefix,
+                filename,
                 data = self.get_frame(frame_range),
                 metadata = self.get_metadata(frame_range),
                 resolution = (*pixels_per_cm,'CENTIMETER'),
