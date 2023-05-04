@@ -231,7 +231,7 @@ class tia:
         self.unit = unit
         return (self.pixelsize,unit)
     
-    def get_pixelsize_legacy(self, debug=False):
+    def get_pixelsize_legacy(self, debug=False, use_legacy_measurement=False):
         """
         .. deprecated::
            This function has been deprecated and may give slightly inaccurate 
@@ -249,6 +249,16 @@ class tia:
         debug : bool, optional
             enable debug mode which prints extra information and figures to
             troubleshoot any issues with calibration. The default is False.
+        use_legacy_measurement : bool, optional
+            if `True`, use the (incorrect) left-side to left-side distance of 
+            the vertical lines of the scale bar (i.e. equal to the 
+            centre-to-centre distance of the vertical parts of the line). This
+            was long thought to be the correct way to interpret the scale bar 
+            and is available for backwards compatability with older data 
+            (analysis). The default is `False`, which uses the outermost white 
+            pixels of the scale bar, i.e. from the leftmost row of white pixels
+            of the left vertical part to the rightmost row of the right 
+            vertical part.
 
         Returns
         -------
@@ -261,26 +271,33 @@ class tia:
         import re
         import cv2
         
-        #find contour corners sorted left to right
+        #this is even more redundant where you have to give the pixelsize
         if len(self.scalebar) == 0:
-            print('[WARNING] tia.get_pixelsize: original scale bar not '
-                  'found!')
+            warn('original scale bar not found!')
             pixelsize = float(input('Please give pixelsize in nm: '))
             self.unit = 'nm'
             self.pixelsize = pixelsize
             return pixelsize,'nm'
+        #find contour corners of objects sorted left to right, first item in 
+        #corners is scale bar, rest is from text
         else:
             sb = self.scalebar
             if self.dtype != np.uint8:
                 sb = ((sb-sb.min())/((sb.max()-sb.min())/255)).astype(np.uint8)
             if int(cv2.__version__[0]) >= 4:
-                corners,_ = cv2.findContours(sb,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+                corners,_ = cv2.findContours(sb,cv2.RETR_LIST,
+                                             cv2.CHAIN_APPROX_SIMPLE)
             else:
-                _,corners,_ = cv2.findContours(sb,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+                _,corners,_ = cv2.findContours(sb,cv2.RETR_LIST,
+                                               cv2.CHAIN_APPROX_SIMPLE)
             corners = sorted(corners, key=lambda c: cv2.boundingRect(c)[0])
         
-        #length in pixels between bottom left corners of vertical bars
-        barlength = corners[0][7,0,0]-corners[0][1,0,0]
+        #length in pixels between top left corners of vertical bars
+        if use_legacy_measurement:
+            usecorners = [0,10]
+        else:
+            usecorners = [0,9]
+        barlength = corners[0][usecorners[1],0,0]-corners[0][usecorners[0],0,0]
         
         if debug:
             import matplotlib.pyplot as plt
@@ -288,8 +305,10 @@ class tia:
             print('- length:',barlength,'pixels')
             plt.figure('[DEBUG MODE] scale bar corners')
             plt.imshow(self.scalebar)
-            plt.scatter(corners[0][:,0,0],corners[0][:,0,1],color='r',label='corners')
-            plt.scatter(corners[0][[1,7],0,0],corners[0][[1,7],0,1],color='green',label='used for calibration')
+            plt.scatter(corners[0][:,0,0],corners[0][:,0,1],color='r',
+                        label='corners')
+            plt.scatter(corners[0][usecorners,0,0],corners[0][usecorners,0,1],
+                        color='green',label='used for calibration')
             plt.legend()
             plt.show(block=False)
         
@@ -313,11 +332,13 @@ class tia:
                 interpolation = cv2.INTER_CUBIC
             )
             bartext = cv2.erode(
-                cv2.threshold(bartext,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1],
+                cv2.threshold(bartext,0,255,
+                              cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1],
                 np.ones((5,5),np.uint8)
             )
             if debug:
-                print('- preprocessing text, resizing text image from',bartextshape,'to',np.shape(bartext))
+                print('- preprocessing text, resizing text image from',
+                      bartextshape,'to',np.shape(bartext))
         
         try:
             #load tesseract-OCR for reading the text
@@ -327,7 +348,8 @@ class tia:
             #in case of text recognition problems) to one we can only raise 
             #here, so we can give the correct warning
             try:
-                tesseract_version = float(str(pytesseract.get_tesseract_version())[:3])
+                tesseract_version = float(str(
+                    pytesseract.get_tesseract_version())[:3])
             except ValueError:
                 raise FileNotFoundError
             
@@ -363,18 +385,18 @@ class tia:
         
         #give different warnings for missing installation or reading problems
         except ImportError:
-            print('pytesseract not found, defaulting to manual mode')
+            warn('pytesseract not installed, defaulting to manual mode',
+                 stacklevel=1)
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         except FileNotFoundError:
-            print('[WARNING] tia.get_pixelsize(): tesseract OCR engine '
-                  'was not found by pytesseract. Switching to manual mode.')
+            warn('tesseract OCR engine was not found by pytesseract. Switching'
+                 ' to manual mode.',stacklevel=2)
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         except:
-            print('[WARNING] tia.get_pixelsize(): could not read scale '
-                  'bar text, perhaps try debug=True. Switching to manual mode.'
-                  )
+            warn('could not read scale bar text, perhaps try debug=True. '
+                 'Switching to manual mode.',stacklevel=2)
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         
