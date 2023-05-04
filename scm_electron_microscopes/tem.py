@@ -135,9 +135,9 @@ class tia:
         #tiff tags 65450 to 65452 give the x resolution, y resolution and unit
         #similar to how tiff tags 2822, 283 and 296 are defined in the tiff 
         #specification. Specifically, a two-tuple of ints giving pixels per `n` 
-        #resolution units, e.g. 586350674 pixels per 100 cm is encoded as 
-        #(586350674, 100) and gives 1.7 nm/pixel. Tag 65452 is 1 for no unit, 
-        #2 for inch and 3 for cm
+        #resolution units, e.g. 586350674 pixels per 100 resolution units is 
+        #encoded as (586350674, 100) and gives 1.7 nm/pixel. Tag 65452 gives 
+        #the unit and is 1 for no unit, 2 for inch and 3 for cm
         if all([t in self.PIL_image.tag for t in [65450,65451,65452]]):
             pixelsize_x = self.PIL_image.tag[65450][0]
             pixelsize_y = self.PIL_image.tag[65451][0]
@@ -148,6 +148,21 @@ class tia:
             raise KeyError('pixel size not encoded in file but your image '
                            'looks like an Olympus SIS tiff. Did you mean to '
                            'use the `sis` class for e.g. the tecnai 10?')
+        
+        #check for ImageJ metadata format, as ImageJ overwrites metadata
+        elif 270 in self.PIL_image.tag and 'ImageJ' in self.PIL_image.tag[270][0]:
+            warn('it looks like the image was modified in ImageJ, metadata may'
+                 ' not be correct',stacklevel=2)
+            from .utility import _convert_length
+            pixelsize_x = self.PIL_image.tag[282][0]
+            pixelsize_y = self.PIL_image.tag[283][0]
+            unit = self.PIL_image.tag[270][0].split('unit=')[1].split('\n')[0]
+            if '\\u00B5' in unit:#replace micro character
+                unit = unit.replace('\\u00B5','µ')
+            fact = _convert_length(1, unit, 'cm')[0]#convert baseunit to px/cm
+            pixelsize_x = (pixelsize_x[0],pixelsize_x[1]*fact)
+            pixelsize_y = (pixelsize_y[0],pixelsize_y[1]*fact)
+            baseunit = 3
             
         #old tecnai 12 images have it in the standard keys 282 and 283 instead
         elif all([t in self.PIL_image.tag for t in [282,283,296]]):
@@ -158,18 +173,29 @@ class tia:
             baseunit = self.PIL_image.tag[296][0]
             #fix for imagej modified data
             #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]
+            
+        #otherwise set the baseunit to 1 for 'no unit' to fall back to legacy
         else:
-            raise KeyError('pixel size not encoded in file')
-        
-        #convert pixels per baseunit to meter/pixel
+            baseunit = 1
+
+        #check unit encoding and convert pixels per n baseunit to meter/pixel
         if baseunit==2:#pixels per inch
-            baseunit = 2.54e-2
+            pixelsize_x = 2.54e-2*pixelsize_x[1]/pixelsize_x[0]
+            pixelsize_y = 2.54e-2*pixelsize_y[1]/pixelsize_y[0]
         elif baseunit==3:#pixels per cm
-            baseunit = 1e-2
-        else:
-            raise ValueError('unknown unit in metadata')
-        pixelsize_x = baseunit*pixelsize_x[1]/pixelsize_x[0]
-        pixelsize_y = baseunit*pixelsize_y[1]/pixelsize_y[0]
+            pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
+            pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
+        else:#try and fall back to legacy calibration by reading the scale bar
+            warn('unknown pixel size or unit, falling back to '
+                 'tia.get_pixelsize_legacy()',stacklevel=2)
+            from .utility import _convert_length
+            pixelsize_x,unit = self.get_pixelsize_legacy()
+            baseunit = 3
+            pixelsize_x = [1/_convert_length(pixelsize_x,unit,'cm')[0],1]
+            pixelsize_y = pixelsize_x
+        
+        #convert 
+
         
         #find the right unit and rescale for convenience
         if convert is None:
@@ -205,7 +231,7 @@ class tia:
         self.unit = unit
         return (self.pixelsize,unit)
     
-    def get_pixelsize_legacy(self, debug=False):
+    def get_pixelsize_legacy(self, debug=False, use_legacy_measurement=False):
         """
         .. deprecated::
            This function has been deprecated and may give slightly inaccurate 
@@ -223,6 +249,16 @@ class tia:
         debug : bool, optional
             enable debug mode which prints extra information and figures to
             troubleshoot any issues with calibration. The default is False.
+        use_legacy_measurement : bool, optional
+            if `True`, use the (incorrect) left-side to left-side distance of 
+            the vertical lines of the scale bar (i.e. equal to the 
+            centre-to-centre distance of the vertical parts of the line). This
+            was long thought to be the correct way to interpret the scale bar 
+            and is available for backwards compatability with older data 
+            (analysis). The default is `False`, which uses the outermost white 
+            pixels of the scale bar, i.e. from the leftmost row of white pixels
+            of the left vertical part to the rightmost row of the right 
+            vertical part.
 
         Returns
         -------
@@ -235,26 +271,33 @@ class tia:
         import re
         import cv2
         
-        #find contour corners sorted left to right
+        #this is even more redundant where you have to give the pixelsize
         if len(self.scalebar) == 0:
-            print('[WARNING] tia.get_pixelsize: original scale bar not '
-                  'found!')
+            warn('original scale bar not found!')
             pixelsize = float(input('Please give pixelsize in nm: '))
             self.unit = 'nm'
             self.pixelsize = pixelsize
             return pixelsize,'nm'
+        #find contour corners of objects sorted left to right, first item in 
+        #corners is scale bar, rest is from text
         else:
             sb = self.scalebar
             if self.dtype != np.uint8:
                 sb = ((sb-sb.min())/((sb.max()-sb.min())/255)).astype(np.uint8)
             if int(cv2.__version__[0]) >= 4:
-                corners,_ = cv2.findContours(sb,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+                corners,_ = cv2.findContours(sb,cv2.RETR_LIST,
+                                             cv2.CHAIN_APPROX_SIMPLE)
             else:
-                _,corners,_ = cv2.findContours(sb,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
+                _,corners,_ = cv2.findContours(sb,cv2.RETR_LIST,
+                                               cv2.CHAIN_APPROX_SIMPLE)
             corners = sorted(corners, key=lambda c: cv2.boundingRect(c)[0])
         
-        #length in pixels between bottom left corners of vertical bars
-        barlength = corners[0][7,0,0]-corners[0][1,0,0]
+        #length in pixels between top left corners of vertical bars
+        if use_legacy_measurement:
+            usecorners = [0,10]
+        else:
+            usecorners = [0,9]
+        barlength = corners[0][usecorners[1],0,0]-corners[0][usecorners[0],0,0]
         
         if debug:
             import matplotlib.pyplot as plt
@@ -262,8 +305,10 @@ class tia:
             print('- length:',barlength,'pixels')
             plt.figure('[DEBUG MODE] scale bar corners')
             plt.imshow(self.scalebar)
-            plt.scatter(corners[0][:,0,0],corners[0][:,0,1],color='r',label='corners')
-            plt.scatter(corners[0][[1,7],0,0],corners[0][[1,7],0,1],color='green',label='used for calibration')
+            plt.scatter(corners[0][:,0,0],corners[0][:,0,1],color='r',
+                        label='corners')
+            plt.scatter(corners[0][usecorners,0,0],corners[0][usecorners,0,1],
+                        color='green',label='used for calibration')
             plt.legend()
             plt.show(block=False)
         
@@ -287,11 +332,13 @@ class tia:
                 interpolation = cv2.INTER_CUBIC
             )
             bartext = cv2.erode(
-                cv2.threshold(bartext,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1],
+                cv2.threshold(bartext,0,255,
+                              cv2.THRESH_BINARY+cv2.THRESH_OTSU)[1],
                 np.ones((5,5),np.uint8)
             )
             if debug:
-                print('- preprocessing text, resizing text image from',bartextshape,'to',np.shape(bartext))
+                print('- preprocessing text, resizing text image from',
+                      bartextshape,'to',np.shape(bartext))
         
         try:
             #load tesseract-OCR for reading the text
@@ -301,7 +348,8 @@ class tia:
             #in case of text recognition problems) to one we can only raise 
             #here, so we can give the correct warning
             try:
-                tesseract_version = float(str(pytesseract.get_tesseract_version())[:3])
+                tesseract_version = float(str(
+                    pytesseract.get_tesseract_version())[:3])
             except ValueError:
                 raise FileNotFoundError
             
@@ -337,18 +385,18 @@ class tia:
         
         #give different warnings for missing installation or reading problems
         except ImportError:
-            print('pytesseract not found, defaulting to manual mode')
+            warn('pytesseract not installed, defaulting to manual mode',
+                 stacklevel=1)
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         except FileNotFoundError:
-            print('[WARNING] tia.get_pixelsize(): tesseract OCR engine '
-                  'was not found by pytesseract. Switching to manual mode.')
+            warn('tesseract OCR engine was not found by pytesseract. Switching'
+                 ' to manual mode.',stacklevel=2)
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         except:
-            print('[WARNING] tia.get_pixelsize(): could not read scale '
-                  'bar text, perhaps try debug=True. Switching to manual mode.'
-                  )
+            warn('could not read scale bar text, perhaps try debug=True. '
+                 'Switching to manual mode.',stacklevel=2)
             unit = input('give scale bar unit: ')
             value = float(input('give scale bar size in '+unit+': '))
         
