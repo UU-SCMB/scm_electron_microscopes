@@ -135,9 +135,9 @@ class tia:
         #tiff tags 65450 to 65452 give the x resolution, y resolution and unit
         #similar to how tiff tags 2822, 283 and 296 are defined in the tiff 
         #specification. Specifically, a two-tuple of ints giving pixels per `n` 
-        #resolution units, e.g. 586350674 pixels per 100 cm is encoded as 
-        #(586350674, 100) and gives 1.7 nm/pixel. Tag 65452 is 1 for no unit, 
-        #2 for inch and 3 for cm
+        #resolution units, e.g. 586350674 pixels per 100 resolution units is 
+        #encoded as (586350674, 100) and gives 1.7 nm/pixel. Tag 65452 gives 
+        #the unit and is 1 for no unit, 2 for inch and 3 for cm
         if all([t in self.PIL_image.tag for t in [65450,65451,65452]]):
             pixelsize_x = self.PIL_image.tag[65450][0]
             pixelsize_y = self.PIL_image.tag[65451][0]
@@ -148,6 +148,21 @@ class tia:
             raise KeyError('pixel size not encoded in file but your image '
                            'looks like an Olympus SIS tiff. Did you mean to '
                            'use the `sis` class for e.g. the tecnai 10?')
+        
+        #check for ImageJ metadata format, as ImageJ overwrites metadata
+        elif 270 in self.PIL_image.tag and 'ImageJ' in self.PIL_image.tag[270][0]:
+            warn('it looks like the image was modified in ImageJ, metadata may'
+                 ' not be correct',stacklevel=2)
+            from .utility import _convert_length
+            pixelsize_x = self.PIL_image.tag[282][0]
+            pixelsize_y = self.PIL_image.tag[283][0]
+            unit = self.PIL_image.tag[270][0].split('unit=')[1].split('\n')[0]
+            if '\\u00B5' in unit:#replace micro character
+                unit = unit.replace('\\u00B5','µ')
+            fact = _convert_length(1, unit, 'cm')[0]#convert baseunit to px/cm
+            pixelsize_x = (pixelsize_x[0],pixelsize_x[1]*fact)
+            pixelsize_y = (pixelsize_y[0],pixelsize_y[1]*fact)
+            baseunit = 3
             
         #old tecnai 12 images have it in the standard keys 282 and 283 instead
         elif all([t in self.PIL_image.tag for t in [282,283,296]]):
@@ -158,18 +173,29 @@ class tia:
             baseunit = self.PIL_image.tag[296][0]
             #fix for imagej modified data
             #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]
+            
+        #otherwise set the baseunit to 1 for 'no unit' to fall back to legacy
         else:
-            raise KeyError('pixel size not encoded in file')
-        
-        #convert pixels per baseunit to meter/pixel
+            baseunit = 1
+
+        #check unit encoding and convert pixels per n baseunit to meter/pixel
         if baseunit==2:#pixels per inch
-            baseunit = 2.54e-2
+            pixelsize_x = 2.54e-2*pixelsize_x[1]/pixelsize_x[0]
+            pixelsize_y = 2.54e-2*pixelsize_y[1]/pixelsize_y[0]
         elif baseunit==3:#pixels per cm
-            baseunit = 1e-2
-        else:
-            raise ValueError('unknown unit in metadata')
-        pixelsize_x = baseunit*pixelsize_x[1]/pixelsize_x[0]
-        pixelsize_y = baseunit*pixelsize_y[1]/pixelsize_y[0]
+            pixelsize_x = 1e-2*pixelsize_x[1]/pixelsize_x[0]
+            pixelsize_y = 1e-2*pixelsize_y[1]/pixelsize_y[0]
+        else:#try and fall back to legacy calibration by reading the scale bar
+            warn('unknown pixel size or unit, falling back to '
+                 'tia.get_pixelsize_legacy()',stacklevel=2)
+            from .utility import _convert_length
+            pixelsize_x,unit = self.get_pixelsize_legacy()
+            baseunit = 3
+            pixelsize_x = [1/_convert_length(pixelsize_x,unit,'cm')[0],1]
+            pixelsize_y = pixelsize_x
+        
+        #convert 
+
         
         #find the right unit and rescale for convenience
         if convert is None:
