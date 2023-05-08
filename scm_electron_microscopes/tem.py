@@ -674,9 +674,9 @@ class velox:
     def print_file_struct(self):
         """prints a formatted overview of the structure of the .emd file 
         container, useful for accessing additional data manually"""
-        self._recursive_print(self._emdfile)
+        self._recursive_struct_print(self._emdfile)
 
-    def _recursive_print(self,root,prefix='|'):
+    def _recursive_struct_print(self,root,prefix='|'):
         """see `print_file_struct"""
         for i in root:
             #safeguard against infinite recursion
@@ -693,7 +693,6 @@ class velox:
             else:
                 print(prefix+f'-{root.__repr__()}')
                 break
-    
 
 class velox_dataset:
     """
@@ -765,6 +764,44 @@ class velox_dataset:
             if flag:
                 raise KeyError('No detector data found')
         return det
+    
+    def print_metadata(self):
+        """prints formatted output of the file's metadata"""
+        metadata = self.get_metadata()
+        
+        #don't print anything when metadata is empty
+        if metadata is None or len(metadata) == 0:
+            warn('no metadata found',stacklevel=2)
+            return
+        
+        #print header, contents and footer
+        print('\n-----------------------------------------------------')
+        print('METADATA')
+        print(self.filename)
+        print('-----------------------------------------------------')
+        for key,val in metadata.items():
+            if isinstance(val,dict):
+                print('\n'+key+':')
+                self._recursive_md_print(val)
+            else:
+                print('\n'+key+': '+val)
+        print('-----------------------------------------------------\n')
+    
+    def _recursive_md_print(self,root,prefix='|'):
+        """see `print_file_struct"""
+        for key,val in root.items():
+            #safeguard against infinite recursion
+            if len(prefix)>20:
+                print(prefix+'-MAX RECURSION DEPTH')
+            
+            #for a tag, print and call function on child
+            elif isinstance(val,dict):
+                print(prefix+key+':')
+                self._recursive_md_print(val,prefix=prefix+'-')
+            
+            #for data, print the root data __repr__ method
+            else:
+                print(prefix+key+': '+val)
 
 class velox_image(velox_dataset):
     """
