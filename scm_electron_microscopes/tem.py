@@ -171,8 +171,6 @@ class tia:
             pixelsize_x = self.PIL_image.tag[282][0]
             pixelsize_y = self.PIL_image.tag[283][0]
             baseunit = self.PIL_image.tag[296][0]
-            #fix for imagej modified data
-            #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]
             
         #otherwise set the baseunit to 1 for 'no unit' to fall back to legacy
         else:
@@ -193,9 +191,6 @@ class tia:
             baseunit = 3
             pixelsize_x = [1/_convert_length(pixelsize_x,unit,'cm')[0],1]
             pixelsize_y = pixelsize_x
-        
-        #convert 
-
         
         #find the right unit and rescale for convenience
         if convert is None:
