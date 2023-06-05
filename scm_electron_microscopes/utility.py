@@ -183,8 +183,14 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             exportim.shape[0]*pixelsize)+unit)
     
     #get intensity range for None or automatic options
-    if intensity_range is None:#min and max
+    if intensity_range is None:#min and max of (cropped) data
         intensity_range = (exportim.min(),exportim.max())
+    elif intensity_range == 'full':#min and max for data type, only int types
+        if issubclass(exportim.dtype.type,np.integer):
+            intensity_range = (np.iinfo(exportim.dtype).min,
+                               np.iinfo(exportim.dtype).max)
+        else:#for floats fall back to default data min max 
+            (exportim.min(),exportim.max())
     elif intensity_range == 'auto' or intensity_range == 'automatic':
         intensity_range = (
             np.percentile(exportim,0.01),
