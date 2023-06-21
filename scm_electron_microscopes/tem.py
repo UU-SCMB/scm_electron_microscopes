@@ -439,15 +439,26 @@ class tia:
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
                 
-            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
-            left and bottom right corners respectively.
+            - `((xmin,ymin),(xmax,ymax))`, with the integer pixel indices of 
+            the top left and bottom right corners respectively.
                 
             - `(xmin,ymin,w,h)` with the integer indices of the top left corner
             and the width and heigth of the cropped image in pixels (prior to 
-            optional rescaling using `resolution`).
+            optional rescaling using `resolution`). When this format is used,
+            it is possible to set the width and height in pixels (default) or 
+            in data units via the `crop_unit` parameter.
             
             The default is `None` which takes the entire image.
-        intensity_range : tuple or `None` or `'automatic'`
+        crop_unit : `'pixels'` or `'data'`, optional
+            sets the unit in which the width and height in `crop` are 
+            specified when using the (x,y,w,h) format, with `'pixels'` to give 
+            the size in pixels or `'data'` to specify the size in the physical 
+            unit used for the scalebar (after optional unit conversion via the 
+            `convert` parameter). Note that the position of the top left corner
+            is given in pixels. The `((xmin,ymin),(xmax,ymax))` format must be
+            always given in pixels, and `crop_unit` is ignored if `crop` is 
+            given in this format. The default is `'pixels'`.
+        intensity_range : tuple or `None` or `'automatic'`, optional
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
             autoscale the intensity to the 0.01th and 99.99th percentile of the 
@@ -1040,14 +1051,25 @@ class velox_image(velox_dataset):
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
                 
-            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
-            left and bottom right corners respectively.
+            - `((xmin,ymin),(xmax,ymax))`, with the integer pixel indices of 
+            the top left and bottom right corners respectively.
                 
             - `(xmin,ymin,w,h)` with the integer indices of the top left corner
             and the width and heigth of the cropped image in pixels (prior to 
-            optional rescaling using `resolution`).
+            optional rescaling using `resolution`). When this format is used,
+            it is possible to set the width and height in pixels (default) or 
+            in data units via the `crop_unit` parameter.
             
             The default is `None` which takes the entire image.
+        crop_unit : `'pixels'` or `'data'`, optional
+            sets the unit in which the width and height in `crop` are 
+            specified when using the (x,y,w,h) format, with `'pixels'` to give 
+            the size in pixels or `'data'` to specify the size in the physical 
+            unit used for the scalebar (after optional unit conversion via the 
+            `convert` parameter). Note that the position of the top left corner
+            is given in pixels. The `((xmin,ymin),(xmax,ymax))` format must be
+            always given in pixels, and `crop_unit` is ignored if `crop` is 
+            given in this format. The default is `'pixels'`.
         intensity_range : tuple or `None` or `'automatic'`
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
@@ -1427,14 +1449,25 @@ class sis:
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
                 
-            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
-            left and bottom right corners respectively.
+            - `((xmin,ymin),(xmax,ymax))`, with the integer pixel indices of 
+            the top left and bottom right corners respectively.
                 
             - `(xmin,ymin,w,h)` with the integer indices of the top left corner
             and the width and heigth of the cropped image in pixels (prior to 
-            optional rescaling using `resolution`).
+            optional rescaling using `resolution`). When this format is used,
+            it is possible to set the width and height in pixels (default) or 
+            in data units via the `crop_unit` parameter.
             
             The default is `None` which takes the entire image.
+        crop_unit : `'pixels'` or `'data'`, optional
+            sets the unit in which the width and height in `crop` are 
+            specified when using the (x,y,w,h) format, with `'pixels'` to give 
+            the size in pixels or `'data'` to specify the size in the physical 
+            unit used for the scalebar (after optional unit conversion via the 
+            `convert` parameter). Note that the position of the top left corner
+            is given in pixels. The `((xmin,ymin),(xmax,ymax))` format must be
+            always given in pixels, and `crop_unit` is ignored if `crop` is 
+            given in this format. The default is `'pixels'`.
         intensity_range : tuple or `None` or `'automatic'`
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
