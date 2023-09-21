@@ -16,6 +16,26 @@ class tia:
     filename : string
         name of the file to load. Can but is not required to include .tif
         as extension.
+        
+    Attributes
+    ----------
+    filename : string
+        name of the image file
+    image : np.ndarray
+        array of pixel values of the image with the optional data/scale bar 
+        cropped off
+    scalebar : numpy.ndarray
+        if present, the array of pixel values of the original data/scale bar
+    shape : tuple
+        shape in (y,x) pixels of the image array
+    dtype : numpy.dtype
+        data type of the pixel values, generally `unint8` or `uint16`
+    PIL_image : PIL.Image
+        python imaging library Image object of the image file
+        
+    Returns
+    -------
+    `tia` class instance 
     """
     
     def __init__(self,filename):
