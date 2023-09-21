@@ -16,6 +16,26 @@ class tia:
     filename : string
         name of the file to load. Can but is not required to include .tif
         as extension.
+        
+    Attributes
+    ----------
+    filename : string
+        name of the image file
+    image : np.ndarray
+        array of pixel values of the image with the optional data/scale bar 
+        cropped off
+    scalebar : numpy.ndarray
+        if present, the array of pixel values of the original data/scale bar
+    shape : tuple
+        shape in (y,x) pixels of the image array
+    dtype : numpy.dtype
+        data type of the pixel values, generally `unint8` or `uint16`
+    PIL_image : PIL.Image
+        python imaging library Image object of the image file
+        
+    Returns
+    -------
+    `tia` class instance 
     """
     
     def __init__(self,filename):
@@ -171,8 +191,6 @@ class tia:
             pixelsize_x = self.PIL_image.tag[282][0]
             pixelsize_y = self.PIL_image.tag[283][0]
             baseunit = self.PIL_image.tag[296][0]
-            #fix for imagej modified data
-            #pixelsize_x = 1e-9*pixelsize_x[1]/pixelsize_x[0]
             
         #otherwise set the baseunit to 1 for 'no unit' to fall back to legacy
         else:
@@ -193,9 +211,6 @@ class tia:
             baseunit = 3
             pixelsize_x = [1/_convert_length(pixelsize_x,unit,'cm')[0],1]
             pixelsize_y = pixelsize_x
-        
-        #convert 
-
         
         #find the right unit and rescale for convenience
         if convert is None:
@@ -444,15 +459,26 @@ class tia:
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
                 
-            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
-            left and bottom right corners respectively.
+            - `((xmin,ymin),(xmax,ymax))`, with the integer pixel indices of 
+            the top left and bottom right corners respectively.
                 
             - `(xmin,ymin,w,h)` with the integer indices of the top left corner
             and the width and heigth of the cropped image in pixels (prior to 
-            optional rescaling using `resolution`).
+            optional rescaling using `resolution`). When this format is used,
+            it is possible to set the width and height in pixels (default) or 
+            in data units via the `crop_unit` parameter.
             
             The default is `None` which takes the entire image.
-        intensity_range : tuple or `None` or `'automatic'`
+        crop_unit : `'pixels'` or `'data'`, optional
+            sets the unit in which the width and height in `crop` are 
+            specified when using the (x,y,w,h) format, with `'pixels'` to give 
+            the size in pixels or `'data'` to specify the size in the physical 
+            unit used for the scalebar (after optional unit conversion via the 
+            `convert` parameter). Note that the position of the top left corner
+            is given in pixels. The `((xmin,ymin),(xmax,ymax))` format must be
+            always given in pixels, and `crop_unit` is ignored if `crop` is 
+            given in this format. The default is `'pixels'`.
+        intensity_range : tuple or `None` or `'automatic'`, optional
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
             autoscale the intensity to the 0.01th and 99.99th percentile of the 
@@ -674,9 +700,9 @@ class velox:
     def print_file_struct(self):
         """prints a formatted overview of the structure of the .emd file 
         container, useful for accessing additional data manually"""
-        self._recursive_print(self._emdfile)
+        self._recursive_struct_print(self._emdfile)
 
-    def _recursive_print(self,root,prefix='|'):
+    def _recursive_struct_print(self,root,prefix='|'):
         """see `print_file_struct"""
         for i in root:
             #safeguard against infinite recursion
@@ -693,7 +719,6 @@ class velox:
             else:
                 print(prefix+f'-{root.__repr__()}')
                 break
-    
 
 class velox_dataset:
     """
@@ -765,6 +790,44 @@ class velox_dataset:
             if flag:
                 raise KeyError('No detector data found')
         return det
+    
+    def print_metadata(self):
+        """prints formatted output of the file's metadata"""
+        metadata = self.get_metadata()
+        
+        #don't print anything when metadata is empty
+        if metadata is None or len(metadata) == 0:
+            warn('no metadata found',stacklevel=2)
+            return
+        
+        #print header, contents and footer
+        print('\n-----------------------------------------------------')
+        print('METADATA')
+        print(self.filename)
+        print('-----------------------------------------------------')
+        for key,val in metadata.items():
+            if isinstance(val,dict):
+                print('\n'+key+':')
+                self._recursive_md_print(val)
+            else:
+                print('\n'+key+': '+val)
+        print('-----------------------------------------------------\n')
+    
+    def _recursive_md_print(self,root,prefix='|'):
+        """see `print_file_struct"""
+        for key,val in root.items():
+            #safeguard against infinite recursion
+            if len(prefix)>20:
+                print(prefix+'-MAX RECURSION DEPTH')
+            
+            #for a tag, print and call function on child
+            elif isinstance(val,dict):
+                print(prefix+key+':')
+                self._recursive_md_print(val,prefix=prefix+'-')
+            
+            #for data, print the root data __repr__ method
+            else:
+                print(prefix+key+': '+val)
 
 class velox_image(velox_dataset):
     """
@@ -1008,14 +1071,25 @@ class velox_image(velox_dataset):
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
                 
-            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
-            left and bottom right corners respectively.
+            - `((xmin,ymin),(xmax,ymax))`, with the integer pixel indices of 
+            the top left and bottom right corners respectively.
                 
             - `(xmin,ymin,w,h)` with the integer indices of the top left corner
             and the width and heigth of the cropped image in pixels (prior to 
-            optional rescaling using `resolution`).
+            optional rescaling using `resolution`). When this format is used,
+            it is possible to set the width and height in pixels (default) or 
+            in data units via the `crop_unit` parameter.
             
             The default is `None` which takes the entire image.
+        crop_unit : `'pixels'` or `'data'`, optional
+            sets the unit in which the width and height in `crop` are 
+            specified when using the (x,y,w,h) format, with `'pixels'` to give 
+            the size in pixels or `'data'` to specify the size in the physical 
+            unit used for the scalebar (after optional unit conversion via the 
+            `convert` parameter). Note that the position of the top left corner
+            is given in pixels. The `((xmin,ymin),(xmax,ymax))` format must be
+            always given in pixels, and `crop_unit` is ignored if `crop` is 
+            given in this format. The default is `'pixels'`.
         intensity_range : tuple or `None` or `'automatic'`
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 
@@ -1395,14 +1469,25 @@ class sis:
             range describing a area of the original image (before rescaling the
             resolution) to crop out for the export image. Can have two forms:
                 
-            - `((xmin,ymin),(xmax,ymax))`, with the integer indices of the top
-            left and bottom right corners respectively.
+            - `((xmin,ymin),(xmax,ymax))`, with the integer pixel indices of 
+            the top left and bottom right corners respectively.
                 
             - `(xmin,ymin,w,h)` with the integer indices of the top left corner
             and the width and heigth of the cropped image in pixels (prior to 
-            optional rescaling using `resolution`).
+            optional rescaling using `resolution`). When this format is used,
+            it is possible to set the width and height in pixels (default) or 
+            in data units via the `crop_unit` parameter.
             
             The default is `None` which takes the entire image.
+        crop_unit : `'pixels'` or `'data'`, optional
+            sets the unit in which the width and height in `crop` are 
+            specified when using the (x,y,w,h) format, with `'pixels'` to give 
+            the size in pixels or `'data'` to specify the size in the physical 
+            unit used for the scalebar (after optional unit conversion via the 
+            `convert` parameter). Note that the position of the top left corner
+            is given in pixels. The `((xmin,ymin),(xmax,ymax))` format must be
+            always given in pixels, and `crop_unit` is ignored if `crop` is 
+            given in this format. The default is `'pixels'`.
         intensity_range : tuple or `None` or `'automatic'`
             tuple of `(lower,upper)` ranges for the (original) pixel values to 
             scale the brightness/contrast in the image to, or `'automatic'` to 

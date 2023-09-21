@@ -75,11 +75,12 @@ class util:
         plt.show(block=False)
 
 def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
-        crop=None,intensity_range=None,resolution=None,draw_bar=True,
-        barsize=None,scale=1,loc=2,convert=None,text=None,draw_text=True,
-        font='arialbd.ttf',fontsize=16,fontbaseline=10,fontpad=10,
-        barthickness=16,barpad=10,draw_box=True,invert=False,boxalpha=0.8,
-        boxpad=10,save=True,show_figure=True,store_settings=False):
+        crop=None,crop_unit='pixels',intensity_range=None,resolution=None,
+        draw_bar=True,barsize=None,scale=1,loc=2,convert=None,text=None,
+        draw_text=True,font='arialbd.ttf',fontsize=16,fontbaseline=10,
+        fontpad=10,barthickness=16,barpad=10,draw_box=True,invert=False,
+        boxalpha=0.8,boxpad=10,save=True,show_figure=True,store_settings=False,
+        ):
     """
     see top level export_with_scalebar functions for docs
     """
@@ -119,7 +120,11 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             exportim = np.mean(exportim,axis=2)
         else:
             raise ValueError('image must be 2-dimensional')
-    
+           
+    #convert unit
+    if not convert is None:
+        pixelsize,unit = _convert_length(pixelsize, unit, convert)
+            
     if show_figure:
         #draw original figure before changing exportim
         fig,ax = plt.subplots(1,1)
@@ -137,8 +142,11 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
                        in zip(exportim.shape,crop[:2])] + list(crop[2:])
                 altcrop = True
                 x,y,w,h = crp
+                if crop_unit == 'data':
+                    w = w/pixelsize
+                    h = h/pixelsize
             else:
-                crp = [[cc if cc>0 else s+cc for cc in c]\
+                crp = [[cc if cc>=0 else s+cc for cc in c]\
                        for s,c in zip(exportim.shape,crop)]
                 x,y = crp[0][0],crp[0][1]
                 w,h = crp[1][0]-crp[0][0], crp[1][1]-crp[0][1]
@@ -150,9 +158,14 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             xmin,xmax = ax.get_xlim()
             ymax,ymin = ax.get_ylim()
             if altcrop:
-                croptext = 'current crop: ({:}, {:}, {:}, {:})'
-                croptext = croptext.format(int(xmin),int(ymin),
-                                           int(xmax-xmin+1),int(ymax-ymin+1))
+                if crop_unit == 'data':
+                    croptext = 'current crop: ({:}, {:}, {:.4g} {}, {:.4g} {})'
+                    croptext = croptext.format(int(xmin),int(ymin),
+                            pixelsize*(xmax-xmin+1),unit,pixelsize*(ymax-ymin+1),unit)
+                else:
+                    croptext = 'current crop: ({:}, {:}, {:}, {:})'
+                    croptext = croptext.format(
+                        int(xmin),int(ymin),int(xmax-xmin+1),int(ymax-ymin+1))
             else:
                 croptext = 'current crop: (({:}, {:}), ({:}, {:}))'
                 croptext = croptext.format(int(xmin),int(ymin),
@@ -165,16 +178,22 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         ax.callbacks.connect("ylim_changed", _on_lim_change)
         plt.show(block=False)
     
-    #convert unit
-    if not convert is None and (draw_bar or draw_text):
-        pixelsize,unit = _convert_length(pixelsize, unit, convert)
-    
     #(optionally) crop
     if not crop is None:
         
         #if (x,y,w,h) format, convert to other format
         if len(crop) == 4:
-            crop = ((crop[0],crop[1]),(crop[0]+crop[2],crop[1]+crop[3]))
+            if crop_unit == 'pixels':#w and h specified in pixels
+                crop = ((crop[0],crop[1]),(crop[0]+crop[2],crop[1]+crop[3]))
+            elif crop_unit == 'data':#w and h specified in data units
+                crop = ((crop[0],crop[1]),(
+                    int(round(crop[0]+crop[2]/pixelsize)),
+                    int(round(crop[1]+crop[3]/pixelsize))
+                ))
+            else:
+                raise ValueError('`crop` must be "pixels" or "data"')
+        elif crop_unit == 'data':
+            warn('`crop_unit="data"` is only implemented for (x,y,w,h) format')
         
         #crop
         exportim = exportim[crop[0][1]:crop[1][1],crop[0][0]:crop[1][0]]
@@ -183,8 +202,14 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             exportim.shape[0]*pixelsize)+unit)
     
     #get intensity range for None or automatic options
-    if intensity_range is None:#min and max
+    if intensity_range is None:#min and max of (cropped) data
         intensity_range = (exportim.min(),exportim.max())
+    elif intensity_range == 'full':#min and max for data type, only int types
+        if issubclass(exportim.dtype.type,np.integer):
+            intensity_range = (np.iinfo(exportim.dtype).min,
+                               np.iinfo(exportim.dtype).max)
+        else:#for floats fall back to default data min max 
+            (exportim.min(),exportim.max())
     elif intensity_range == 'auto' or intensity_range == 'automatic':
         intensity_range = (
             np.percentile(exportim,0.01),
