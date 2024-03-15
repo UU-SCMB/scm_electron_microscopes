@@ -1,4 +1,4 @@
-__version__ = '3.2.5'
+__version__ = '3.3.0'
 
 from .tem import tia,sis,velox,velox_image,velox_edx,tecnai,talos
 from .sem import helios,phenom,xl30sfeg,ZeissSEM

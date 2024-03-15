@@ -6,7 +6,7 @@ Set of functions for dealing with data from the electron microscopes at Utrecht 
 ## Info
 - Created by: Maarten Bransen
 - Email: m.bransen@uu.nl
-- Version: 3.2.4
+- Version: 3.3.0
 
 ## Installation
 
