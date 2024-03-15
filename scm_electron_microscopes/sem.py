@@ -116,6 +116,53 @@ class helios:
         util.print_metadata(xml_root)
         
         
+    def export_metadata(self,filename=None):
+        """
+        save text file with metadata
+        
+        Parameters
+        ----------
+        filename : str, optional
+            filename to store. The default is the image name with 
+            `'_metadata.txt'` appended.
+        """
+        metadata = self.get_metadata()
+        
+        if filename is None:
+            filename =  self.filename.rpartition('.')[0]+'_metadata.txt'
+        
+        with open(filename,'w') as f:
+            f.write('original file: '+self.filename+'\n\n')
+            
+            def recursive_write(root,prefix=''):
+                #if there are subelements, print and call itself on subelements
+                if root:
+                    if root.attrib:
+                        f.write(prefix + root.tag + ' ' + str(root.attrib) + ':\n')
+                    else:
+                        f.write(prefix + root.tag + ':\n')
+                    for child in root:
+                        recursive_write(child,prefix=prefix+'\t')
+                
+                #otherwise, just print available info
+                else:
+                    if not root.text:
+                        root.text = ''
+                    if not root.attrib:#if attributes are empty
+                        f.write(prefix + root.tag + ' = ' + root.text+'\n')
+                    elif 'unit' in root.attrib:#if not, get unit from attributes
+                        f.write(prefix + root.tag + ' = ' + root.text + ' ' + root.attrib['unit']+'\n')
+                    elif root.text:#when attributes not empty check if there is text
+                        f.write(prefix + root.tag + ' = ' + str(root.attrib) + root.text+'\n')
+                    else:
+                        f.write(prefix + root.tag + ' = ' + str(root.attrib)+'\n')
+                
+                if len(prefix)==0:
+                    f.write('\n')
+            
+            for root in metadata:
+                recursive_write(root)
+        
     def get_pixelsize(self):
         """
         gets the pixel size from the metadata and calculates the unit
@@ -389,6 +436,52 @@ class phenom:
         
         util.print_metadata(xml_root)
     
+    def export_metadata(self,filename=None):
+        """
+        save text file with metadata
+        
+        Parameters
+        ----------
+        filename : str, optional
+            filename to store. The default is the image name with 
+            `'_metadata.txt'` appended.
+        """
+        metadata = self.get_metadata()
+        
+        if filename is None:
+            filename =  self.filename.rpartition('.')[0]+'_metadata.txt'
+        
+        with open(filename,'w') as f:
+            f.write('original file: '+self.filename+'\n\n')
+            
+            def recursive_write(root,prefix=''):
+                #if there are subelements, print and call itself on subelements
+                if root:
+                    if root.attrib:
+                        f.write(prefix + root.tag + ' ' + str(root.attrib) + ':\n')
+                    else:
+                        f.write(prefix + root.tag + ':\n')
+                    for child in root:
+                        recursive_write(child,prefix=prefix+'\t')
+                
+                #otherwise, just print available info
+                else:
+                    if not root.text:
+                        root.text = ''
+                    if not root.attrib:#if attributes are empty
+                        f.write(prefix + root.tag + ' = ' + root.text+'\n')
+                    elif 'unit' in root.attrib:#if not, get unit from attributes
+                        f.write(prefix + root.tag + ' = ' + root.text + ' ' + root.attrib['unit']+'\n')
+                    elif root.text:#when attributes not empty check if there is text
+                        f.write(prefix + root.tag + ' = ' + str(root.attrib) + root.text+'\n')
+                    else:
+                        f.write(prefix + root.tag + ' = ' + str(root.attrib)+'\n')
+                
+                if len(prefix)==0:
+                    f.write('\n')
+            
+            for root in metadata:
+                recursive_write(root)
     
     def get_pixelsize(self):
         """gets the pixel size from the metadata and calculates the unit
@@ -900,6 +993,53 @@ class ZeissSEM:
             xml_root = self.get_metadata()
         
         util.print_metadata(xml_root)
+
+    def export_metadata(self,filename=None):
+        """
+        save text file with metadata
+        
+        Parameters
+        ----------
+        filename : str, optional
+            filename to store. The default is the image name with 
+            `'_metadata.txt'` appended.
+        """
+        metadata = self.get_metadata()
+        
+        if filename is None:
+            filename =  self.filename.rpartition('.')[0]+'_metadata.txt'
+        
+        with open(filename,'w') as f:
+            f.write('original file: '+self.filename+'\n\n')
+            
+            def recursive_write(root,prefix=''):
+                #if there are subelements, print and call itself on subelements
+                if root:
+                    if root.attrib:
+                        f.write(prefix + root.tag + ' ' + str(root.attrib) + ':\n')
+                    else:
+                        f.write(prefix + root.tag + ':\n')
+                    for child in root:
+                        recursive_write(child,prefix=prefix+'\t')
+                
+                #otherwise, just print available info
+                else:
+                    if not root.text:
+                        root.text = ''
+                    if not root.attrib:#if attributes are empty
+                        f.write(prefix + root.tag + ' = ' + root.text+'\n')
+                    elif 'unit' in root.attrib:#if not, get unit from attributes
+                        f.write(prefix + root.tag + ' = ' + root.text + ' ' + root.attrib['unit']+'\n')
+                    elif root.text:#when attributes not empty check if there is text
+                        f.write(prefix + root.tag + ' = ' + str(root.attrib) + root.text+'\n')
+                    else:
+                        f.write(prefix + root.tag + ' = ' + str(root.attrib)+'\n')
+                
+                if len(prefix)==0:
+                    f.write('\n')
+            
+            for root in metadata:
+                recursive_write(root)
 
     def get_pixelsize(self):
         """

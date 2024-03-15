@@ -133,6 +133,27 @@ class tia:
             print(string.expandtabs(l+2))
         print('-----------------------------------------------------\n')
             
+    def export_metadata(self,filename=None):
+        """
+        save text file with metadata
+        
+        Parameters
+        ----------
+        filename : str, optional
+            filename to store. The default is the image name with 
+            `'_metadata.txt'` appended.
+        """
+        metadata = self.get_metadata(asdict=True)
+        
+        if filename is None:
+            filename =  self.filename.rsplit('.')[0]+'_metadata.txt'
+        
+        l = max(len(i) for i in metadata)
+        with open(filename,'w') as f:
+            f.write(('original file:\t'+self.filename).expandtabs(l+2)+'\n')
+            for i,k in metadata.items():
+                string = i+':\t'+str(k['value'])+' '+str(k['unit'])+'\n'
+                f.write(string.expandtabs(l+2))
     
     def get_pixelsize(self,convert=None):
         """
@@ -828,6 +849,45 @@ class velox_dataset:
             #for data, print the root data __repr__ method
             else:
                 print(prefix+key+': '+val)
+
+    def export_metadata(self,filename=None):
+        """
+        save text file with metadata
+        
+        Parameters
+        ----------
+        filename : str, optional
+            filename to store. The default is the image name with 
+            `'_metadata.txt'` appended.
+        """
+        metadata = self.get_metadata()
+        
+        if filename is None:
+            filename =  self.filename.rpartition('.')[0]+\
+                f'_image-{self.index:02d}_metadata.txt'
+        
+        with open(filename,'w') as f:
+            f.write('original file: '+self.filename+'\n')
+            
+            def recursive_write(root,prefix='\t'):
+                for key,val in root.items():
+                    #safeguard against infinite recursion
+                    if len(prefix)>20:
+                        f.write(prefix+'\tMAX RECURSION DEPTH\n')
+                    #for a tag, print and call function on child
+                    elif isinstance(val,dict):
+                        f.write(prefix+key+':\n')
+                        recursive_write(val,prefix=prefix+'\t')
+                    #for data, print the root data __repr__ method
+                    else:
+                        f.write(prefix+key+': '+val+'\n')
+            
+            for key,val in metadata.items():
+                if isinstance(val,dict):
+                    f.write('\n'+key+':\n')
+                    recursive_write(val)
+                else:
+                    f.write('\n'+key+': '+val+'\n')
 
 class velox_image(velox_dataset):
     """

@@ -291,13 +291,14 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
             #get size of text
             from PIL import ImageFont
             font = ImageFont.truetype(font,size=int(fontsize))
-            textsize = font.getsize(text)
-            offset = font.getoffset(text)
-            textsize = (textsize[0]-offset[0],textsize[1]-offset[1]+fontbaseline)
+            text_bbox = font.getbbox(text)
+            offset = (text_bbox[0],text_bbox[1])
+            textsize = (text_bbox[2]-text_bbox[0],text_bbox[3]-text_bbox[1])
             
             #correct baseline for mu in case of micrometer
             if 'µ' in text:
-                textsize = (textsize[0],textsize[1]-6*scale)
+                bb = font.getbbox(text.replace('µ','u'))
+                textsize = (textsize[0],bb[3]-bb[1])
         
         else:
             textsize = (0,0)
@@ -305,13 +306,13 @@ def _export_with_scalebar(exportim,pixelsize,unit,filename,preprocess=None,
         
         #determine box height with appropriate paddings
         if draw_text and draw_bar:#both
-            boxheight = barpad + barthickness + fontpad + textsize[1]
+            boxheight = barpad + barthickness+fontpad+textsize[1]+fontbaseline
             boxwidth = max([2*barpad+barsize_px,2*fontpad+textsize[0]])
         elif draw_bar:#bar only
             boxheight = 2*barpad + barthickness
             boxwidth = 2*barpad + barsize_px
         else:#text only
-            boxheight = 2*fontpad + textsize[1]
+            boxheight = 2*fontpad + textsize[1] + fontbaseline
             boxwidth = 2*fontpad + textsize[0]
         
         #determine box/bar/text position based on loc
