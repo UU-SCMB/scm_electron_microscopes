@@ -1,0 +1,1726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>scm_electron_microscopes API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>scm_electron_microscopes</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="scm_electron_microscopes.ZeissSEM"><code class="flex name class">
+<span>class <span class="ident">ZeissSEM</span></span>
+<span>(</span><span>filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class with convenience functions for the Zeiss EVO and Gemini SEMs. By
+default does not load the image into memory.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>filename of the image to load. The file extension may be but is not
+required to be included.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="scm_electron_microscopes.ZeissSEM" href="#scm_electron_microscopes.ZeissSEM">ZeissSEM</a> class instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.ZeissSEM.export_metadata"><code class="name flex">
+<span>def <span class="ident">export_metadata</span></span>(<span>self, filename=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>save text file with metadata</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename to store. The default is the image name with
+<code>'_metadata.txt'</code> appended.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.ZeissSEM.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the SEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original SEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to crop and rescale. The default is <code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>one</code> of <code>str, one</code> of <code>[</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code></dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.ZeissSEM.get_image"><code class="name flex">
+<span>def <span class="ident">get_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>loads the image data</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PIL.Image instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.ZeissSEM.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>extracts embedded metadata from the image file</p></div>
+</dd>
+<dt id="scm_electron_microscopes.ZeissSEM.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>gets the physical size of a pixel from the metadata</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>float</code></dt>
+<dd>physical size of the pixels in x and y</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>str</code></dt>
+<dd>physical unit corresponding to the pixelsize.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.ZeissSEM.print_metadata"><code class="name flex">
+<span>def <span class="ident">print_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>print formatted output of metadata</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.helios"><code class="flex name class">
+<span>class <span class="ident">helios</span></span>
+<span>(</span><span>filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set of convenience functions for the Helios SEM.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code></dt>
+<dd>name of the file to load. Can but is not required to include .tif
+as extension.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="scm_electron_microscopes.helios" href="#scm_electron_microscopes.helios">helios</a> class instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.helios.export_metadata"><code class="name flex">
+<span>def <span class="ident">export_metadata</span></span>(<span>self, filename=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>save text file with metadata</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename to store. The default is the image name with
+<code>'_metadata.txt'</code> appended.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.helios.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the SEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original SEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to strip the original bar and crop. The default is
+<code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, one</code> of <code>[</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code></dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.helios.get_image"><code class="name flex">
+<span>def <span class="ident">get_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>load the image and split into image and databar</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>numpy.array</code></dt>
+<dd>array of pixel values in the image (not including the data bar)</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.helios.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the metadata footer from Helios SEM files and return xml tree
+object which can be indexed for extraction of useful parameters. Does
+not require loading whole file into memory. Attempts first to find xml
+formatted data, if this is not found it looks for 'human' formatted
+metadata.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>xml.etree.ElementTree root object</code></dt>
+<dd>xml root object of the metadata. Can be printed using it as
+argument to print_metadata, or indexed with
+<code>xml_root.find('&lt;element name&gt;')</code>.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.helios.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>gets the pixel size from the metadata and calculates the unit</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>tuple</code> of <code>float</code></dt>
+<dd>the pixelsize in calibrated (physical) units in (x,y)</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>string</code></dt>
+<dd>the physical unit of the pixel size</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.helios.print_metadata"><code class="name flex">
+<span>def <span class="ident">print_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>print formatted output of metadata</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.phenom"><code class="flex name class">
+<span>class <span class="ident">phenom</span></span>
+<span>(</span><span>filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set of convenience functions for the phenom SEM microscopes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>filename of the image to load</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="scm_electron_microscopes.phenom" href="#scm_electron_microscopes.phenom">phenom</a> class instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.phenom.export_metadata"><code class="name flex">
+<span>def <span class="ident">export_metadata</span></span>(<span>self, filename=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>save text file with metadata</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename to store. The default is the image name with
+<code>'_metadata.txt'</code> appended.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.phenom.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the SEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original SEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to strip the original bar and crop. The default is
+<code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, one</code> of <code>[</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code></dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.phenom.get_image"><code class="name flex">
+<span>def <span class="ident">get_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>load the image and split into image and databar</p></div>
+</dd>
+<dt id="scm_electron_microscopes.phenom.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the metadata footer from Helios SEM files and return xml tree
+object which can be indexed for extraction of useful parameters. Does
+not require loading whole file into memory. Attempts first to find xml
+formatted data, if this is not found it looks for 'human' formatted
+metadata.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>xml.etree.ElementTree object</code></dt>
+<dd>xml root object of the metadata. Can be printed using it as
+argument to print_metadata, or indexed with
+xml_root.find('<element name>')</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.phenom.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>gets the pixel size from the metadata and calculates the unit</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>(y,x) tuple</code> of <code>float</code></dt>
+<dd>physical size of the pixels</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>str</code></dt>
+<dd>physical unit corresponding to the pixelsize.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.phenom.print_metadata"><code class="name flex">
+<span>def <span class="ident">print_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>print formatted output of metadata</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.sis"><code class="flex name class">
+<span>class <span class="ident">sis</span></span>
+<span>(</span><span>filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set of convenience functions for electron microscopy images of the now
+defunct tecnai 10 microscope which operated the Olympus Soft Imaging System
+software (analySIS) which exported to .tif. Initializing the class takes a
+string containing the filename as only argument, and by default loads in
+the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code></dt>
+<dd>name of the file to load. Can but is not required to include .tif
+as extension.</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.sis.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>intensity_range</code></strong> :&ensp;<code>tuple</code> or <code>None</code> or <code>'automatic'</code></dt>
+<dd>tuple of <code>(lower,upper)</code> ranges for the (original) pixel values to
+scale the brightness/contrast in the image to, or <code>'automatic'</code> to
+autoscale the intensity to the 0.01th and 99.99th percentile of the
+input image, or None for the min and max value in the original
+image. The default is <code>None</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to strip the original bar and crop. The default is
+<code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, one</code> of <code>[</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code></dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.sis.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads metadata from the file.</p>
+<p>NOT IMPLEMENTED</p></div>
+</dd>
+<dt id="scm_electron_microscopes.sis.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self, convert=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the physical size represented by the pixels from the image
+metadata</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>convert</code></strong> :&ensp;<code>one</code> of <code>['m', 'mm', 'um', 'µm', 'nm', 'pm', None]</code>, optional</dt>
+<dd>physical unit to use for the pixel size. The default is None, which
+chooses one of the above automatically based on the value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>float</code></dt>
+<dd>the physical size of a pixel in the given unit</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>str</code></dt>
+<dd>physical unit of the pixel size</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.talos"><code class="flex name class">
+<span>class <span class="ident">talos</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><div class="admonition deprecated">
+<p class="admonition-title">Deprecated</p>
+<p>The tecnai and Talos classes have been renamed to the <code><a title="scm_electron_microscopes.tia" href="#scm_electron_microscopes.tia">tia</a></code> class to
+avoid confusion between data aquired using the older TIA and newer
+Velox software from version 3.0.0 onwards. The old names are available
+for backwards compatibility and should behave identically, but their
+use is discouraged.</p>
+</div>
+<p>Class of functions for TEM images from the Talos microscopes operated with
+the TIA software</p>
+<h2 id="see-also">See Also</h2>
+<p><code><a title="scm_electron_microscopes.tia" href="#scm_electron_microscopes.tia">tia</a></code></p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>scm_electron_microscopes.tem.tia</li>
+</ul>
+</dd>
+<dt id="scm_electron_microscopes.tecnai"><code class="flex name class">
+<span>class <span class="ident">tecnai</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><div class="admonition deprecated">
+<p class="admonition-title">Deprecated</p>
+<p>The tecnai and Talos classes have been renamed to the <code><a title="scm_electron_microscopes.tia" href="#scm_electron_microscopes.tia">tia</a></code> class to
+avoid confusion between data aquired using the older TIA and newer
+Velox software from version 3.0.0 onwards. The old names are available
+for backwards compatibility and should behave identically, but their
+use is discouraged.</p>
+</div>
+<p>Class of functions for TEM images from the tecnai microscopes operated with
+the TIA software</p>
+<h2 id="see-also">See Also</h2>
+<p><code><a title="scm_electron_microscopes.tia" href="#scm_electron_microscopes.tia">tia</a></code></p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>scm_electron_microscopes.tem.tia</li>
+</ul>
+</dd>
+<dt id="scm_electron_microscopes.tia"><code class="flex name class">
+<span>class <span class="ident">tia</span></span>
+<span>(</span><span>filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set of convenience functions for electron microscopy images of the tecnai
+12, 20, 20feg and Talos microscopes when using the TIA software and
+exporting the images as .tif files from TIA. Initializing the class takes a
+string containing the filename as only argument, and by default loads in
+the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code></dt>
+<dd>name of the file to load. Can but is not required to include .tif
+as extension.</dd>
+</dl>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code></dt>
+<dd>name of the image file</dd>
+<dt><strong><code>image</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>array of pixel values of the image with the optional data/scale bar
+cropped off</dd>
+<dt><strong><code>scalebar</code></strong> :&ensp;<code>numpy.ndarray</code></dt>
+<dd>if present, the array of pixel values of the original data/scale bar</dd>
+<dt><strong><code>shape</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>shape in (y,x) pixels of the image array</dd>
+<dt><strong><code>dtype</code></strong> :&ensp;<code>numpy.dtype</code></dt>
+<dd>data type of the pixel values, generally <code>unint8</code> or <code>uint16</code></dd>
+<dt><strong><code>PIL_image</code></strong> :&ensp;<code>PIL.Image</code></dt>
+<dd>python imaging library Image object of the image file</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p><code><a title="scm_electron_microscopes.tia" href="#scm_electron_microscopes.tia">tia</a></code> class instance</p></div>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li>scm_electron_microscopes.tem.talos</li>
+<li>scm_electron_microscopes.tem.tecnai</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.tia.export_metadata"><code class="name flex">
+<span>def <span class="ident">export_metadata</span></span>(<span>self, filename=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>save text file with metadata</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename to store. The default is the image name with
+<code>'_metadata.txt'</code> appended.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.tia.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>intensity_range</code></strong> :&ensp;<code>tuple</code> or <code>None</code> or <code>'automatic'</code>, optional</dt>
+<dd>tuple of <code>(lower,upper)</code> ranges for the (original) pixel values to
+scale the brightness/contrast in the image to, or <code>'automatic'</code> to
+autoscale the intensity to the 0.01th and 99.99th percentile of the
+input image, or None for the min and max value in the original
+image. The default is <code>None</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to strip the original bar and crop. The default is
+<code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, one</code> of <code>[</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code></dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.tia.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>self, asdict=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>loads xml metadata from .tif file and returns xml tree object or dict</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>asdict</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>whether to export as a dictionary. When False, an
+<code>xml.etree.ElementTree</code> is returned. The default is False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dictionary</code> or <code>xml root object</code></dt>
+<dd>dictionary or xml root object of the metadata. Can be indexed with
+xml_root.find('<element name>')</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.tia.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self, convert=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the physical size represented by the pixels from the image
+metadata</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, one</code> of <code>[</code>fm<code>,</code>pm<code>,</code>Å<code>,'A',</code>nm<code>,</code>um<code>,</code>µm<code>,</code>mm<code>,</code>cm<code>,</code>dm<code>,</code>m<code>]</code>, optional</dt>
+<dd>physical unit to use for the pixel size. The default is None, which
+chooses one of the above automatically based on the value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>float</code></dt>
+<dd>the physical size of a pixel in the given unit</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>str</code></dt>
+<dd>physical unit of the pixel size</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.tia.get_pixelsize_legacy"><code class="name flex">
+<span>def <span class="ident">get_pixelsize_legacy</span></span>(<span>self, debug=False, use_legacy_measurement=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><div class="admonition deprecated">
+<p class="admonition-title">Deprecated</p>
+<p>This function has been deprecated and may give slightly inaccurate
+result (only accurate to the nearest whole pixel), use
+<code><a title="scm_electron_microscopes.tia.get_pixelsize" href="#scm_electron_microscopes.tia.get_pixelsize">tia.get_pixelsize()</a></code> for more accurate and faster calibration.
+Included for cases where results using the previous calibration
+method must be reproduced or compared with.</p>
+</div>
+<p>Reads the scalebar from images of the Tecnai or Talos
+TEM microscopes
+using text recognition via pytesseract or with manual input when
+pytesseract is not installed</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>enable debug mode which prints extra information and figures to
+troubleshoot any issues with calibration. The default is False.</dd>
+<dt><strong><code>use_legacy_measurement</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>if <code>True</code>, use the (incorrect) left-side to left-side distance of
+the vertical lines of the scale bar (i.e. equal to the
+centre-to-centre distance of the vertical parts of the line). This
+was long thought to be the correct way to interpret the scale bar
+and is available for backwards compatability with older data
+(analysis). The default is <code>False</code>, which uses the outermost white
+pixels of the scale bar, i.e. from the leftmost row of white pixels
+of the left vertical part to the rightmost row of the right
+vertical part.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>float</code></dt>
+<dd>the pixelsize in calibrated (physical) units</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>string</code></dt>
+<dd>the physical unit of the pixelsize</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.tia.print_metadata"><code class="name flex">
+<span>def <span class="ident">print_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>prints formatted output of the file's metadata</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.util"><code class="flex name class">
+<span>class <span class="ident">util</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>utility functions</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.util.image_histogram"><code class="name flex">
+<span>def <span class="ident">image_histogram</span></span>(<span>image, binsize=1, log=True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>plot histogram of the image grey values</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>image</code></strong> :&ensp;<code>numpy.array-like</code></dt>
+<dd>the image to calculate the intensity histogram for.</dd>
+<dt><strong><code>binsize</code></strong> :&ensp;<code>float-like</code>, optional</dt>
+<dd>width (in intensity units) of the bins to use. The default is 1.</dd>
+<dt><strong><code>log</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to plot the histogram y axis on a log scale. The default is
+True.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.util.print_metadata"><code class="name flex">
+<span>def <span class="ident">print_metadata</span></span>(<span>xml_root)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>print xml attributes/tags of phenom data to inspect elements.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>xml_root</code></strong> :&ensp;<code>xml root object</code></dt>
+<dd>Takes output of get_metadata() and prints formatted metadata to the
+terminal</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.velox"><code class="flex name class">
+<span>class <span class="ident">velox</span></span>
+<span>(</span><span>filename=None, quiet=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class for importing the .emd file format used natively by the Velox
+software used on the Talos microscopes.</p>
+<p>Note that one .emd file may contain multiple images / videos, (e.g. when
+recording with multiple detectors simultaneously), and most functions are
+available through the <code><a title="scm_electron_microscopes.velox_image" href="#scm_electron_microscopes.velox_image">velox_image</a></code> subclass accessible through the
+<code>get_image</code> function.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code> or <code>int</code></dt>
+<dd>The filename to load, extension optional. Alternatively an integer may
+be given to load the nth file in the current working directory. The
+default is to load the first file.</dd>
+<dt><strong><code>quiet</code></strong> :&ensp;<code>bool</code></dt>
+<dd>whether to print a list of images contained in the file when the class
+is initialized. The default is False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p><code><a title="scm_electron_microscopes.velox" href="#scm_electron_microscopes.velox">velox</a></code> class instance </p>
+<dl>
+<dt><code>init class instance, open file container</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.velox.get_dataset"><code class="name flex">
+<span>def <span class="ident">get_dataset</span></span>(<span>self, dataset)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns velox_image class instance containing all data and metadata
+for a particular image in the file.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>image</code></strong> :&ensp;<code>str</code> or <code>int</code></dt>
+<dd>the image to return the data for, given as the name/tag (when str)
+or as its integer index in the file, i.e. <code>velox.get_image(0)</code>
+returns the data container for the first image.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p><code>velox_dataset</code> or <code><a title="scm_electron_microscopes.velox_image" href="#scm_electron_microscopes.velox_image">velox_image</a></code> class instance</p></div>
+</dd>
+<dt id="scm_electron_microscopes.velox.print_file_struct"><code class="name flex">
+<span>def <span class="ident">print_file_struct</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>prints a formatted overview of the structure of the .emd file
+container, useful for accessing additional data manually</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.velox_edx"><code class="flex name class">
+<span>class <span class="ident">velox_edx</span></span>
+<span>(</span><span>parent, im)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>subclass for emd files with edx data</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>scm_electron_microscopes.tem.velox_dataset</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.velox_edx.get_image"><code class="name flex">
+<span>def <span class="ident">get_image</span></span>(<span>self, energy_ranges=None, frame_range=None, binning=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns edx/eds image where the pixel value is the total number of
+photon counts within the specified energy range(s) and frame range.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>energy_ranges</code></strong> :&ensp;<code>list</code> of <code>tuples</code>, optional</dt>
+<dd>List of (min,max) energy range(s) specifying which photons to
+count, given in keV. The default is None which takes all photon
+counts.</dd>
+<dt><strong><code>frame_range</code></strong> :&ensp;<code>tuple</code>, optional</dt>
+<dd>Tuple of (min,max) for the frame indices to sum the counts for. The
+default is None which sums all frames.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>2D numpy.array</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.velox_edx.get_spectrum"><code class="name flex">
+<span>def <span class="ident">get_spectrum</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>get overall spectral data for the edx dataset</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>energies</code></strong> :&ensp;<code>numpy.array</code></dt>
+<dd>energies in keV</dd>
+<dt><strong><code>counts</code></strong> :&ensp;<code>numpy.array</code></dt>
+<dd>number of photon counts per energy</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.velox_image"><code class="flex name class">
+<span>class <span class="ident">velox_image</span></span>
+<span>(</span><span>parent, im)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Subclass of the <code>velox_dataset</code> class for individual images (or image
+series) in an .emd file, such as when simultaneously recording HAADF-STEM
+and BF-STEM. Not indended to be called directly, rather to be initialized
+trough the <code>get_image</code> method of the <code><a title="scm_electron_microscopes.velox" href="#scm_electron_microscopes.velox">velox</a></code>
+class.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>the .emd file to take the image from</dd>
+<dt><strong><code>im</code></strong> :&ensp;<code>str</code> or <code>int</code></dt>
+<dd>name / tag or integer index of the image to initialize</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>scm_electron_microscopes.tem.velox_dataset</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.velox_image.export_tiff"><code class="name flex">
+<span>def <span class="ident">export_tiff</span></span>(<span>self, filename_prefix=None, frame_range=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>stores the image data to a tiff file with metadata stored in the image
+description for futher processing or viewing in other software.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename_prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>filename to use for saved file without file extension</dd>
+<dt><strong><code>frame_range</code></strong> :&ensp;<code>int</code> or <code>tuple</code> of <code>int</code></dt>
+<dd>int specifying which frame, or tuple of (start,stop) ints
+specifying which frames, to save in the tiff file. The default is
+all frames in the dataset</dd>
+<dt><strong><code>kwargs</code></strong> :&ensp;<code>dict</code></dt>
+<dd>any further keyword arguments will be passed on to
+<code>tifffile.imsave</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>None.</p></div>
+</dd>
+<dt id="scm_electron_microscopes.velox_image.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, frame=0, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the TEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original TEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>frame</code></strong> :&ensp;<code>int</code></dt>
+<dd>the frame to export, see <code>get_frame()</code>. The default is 0.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>intensity_range</code></strong> :&ensp;<code>tuple</code> or <code>None</code> or <code>'automatic'</code></dt>
+<dd>tuple of <code>(lower,upper)</code> ranges for the (original) pixel values to
+scale the brightness/contrast in the image to, or <code>'automatic'</code> to
+autoscale the intensity to the 0.01th and 99.99th percentile of the
+input image, or None for the min and max value in the original
+image. The default is <code>None</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to strip the original bar and crop. The default is
+<code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, one</code> of <code>[</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code>, optional</dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.velox_image.get_data"><code class="name flex">
+<span>def <span class="ident">get_data</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Loads and returns the full image data as numpy array</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>numpy.ndarray</code> of <code>pixel value</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>s</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.velox_image.get_frame"><code class="name flex">
+<span>def <span class="ident">get_frame</span></span>(<span>self, i)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns specific image / video frame from the dataset</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>i</code></strong> :&ensp;<code>int</code></dt>
+<dd>the index of the frame to load</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>numpy.array</code> of <code>pixel values</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.velox_image.get_frametime"><code class="name flex">
+<span>def <span class="ident">get_frametime</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the time in seconds it takes to scan one frame</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.velox_image.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self, convert=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>returns the pixel size from the metadata, rescaled to an appropriate
+unit for convenience</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>convert</code></strong> :&ensp;<code>one</code> of <code>['pm', 'nm', 'µm', 'um', 'mm', 'm']</code></dt>
+<dd>physical data unit to convert the pixel size to, the default is
+None which chooses a unit based on the magnitude.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>tuple</code> of <code>float</code></dt>
+<dd>(y,x) pixel sizes</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>str</code></dt>
+<dd>physical unit of the pixel size</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="scm_electron_microscopes.xl30sfeg"><code class="flex name class">
+<span>class <span class="ident">xl30sfeg</span></span>
+<span>(</span><span>filename)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set of convenience functions for the xl30sfeg SEM microscope.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>str</code></dt>
+<dd>filename of the image to load</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="scm_electron_microscopes.xl30sfeg" href="#scm_electron_microscopes.xl30sfeg">xl30sfeg</a> class instance</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<h3>Methods</h3>
+<dl>
+<dt id="scm_electron_microscopes.xl30sfeg.export_with_scalebar"><code class="name flex">
+<span>def <span class="ident">export_with_scalebar</span></span>(<span>self, filename=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>saves an exported image of the SEM image with a scalebar in one of the
+four corners, where barsize is the scalebar size in data units (e.g.
+nm) and scale the overall size of the scalebar and text with respect to
+the width of the image.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>filename</code></strong> :&ensp;<code>string</code> or <code>None</code>, optional</dt>
+<dd>Filename + extension to use for the export file. The default is the
+filename sans extension of the original SEM file, with
+'_exported.png' appended.</dd>
+<dt><strong><code>preprocess</code></strong> :&ensp;<code>callable</code>, optional</dt>
+<dd>callable to pre-process the image before any other processing is
+done, useful for e.g. smoothing. Must take and return a
+numpy.ndarray containing the image data as only arguments, and must
+not change e.g. the pixel size or the scale bar may be incorrectly
+sized. The default is None.</dd>
+<dt><strong><code>crop</code></strong> :&ensp;<code>tuple</code> or <code>None</code>, optional</dt>
+<dd>
+<p>range describing a area of the original image (before rescaling the
+resolution) to crop out for the export image. Can have two forms:</p>
+<ul>
+<li>
+<p><code>((xmin,ymin),(xmax,ymax))</code>, with the integer pixel indices of
+the top left and bottom right corners respectively.</p>
+</li>
+<li>
+<p><code>(xmin,ymin,w,h)</code> with the integer indices of the top left corner
+and the width and heigth of the cropped image in pixels (prior to
+optional rescaling using <code>resolution</code>). When this format is used,
+it is possible to set the width and height in pixels (default) or
+in data units via the <code>crop_unit</code> parameter.</p>
+</li>
+</ul>
+<p>The default is <code>None</code> which takes the entire image.</p>
+</dd>
+<dt><strong><code>crop_unit</code></strong> :&ensp;<code>'pixels'</code> or <code>'data'</code>, optional</dt>
+<dd>sets the unit in which the width and height in <code>crop</code> are
+specified when using the (x,y,w,h) format, with <code>'pixels'</code> to give
+the size in pixels or <code>'data'</code> to specify the size in the physical
+unit used for the scalebar (after optional unit conversion via the
+<code>convert</code> parameter). Note that the position of the top left corner
+is given in pixels. The <code>((xmin,ymin),(xmax,ymax))</code> format must be
+always given in pixels, and <code>crop_unit</code> is ignored if <code>crop</code> is
+given in this format. The default is <code>'pixels'</code>.</dd>
+<dt><strong><code>resolution</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>the resolution along the x-axis (i.e. image width in pixels) to use
+for the exported image. The default is <code>None</code>, which uses the size
+of the original image (after optional cropping using <code>crop</code>).</dd>
+<dt><strong><code>draw_bar</code></strong> :&ensp;<code>boolean</code>, optional</dt>
+<dd>whether to draw a scalebar on the image, such that this function
+may be used just to strip the original bar and crop. The default is
+<code>True</code>.</dd>
+<dt><strong><code>barsize</code></strong> :&ensp;<code>float</code> or <code>None</code>, optional</dt>
+<dd>size (in data units matching the original scale bar, e.g. nm) of
+the scale bar to use. The default <code>None</code>, wich takes the desired
+length for the current scale and round this to the nearest option
+from a list of "nice" values.</dd>
+<dt><strong><code>scale</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>factor to change the size of the scalebar+text with respect to the
+width of the image. Scale is chosen such, that at <code>scale=1</code> the
+font size of the scale bar text is approximately 10 pt when
+the image is printed at half the width of the text in a typical A4
+paper document (e.g. two images side-by-side). The default is 1.</dd>
+<dt><strong><code>loc</code></strong> :&ensp;<code>int, one</code> of <code>[</code>0<code>,</code>1<code>,</code>2<code>,</code>3<code>]</code>, optional</dt>
+<dd>Location of the scalebar on the image, where <code>0</code>, <code>1</code>, <code>2</code> and <code>3</code>
+refer to the top left, top right, bottom left and bottom right
+respectively. The default is <code>2</code>, which is the bottom left corner.</dd>
+<dt><strong><code>convert</code></strong> :&ensp;<code>str, [</code>'fm'<code>,</code>'pm'<code>,</code>'Å'<code> or </code>A<code>,</code>'nm'<code>,</code>'µm'<code> or </code>'um'<code>,</code>'mm'<code>,</code>'cm'<code>,</code>'dm'<code>,</code>'m'<code>]</code></dt>
+<dd>Unit that will be used for the scale bar, the value will be
+automatically converted if this unit differs from the pixel size
+unit. The default is <code>None</code>, which uses the unit of the scalebar on
+the original image.</dd>
+<dt><strong><code>font</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>filename of an installed TrueType font ('.ttf' file) to use for the
+text on the scalebar. The default is <code>'arialbd.ttf'</code>.</dd>
+<dt><strong><code>fontsize</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>base font size to use for the scale bar text. The default is 16.
+Note that this size will be re-scaled according to <code>resolution</code> and
+<code>scale</code>.</dd>
+<dt><strong><code>fontbaseline</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>vertical offset for the baseline of the scale bar text from the top
+of the scale bar, in printer points. The default is 10.</dd>
+<dt><strong><code>fontpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>minimum size in printer points of the space/padding between the
+text and the bar and surrounding box. The default is 10.</dd>
+<dt><strong><code>barthickness</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>thickness in printer points of the scale bar itself. The default is
+16.</dd>
+<dt><strong><code>barpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size in printer points of the padding between the scale bar and the
+surrounding box. The default is 10.</dd>
+<dt><strong><code>box</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to put a semitransparent box around the scalebar and text
+to enhance contrast. The default is <code>True</code>.</dd>
+<dt><strong><code>boxalpha</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>value between 0 and 1 for the opacity (inverse of transparency) of
+the box behind the scalebar and text when <code>box=True</code>. The default
+is <code>0.8</code>.</dd>
+<dt><strong><code>invert</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, a white scalebar and text on a black box are used. The
+default is <code>False</code> which gives black text on a white background.</dd>
+<dt><strong><code>boxpad</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>size of the space/padding around the box (with respect to the sides
+of the image) in printer points. The default is 10.</dd>
+<dt><strong><code>store_settings</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>when <code>True</code>, a .txt file is saved along with the image containing
+all settings passed to this function. The default is False</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.xl30sfeg.get_image"><code class="name flex">
+<span>def <span class="ident">get_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>load the image and (if present) scalebar</p></div>
+</dd>
+<dt id="scm_electron_microscopes.xl30sfeg.get_metadata"><code class="name flex">
+<span>def <span class="ident">get_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load the metadata footer from XL30SFEG SEM files and return xml
+tree object which can be indexed for extraction of useful parameters.
+Does not require loading whole file into memory. Searches for 'human'
+formatted metadata.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>xml_root</code></strong> :&ensp;<code>xml.etree.ElementTree object</code></dt>
+<dd>xml root object of the metadata. Can be printed using it as
+argument to print_metadata, or indexed with
+xml_root.find('<element name>')</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.xl30sfeg.get_pixelsize"><code class="name flex">
+<span>def <span class="ident">get_pixelsize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>gets the pixel size from the metadata and calculates the unit</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>pixelsize</code></strong> :&ensp;<code>float</code></dt>
+<dd>physical size of the pixels in x and y</dd>
+<dt><strong><code>unit</code></strong> :&ensp;<code>str</code></dt>
+<dd>physical unit corresponding to the pixelsize.</dd>
+</dl></div>
+</dd>
+<dt id="scm_electron_microscopes.xl30sfeg.print_metadata"><code class="name flex">
+<span>def <span class="ident">print_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>print formatted output of metadata</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="scm_electron_microscopes.ZeissSEM" href="#scm_electron_microscopes.ZeissSEM">ZeissSEM</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.ZeissSEM.export_metadata" href="#scm_electron_microscopes.ZeissSEM.export_metadata">export_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.ZeissSEM.export_with_scalebar" href="#scm_electron_microscopes.ZeissSEM.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.ZeissSEM.get_image" href="#scm_electron_microscopes.ZeissSEM.get_image">get_image</a></code></li>
+<li><code><a title="scm_electron_microscopes.ZeissSEM.get_metadata" href="#scm_electron_microscopes.ZeissSEM.get_metadata">get_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.ZeissSEM.get_pixelsize" href="#scm_electron_microscopes.ZeissSEM.get_pixelsize">get_pixelsize</a></code></li>
+<li><code><a title="scm_electron_microscopes.ZeissSEM.print_metadata" href="#scm_electron_microscopes.ZeissSEM.print_metadata">print_metadata</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.helios" href="#scm_electron_microscopes.helios">helios</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.helios.export_metadata" href="#scm_electron_microscopes.helios.export_metadata">export_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.helios.export_with_scalebar" href="#scm_electron_microscopes.helios.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.helios.get_image" href="#scm_electron_microscopes.helios.get_image">get_image</a></code></li>
+<li><code><a title="scm_electron_microscopes.helios.get_metadata" href="#scm_electron_microscopes.helios.get_metadata">get_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.helios.get_pixelsize" href="#scm_electron_microscopes.helios.get_pixelsize">get_pixelsize</a></code></li>
+<li><code><a title="scm_electron_microscopes.helios.print_metadata" href="#scm_electron_microscopes.helios.print_metadata">print_metadata</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.phenom" href="#scm_electron_microscopes.phenom">phenom</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.phenom.export_metadata" href="#scm_electron_microscopes.phenom.export_metadata">export_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.phenom.export_with_scalebar" href="#scm_electron_microscopes.phenom.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.phenom.get_image" href="#scm_electron_microscopes.phenom.get_image">get_image</a></code></li>
+<li><code><a title="scm_electron_microscopes.phenom.get_metadata" href="#scm_electron_microscopes.phenom.get_metadata">get_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.phenom.get_pixelsize" href="#scm_electron_microscopes.phenom.get_pixelsize">get_pixelsize</a></code></li>
+<li><code><a title="scm_electron_microscopes.phenom.print_metadata" href="#scm_electron_microscopes.phenom.print_metadata">print_metadata</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.sis" href="#scm_electron_microscopes.sis">sis</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.sis.export_with_scalebar" href="#scm_electron_microscopes.sis.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.sis.get_metadata" href="#scm_electron_microscopes.sis.get_metadata">get_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.sis.get_pixelsize" href="#scm_electron_microscopes.sis.get_pixelsize">get_pixelsize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.talos" href="#scm_electron_microscopes.talos">talos</a></code></h4>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.tecnai" href="#scm_electron_microscopes.tecnai">tecnai</a></code></h4>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.tia" href="#scm_electron_microscopes.tia">tia</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.tia.export_metadata" href="#scm_electron_microscopes.tia.export_metadata">export_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.tia.export_with_scalebar" href="#scm_electron_microscopes.tia.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.tia.get_metadata" href="#scm_electron_microscopes.tia.get_metadata">get_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.tia.get_pixelsize" href="#scm_electron_microscopes.tia.get_pixelsize">get_pixelsize</a></code></li>
+<li><code><a title="scm_electron_microscopes.tia.get_pixelsize_legacy" href="#scm_electron_microscopes.tia.get_pixelsize_legacy">get_pixelsize_legacy</a></code></li>
+<li><code><a title="scm_electron_microscopes.tia.print_metadata" href="#scm_electron_microscopes.tia.print_metadata">print_metadata</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.util" href="#scm_electron_microscopes.util">util</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.util.image_histogram" href="#scm_electron_microscopes.util.image_histogram">image_histogram</a></code></li>
+<li><code><a title="scm_electron_microscopes.util.print_metadata" href="#scm_electron_microscopes.util.print_metadata">print_metadata</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.velox" href="#scm_electron_microscopes.velox">velox</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.velox.get_dataset" href="#scm_electron_microscopes.velox.get_dataset">get_dataset</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox.print_file_struct" href="#scm_electron_microscopes.velox.print_file_struct">print_file_struct</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.velox_edx" href="#scm_electron_microscopes.velox_edx">velox_edx</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.velox_edx.get_image" href="#scm_electron_microscopes.velox_edx.get_image">get_image</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox_edx.get_spectrum" href="#scm_electron_microscopes.velox_edx.get_spectrum">get_spectrum</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.velox_image" href="#scm_electron_microscopes.velox_image">velox_image</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.velox_image.export_tiff" href="#scm_electron_microscopes.velox_image.export_tiff">export_tiff</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox_image.export_with_scalebar" href="#scm_electron_microscopes.velox_image.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox_image.get_data" href="#scm_electron_microscopes.velox_image.get_data">get_data</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox_image.get_frame" href="#scm_electron_microscopes.velox_image.get_frame">get_frame</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox_image.get_frametime" href="#scm_electron_microscopes.velox_image.get_frametime">get_frametime</a></code></li>
+<li><code><a title="scm_electron_microscopes.velox_image.get_pixelsize" href="#scm_electron_microscopes.velox_image.get_pixelsize">get_pixelsize</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="scm_electron_microscopes.xl30sfeg" href="#scm_electron_microscopes.xl30sfeg">xl30sfeg</a></code></h4>
+<ul class="">
+<li><code><a title="scm_electron_microscopes.xl30sfeg.export_with_scalebar" href="#scm_electron_microscopes.xl30sfeg.export_with_scalebar">export_with_scalebar</a></code></li>
+<li><code><a title="scm_electron_microscopes.xl30sfeg.get_image" href="#scm_electron_microscopes.xl30sfeg.get_image">get_image</a></code></li>
+<li><code><a title="scm_electron_microscopes.xl30sfeg.get_metadata" href="#scm_electron_microscopes.xl30sfeg.get_metadata">get_metadata</a></code></li>
+<li><code><a title="scm_electron_microscopes.xl30sfeg.get_pixelsize" href="#scm_electron_microscopes.xl30sfeg.get_pixelsize">get_pixelsize</a></code></li>
+<li><code><a title="scm_electron_microscopes.xl30sfeg.print_metadata" href="#scm_electron_microscopes.xl30sfeg.print_metadata">print_metadata</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
