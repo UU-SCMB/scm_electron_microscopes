@@ -992,10 +992,16 @@ class velox_image(velox_dataset):
         unit : str
             physical unit of the pixel size
         """
-        md = self.get_metadata()['BinaryResult']
-        pixelsize = md['PixelSize']
-        pixelsize = [float(pixelsize['height']),float(pixelsize['width'])]
-        unit = [md['PixelUnitY'],md['PixelUnitX']]
+        try:
+            md = self.get_metadata()['BinaryResult']
+            pixelsize = md['PixelSize']
+            pixelsize = [float(pixelsize['height']),float(pixelsize['width'])]
+            unit = [md['PixelUnitY'],md['PixelUnitX']]
+        except KeyError:
+            warn('pixelsize could not be found, using "1 px"',stacklevel=2)
+            self.pixelsize = [1.,1.]
+            self.unit = 'px'
+            return self.pixelsize,self.unit
         
         #if no unit is given, determine from y-pizelsize
         if convert is None:
